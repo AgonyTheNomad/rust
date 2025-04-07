@@ -1,0 +1,211 @@
+{
+    "backtest_instances": [
+      {
+        "id": "btc_conservative",
+        "description": "Conservative BTC strategy with lower risk",
+        "symbol": "BTC",
+        "enabled": true,
+        
+        "override_default_config": {
+          "backtesting": {
+            "initial_balance": 10000.0,
+            "leverage": 10.0,
+            "max_risk_per_trade": 0.01,
+            "start_date": "2024-01-01T00:00:00Z",
+            "end_date": "2024-03-01T00:00:00Z"
+          },
+          
+          "risk_management": {
+            "position_sizing": {
+              "risk_per_trade": 0.01,
+              "kelly_fraction": 0.3
+            },
+            "max_drawdown": 0.15,
+            "max_trades_per_day": 3
+          },
+  
+          "strategy": {
+            "fibonacci": {
+              "entry_conditions": {
+                "long": {
+                  "entry_level": 0.618,
+                  "stop_loss_level": 0.5,
+                  "take_profit_level": 1.618
+                },
+                "short": {
+                  "entry_level": 0.382,
+                  "stop_loss_level": 0.5,
+                  "take_profit_level": -0.618
+                }
+              }
+            },
+            "indicators": {
+              "macd": {
+                "fast_period": 12,
+                "slow_period": 26,
+                "signal_period": 9
+              },
+              "rsi": {
+                "period": 14,
+                "overbought": 75,
+                "oversold": 25
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "btc_aggressive",
+        "description": "Aggressive BTC strategy with higher leverage",
+        "symbol": "BTC",
+        "enabled": true,
+        
+        "override_default_config": {
+          "backtesting": {
+            "initial_balance": 10000.0,
+            "leverage": 20.0,
+            "max_risk_per_trade": 0.03,
+            "start_date": "2024-01-01T00:00:00Z",
+            "end_date": "2024-03-01T00:00:00Z"
+          },
+          
+          "risk_management": {
+            "position_sizing": {
+              "risk_per_trade": 0.03,
+              "kelly_fraction": 0.7
+            },
+            "max_drawdown": 0.25,
+            "max_trades_per_day": 8,
+            "trailing_stop": {
+              "enabled": false,
+              "activation_percent": 0.02,
+              "trailing_percent": 0.015
+            }
+          },
+  
+          "strategy": {
+            "fibonacci": {
+              "entry_conditions": {
+                "long": {
+                  "entry_level": 0.5,
+                  "stop_loss_level": 0.382,
+                  "take_profit_level": 2.0
+                },
+                "short": {
+                  "entry_level": 0.5,
+                  "stop_loss_level": 0.618,
+                  "take_profit_level": -1.0
+                }
+              }
+            },
+            "indicators": {
+              "macd": {
+                "fast_period": 8,
+                "slow_period": 21,
+                "signal_period": 9
+              },
+              "rsi": {
+                "period": 10,
+                "overbought": 80,
+                "oversold": 20
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "btc_swing",
+        "description": "Swing trading strategy with longer timeframes",
+        "symbol": "BTC",
+        "enabled": true,
+        
+        "override_default_config": {
+          "backtesting": {
+            "initial_balance": 10000.0,
+            "leverage": 5.0,
+            "max_risk_per_trade": 0.02,
+            "start_date": "2024-01-01T00:00:00Z",
+            "end_date": "2024-03-01T00:00:00Z"
+          },
+          
+          "risk_management": {
+            "position_sizing": {
+              "risk_per_trade": 0.02,
+              "kelly_fraction": 0.5
+            },
+            "max_drawdown": 0.20,
+            "max_trades_per_day": 2,
+            "trailing_stop": {
+              "enabled": false,
+              "activation_percent": 0.03,
+              "trailing_percent": 0.02
+            }
+          },
+  
+          "strategy": {
+            "fibonacci": {
+              "lookback_period": 30,
+              "entry_conditions": {
+                "long": {
+                  "entry_level": 0.786,
+                  "stop_loss_level": 0.618,
+                  "take_profit_level": 2.618
+                },
+                "short": {
+                  "entry_level": 0.236,
+                  "stop_loss_level": 0.382,
+                  "take_profit_level": -1.618
+                }
+              }
+            },
+            "indicators": {
+              "macd": {
+                "fast_period": 21,
+                "slow_period": 55,
+                "signal_period": 13
+              },
+              "rsi": {
+                "period": 21,
+                "overbought": 70,
+                "oversold": 30
+              }
+            }
+          }
+        }
+      }
+    ],
+  
+    "batch_settings": {
+      "parallel_execution": true,
+      "max_concurrent_backtests": 4,
+      "save_individual_results": true,
+      "generate_comparison_report": true,
+      "export_format": ["json", "csv"],
+      "metrics_to_compare": [
+        "total_return",
+        "sharpe_ratio",
+        "max_drawdown",
+        "win_rate",
+        "profit_factor"
+      ]
+    },
+  
+    "output_settings": {
+      "base_directory": "./results",
+      "subdirectories": {
+        "trades": "trades",
+        "metrics": "metrics",
+        "charts": "charts",
+        "logs": "logs"
+      },
+      "filename_template": "{id}_{date}_{metric}",
+      "date_format": "%Y%m%d_%H%M%S"
+    },
+  
+    "monitoring": {
+      "save_memory_usage": true,
+      "save_execution_time": true,
+      "progress_updates": true,
+      "error_logging": true
+    }
+  }

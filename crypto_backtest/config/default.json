@@ -1,0 +1,210 @@
+{
+    "general": {
+      "log_level": "info",
+      "output_directory": "./results",
+      "save_trades": true,
+      "save_equity_curve": true
+    },
+  
+    "market": {
+      "symbol": "BTC",
+      "base_currency": "USD",
+      "trading_fee": 0.0004,
+      "slippage": 0.0002,
+      "min_trade_size": 0.001,
+      "price_precision": 2,
+      "size_precision": 8
+    },
+  
+    "backtesting": {
+      "initial_balance": 10000.0,
+      "leverage": 20.0,
+      "max_risk_per_trade": 0.02,
+      "max_position_size": 10.0,
+      "start_date": "2024-01-01T00:00:00Z",
+      "end_date": "2024-12-31T23:59:59Z",
+      "warmup_period": 100
+    },
+  
+    "risk_management": {
+      "position_sizing": {
+        "method": "risk_based",
+        "fixed_size": 1.0,
+        "risk_per_trade": 0.02,
+        "kelly_fraction": 0.5
+      },
+      "stop_loss": {
+        "enabled": true,
+        "type": "fixed",
+        "value": 0.02,
+        "atr_multiplier": 2.0
+      },
+      "take_profit": {
+        "enabled": true,
+        "type": "risk_ratio",
+        "risk_reward_ratio": 2.0
+      },
+      "trailing_stop": {
+        "enabled": false,
+        "activation_percent": 0.01,
+        "trailing_percent": 0.02
+      },
+      "max_drawdown": 0.20,
+      "max_trades_per_day": 5,
+      "max_correlation": 0.75,
+      "max_leverage_used": 0.8
+    },
+  
+    "strategy": {
+      "name": "fibonacci_macd",
+      "fibonacci": {
+        "lookback_period": 14,
+        "entry_conditions": {
+          "long": {
+            "entry_level": 0.618,
+            "confirmation_level": 0.5,
+            "stop_loss_level": 0.382,
+            "take_profit_level": 1.618
+          },
+          "short": {
+            "entry_level": 0.382,
+            "confirmation_level": 0.5,
+            "stop_loss_level": 0.618,
+            "take_profit_level": -0.618
+          }
+        },
+        "min_range_size": 100.0,
+        "consolidation_period": 12
+      },
+      
+      "indicators": {
+        "macd": {
+          "enabled": true,
+          "fast_period": 12,
+          "slow_period": 26,
+          "signal_period": 9,
+          "source": "close"
+        },
+        "rsi": {
+          "enabled": true,
+          "period": 14,
+          "overbought": 70,
+          "oversold": 30,
+          "source": "close"
+        },
+        "bollinger_bands": {
+          "enabled": true,
+          "period": 20,
+          "std_dev": 2.0,
+          "source": "close"
+        },
+        "atr": {
+          "enabled": true,
+          "period": 14
+        },
+        "volume_profile": {
+          "enabled": true,
+          "period": 20,
+          "zones": 12
+        }
+      },
+  
+      "filters": {
+        "time_filter": {
+          "enabled": true,
+          "trading_hours": {
+            "start": "00:00",
+            "end": "23:59"
+          },
+          "excluded_days": ["Saturday", "Sunday"]
+        },
+        "volatility_filter": {
+          "enabled": true,
+          "min_atr": 50.0,
+          "max_atr": 500.0
+        },
+        "volume_filter": {
+          "enabled": true,
+          "min_volume": 1000000
+        },
+        "trend_filter": {
+          "enabled": true,
+          "period": 200,
+          "min_slope": 0.1
+        }
+      },
+  
+      "entry_rules": {
+        "fibonacci_confirmation": true,
+        "indicator_alignment": true,
+        "volume_confirmation": true,
+        "min_distance_to_support": 0.01,
+        "min_distance_to_resistance": 0.01
+      },
+  
+      "exit_rules": {
+        "trailing_activation": 0.01,
+        "profit_taking": {
+          "first_target": 0.02,
+          "first_target_size": 0.5,
+          "second_target": 0.04
+        },
+        "stop_loss": {
+          "initial": 0.02,
+          "breakeven": 0.015
+        }
+      }
+    },
+  
+    "performance_metrics": {
+      "risk_free_rate": 0.02,
+      "benchmark": "BTC",
+      "metrics": [
+        "total_return",
+        "sharpe_ratio",
+        "sortino_ratio",
+        "max_drawdown",
+        "win_rate",
+        "profit_factor",
+        "calmar_ratio",
+        "average_trade",
+        "trade_count",
+        "exposure_time"
+      ],
+      "reporting": {
+        "generate_plots": true,
+        "save_trade_list": true,
+        "include_equity_curve": true,
+        "include_drawdown_analysis": true,
+        "include_monthly_returns": true
+      }
+    },
+  
+    "optimization": {
+      "enabled": false,
+      "method": "grid",
+      "parameters": {
+        "fibonacci.entry_level": {
+          "start": 0.5,
+          "end": 0.7,
+          "step": 0.05
+        },
+        "macd.fast_period": {
+          "start": 8,
+          "end": 16,
+          "step": 2
+        },
+        "macd.slow_period": {
+          "start": 20,
+          "end": 30,
+          "step": 2
+        }
+      },
+      "optimization_metric": "sharpe_ratio",
+      "cross_validation": {
+        "enabled": true,
+        "folds": 5,
+        "shuffle": true
+      }
+    }
+  }
