@@ -222,33 +222,107 @@ mod tests {
 
     #[test]
     fn test_backtester_run() {
-        let candles = vec![
-            Candle {
-                time: "2023-01-01T00:00:00Z".to_string(),
-                open: 100.0,
-                high: 110.0,
-                low: 90.0,
-                close: 105.0,
-                volume: 1000.0,
-                num_trades: 50,
-            },
-            Candle {
-                time: "2023-01-02T00:00:00Z".to_string(),
-                open: 105.0,
-                high: 115.0,
-                low: 95.0,
-                close: 100.0,
-                volume: 1200.0,
-                num_trades: 55,
-            },
-        ];
+        // Create a more sophisticated test dataset that will trigger trades
+        let mut candles = Vec::new();
+        
+        // Generate candles with a clear trend and reversal pattern
+        // Initial uptrend
+        for i in 0..8 {
+            let base = 100.0 + (i as f64 * 10.0);
+            candles.push(Candle {
+                time: format!("2023-01-{:02}T00:00:00Z", i+1),
+                open: base,
+                high: base + 5.0 + (i as f64 * 2.0), // Increasing highs
+                low: base - 2.0,
+                close: base + 4.0,
+                volume: 1000.0 + (i as f64 * 100.0),
+                num_trades: 50 + (i * 5),
+            });
+        }
+        
+        // Clear peak and reversal
+        candles.push(Candle {
+            time: "2023-01-09T00:00:00Z".to_string(),
+            open: 180.0,
+            high: 195.0, // Strong high - this should create a pivot high
+            low: 175.0,
+            close: 176.0, // Close lower, suggesting reversal
+            volume: 2500.0, // Higher volume on reversal
+            num_trades: 90,
+        });
+        
+        // Downtrend
+        for i in 0..6 {
+            let base = 175.0 - (i as f64 * 8.0);
+            candles.push(Candle {
+                time: format!("2023-01-{:02}T00:00:00Z", i+10),
+                open: base,
+                high: base + 3.0,
+                low: base - 5.0 - (i as f64 * 1.5), // Decreasing lows
+                close: base - 4.0,
+                volume: 1800.0 - (i as f64 * 100.0),
+                num_trades: 70 - (i * 3),
+            });
+        }
+        
+        // Bottom formation and reversal
+        candles.push(Candle {
+            time: "2023-01-16T00:00:00Z".to_string(),
+            open: 120.0,
+            high: 124.0,
+            low: 105.0, // Strong low - this should create a pivot low
+            close: 122.0, // Close higher, suggesting reversal
+            volume: 2700.0, // Higher volume on reversal
+            num_trades: 95,
+        });
+        
+        // New uptrend
+        for i in 0..5 {
+            let base = 125.0 + (i as f64 * 7.0);
+            candles.push(Candle {
+                time: format!("2023-01-{:02}T00:00:00Z", i+17),
+                open: base - 2.0,
+                high: base + 5.0,
+                low: base - 3.0,
+                close: base + 4.0,
+                volume: 1600.0 + (i as f64 * 150.0),
+                num_trades: 65 + (i * 4),
+            });
+        }
 
-        let config = StrategyConfig::default();
+        // Configure a strategy that will work with our test data
+        let config = StrategyConfig {
+            initial_balance: 10000.0,
+            leverage: 10.0,
+            max_risk_per_trade: 0.02,      // Higher risk for test
+            pivot_lookback: 2,             // Small lookback for test
+            signal_lookback: 1,            // Quick signal generation
+            fib_threshold: 5.0,            // Lower threshold to ensure entry
+            fib_initial: 0.382,            // Standard Fibonacci entry
+            fib_tp: 0.618,                 // Standard take profit
+            fib_sl: 0.236,                 // Standard stop loss
+            ..Default::default()
+        };
+        
         let strategy = Strategy::new(config);
         let mut backtester = Backtester::new(10000.0, strategy);
 
         let results = backtester.run(&candles).unwrap();
-        assert!(results.trades.len() > 0);
+        
+        // Debug output to see what happened
+        println!("Test trade count: {}", results.trades.len());
+        if !results.trades.is_empty() {
+            println!("First trade: {} {} Entry: {}, Exit: {}, PnL: {}", 
+                results.trades[0].position_type,
+                results.trades[0].entry_time,
+                results.trades[0].entry_price,
+                results.trades[0].exit_price,
+                results.trades[0].pnl);
+        }
+        
+        // Assertions
+        assert!(results.trades.len() > 0, "No trades were executed!");
         assert!(results.metrics.total_trades > 0);
+        assert!(results.metrics.win_rate >= 0.0 && results.metrics.win_rate <= 1.0);
     }
 }
