@@ -113,7 +113,7 @@ impl Strategy {
             self.generate_signals();
         }
 
-        if let Some(position) = &state.position {
+        if let Some(position) = &mut state.position {
             if let Some(trade) = self.check_exits(current_candle, position) {
                 state.position = None;
                 state.account_balance += trade.pnl;
@@ -169,7 +169,7 @@ impl Strategy {
             used_margin: 0.0,
             positions: HashMap::new(),
         };
-
+    
         let result = self.risk_manager.calculate_positions_with_risk(
             &account,
             levels.entry_price,
@@ -179,7 +179,7 @@ impl Strategy {
             self.config.fib_limit2,
             self.config.leverage,
         );
-
+    
         if let Ok(position_result) = result {
             state.position = Some(Position {
                 entry_time: candle.time.clone(),
@@ -190,11 +190,53 @@ impl Strategy {
                 position_type,
                 risk_percent: position_result.final_risk,
                 margin_used: position_result.max_margin,
+    
+                // ✅ Scaling fields
+                limit1_price: Some(levels.limit1),
+                limit2_price: Some(levels.limit2),
+                limit1_hit: false,
+                limit2_hit: false,
+                limit1_size: position_result.limit1_position_size,
+                limit2_size: position_result.limit2_position_size,
+                new_tp1: Some(position_result.new_tp1),
+                new_tp2: Some(position_result.new_tp2),
             });
         }
     }
+    
 
-    fn check_exits(&self, candle: &Candle, position: &Position) -> Option<Trade> {
+    fn check_exits(&self, candle: &Candle, position: &mut Position) -> Option<Trade> {
+        // Check Limit 1
+        if !position.limit1_hit {
+            if let Some(limit1) = position.limit1_price {
+                let hit = match position.position_type {
+                    PositionType::Long => candle.low <= limit1,
+                    PositionType::Short => candle.high >= limit1,
+                };
+                if hit {
+                    position.size += position.limit1_size;
+                    position.take_profit = position.new_tp1.unwrap_or(position.take_profit);
+                    position.limit1_hit = true;
+                }
+            }
+        }
+
+        // Check Limit 2
+        if !position.limit2_hit {
+            if let Some(limit2) = position.limit2_price {
+                let hit = match position.position_type {
+                    PositionType::Long => candle.low <= limit2,
+                    PositionType::Short => candle.high >= limit2,
+                };
+                if hit {
+                    position.size += position.limit2_size;
+                    position.take_profit = position.new_tp2.unwrap_or(position.take_profit);
+                    position.limit2_hit = true;
+                }
+            }
+        }
+
+        // Check TP or SL
         let (exit_price, should_exit) = match position.position_type {
             PositionType::Long => {
                 if candle.low <= position.stop_loss {

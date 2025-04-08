@@ -35,11 +35,11 @@ impl FibonacciLevels {
         }
 
         Some(FibLevels {
-            entry_price: prev_high - self.initial_level * range,
+            entry_price: prev_low + self.initial_level * range,
             take_profit: prev_high + self.tp_level * range,
-            stop_loss: prev_high - self.sl_level * range,
-            limit1: prev_high - self.limit1_level * range,
-            limit2: prev_high - self.limit2_level * range,
+            stop_loss: prev_low - self.sl_level * range,
+            limit1: prev_low - self.limit1_level * range,
+            limit2: prev_low - self.limit2_level * range,
         })
     }
 
@@ -50,7 +50,7 @@ impl FibonacciLevels {
         }
 
         Some(FibLevels {
-            entry_price: prev_high + self.initial_level * range,
+            entry_price: prev_high - self.initial_level * range,
             take_profit: prev_low - self.tp_level * range,
             stop_loss: prev_high + self.sl_level * range,
             limit1: prev_high + self.limit1_level * range,

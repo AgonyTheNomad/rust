@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Candle {
@@ -27,6 +28,16 @@ pub struct Position {
     pub position_type: PositionType,
     pub risk_percent: f64,
     pub margin_used: f64,
+
+    // ✅ Scaling Support
+    pub limit1_price: Option<f64>,
+    pub limit2_price: Option<f64>,
+    pub limit1_hit: bool,
+    pub limit2_hit: bool,
+    pub limit1_size: f64,
+    pub limit2_size: f64,
+    pub new_tp1: Option<f64>,
+    pub new_tp2: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -39,7 +50,7 @@ pub struct Trade {
     pub size: f64,
     pub pnl: f64,
     pub risk_percent: f64,
-    pub profit_factor: f64, 
+    pub profit_factor: f64,
     pub margin_used: f64,
 }
 
@@ -60,7 +71,7 @@ pub struct Account {
     pub balance: f64,
     pub equity: f64,
     pub used_margin: f64,
-    pub positions: std::collections::HashMap<String, Position>,
+    pub positions: HashMap<String, Position>,
 }
 
 impl Account {
@@ -69,7 +80,7 @@ impl Account {
             balance: initial_balance,
             equity: initial_balance,
             used_margin: 0.0,
-            positions: std::collections::HashMap::new(),
+            positions: HashMap::new(),
         }
     }
 

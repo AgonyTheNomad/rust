@@ -1,5 +1,6 @@
 use crate::models::{Candle, Trade, BacktestState};
 use crate::strategy::Strategy;
+use crate::stats::StatsTracker; // <-- NEW
 use std::time::{Duration, Instant};
 
 #[derive(Debug)]
@@ -27,7 +28,8 @@ pub struct Backtester {
     trades: Vec<Trade>,
     equity_curve: Vec<f64>,
     current_balance: f64,
-    state: BacktestState, // Include BacktestState
+    state: BacktestState,
+    stats: StatsTracker, // <-- NEW
 }
 
 impl Backtester {
@@ -42,6 +44,7 @@ impl Backtester {
             peak_balance: initial_balance,
             current_drawdown: 0.0,
         };
+
         Self {
             initial_balance,
             strategy,
@@ -49,6 +52,7 @@ impl Backtester {
             equity_curve: vec![initial_balance],
             current_balance: initial_balance,
             state,
+            stats: StatsTracker::new(), // <-- NEW
         }
     }
 
@@ -85,7 +89,9 @@ impl Backtester {
         };
 
         self.current_balance += trade.pnl;
-        self.trades.push(trade);
+        self.trades.push(trade.clone());
+
+        self.stats.record_trade(&trade, self.current_balance); // <-- NEW
     }
 
     fn calculate_metrics(&self) -> BacktestMetrics {
@@ -186,7 +192,7 @@ impl Backtester {
             .filter(|t| t.pnl > 0.0)
             .map(|t| t.pnl)
             .sum::<f64>()
-            / self.trades.iter().filter(|t| t.pnl > 0.0).count() as f64;
+            / self.trades.iter().filter(|t| t.pnl > 0.0).count().max(1) as f64;
 
         let avg_loss = self
             .trades
@@ -194,13 +200,17 @@ impl Backtester {
             .filter(|t| t.pnl < 0.0)
             .map(|t| t.pnl.abs())
             .sum::<f64>()
-            / self.trades.iter().filter(|t| t.pnl < 0.0).count() as f64;
+            / self.trades.iter().filter(|t| t.pnl < 0.0).count().max(1) as f64;
 
         if avg_loss == 0.0 {
             return 0.0;
         }
 
         avg_win / avg_loss
+    }
+
+    pub fn stats(&self) -> &StatsTracker {
+        &self.stats
     }
 }
 
@@ -220,6 +230,7 @@ mod tests {
                 low: 90.0,
                 close: 105.0,
                 volume: 1000.0,
+                num_trades: 50,
             },
             Candle {
                 time: "2023-01-02T00:00:00Z".to_string(),
@@ -228,6 +239,7 @@ mod tests {
                 low: 95.0,
                 close: 100.0,
                 volume: 1200.0,
+                num_trades: 55,
             },
         ];
 
