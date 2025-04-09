@@ -82,9 +82,6 @@ fn test_pivot_detection_and_signals() {
         });
     }
     
-    // Add candles that will trigger position closure
-    // First get information about current position to determine exit levels
-    
     // Process all candles
     let mut long_signals = 0;
     let mut short_signals = 0;
@@ -92,6 +89,10 @@ fn test_pivot_detection_and_signals() {
     
     // First pass through the original candles to establish positions
     for (i, candle) in test_candles.iter().enumerate() {
+        // Store information about previous signals to compare after processing
+        let had_long_signal = strategy.is_long_signal();
+        let had_short_signal = strategy.is_short_signal();
+        
         // Process the candle
         let trade_result = strategy.analyze_candle(candle, &mut state);
         
@@ -99,13 +100,13 @@ fn test_pivot_detection_and_signals() {
         let has_long_signal = strategy.is_long_signal();
         let has_short_signal = strategy.is_short_signal();
         
-        // Count signals
-        if has_long_signal && long_signals == 0 {
+        // Count signals - only record a signal if it wasn't there before
+        if has_long_signal && !had_long_signal {
             println!("Candle {}: LONG SIGNAL GENERATED! Price: {}", i, candle.high);
             long_signals += 1;
         }
         
-        if has_short_signal && short_signals == 0 {
+        if has_short_signal && !had_short_signal {
             println!("Candle {}: SHORT SIGNAL GENERATED! Price: {}", i, candle.low);
             short_signals += 1;
         }
@@ -128,8 +129,9 @@ fn test_pivot_detection_and_signals() {
     }
     
     // Extract position details if there's an active position
-    let take_profit;
-    let stop_loss;
+    let mut take_profit_level = 0.0;
+    let mut stop_loss_level = 0.0;
+    let mut position_type = "None";
     
     if let Some(pos) = &state.position {
         println!("\nActive position details before extending test:");
@@ -138,24 +140,41 @@ fn test_pivot_detection_and_signals() {
         println!("Take profit: {}", pos.take_profit);
         println!("Stop loss: {}", pos.stop_loss);
         
-        take_profit = pos.take_profit;
-        stop_loss = pos.stop_loss;
+        // Store these values for later use, avoiding the borrow
+        take_profit_level = pos.take_profit;
+        stop_loss_level = pos.stop_loss;
+        position_type = match pos.position_type {
+            crypto_backtest::models::PositionType::Long => "Long",
+            crypto_backtest::models::PositionType::Short => "Short",
+        };
         
         // Now create additional candles to trigger trade exit
         println!("\nAdding candles to trigger position exit...");
         
-        // Test Take Profit Exit - create a candle with high > take profit
-        let tp_candle = Candle {
-            time: "2023-01-16T00:00:00Z".to_string(),
-            open: pos.entry_price,
-            high: take_profit + 1.0, // Make sure it's above take profit
-            low: take_profit - 5.0,  // Make sure it's above stop loss
-            close: take_profit + 0.5,
-            volume: 1000.0,
-            num_trades: 100,
+        // Test Take Profit Exit - create a candle with high/low hitting the take profit
+        let tp_candle = if position_type == "Long" {
+            Candle {
+                time: "2023-01-16T00:00:00Z".to_string(),
+                open: pos.entry_price,
+                high: take_profit_level + 1.0, // Make sure high passes take profit for long
+                low: pos.entry_price - 1.0,    // But not hitting stop loss
+                close: take_profit_level + 0.5,
+                volume: 1000.0,
+                num_trades: 100,
+            }
+        } else {
+            Candle {
+                time: "2023-01-16T00:00:00Z".to_string(),
+                open: pos.entry_price,
+                high: pos.entry_price + 1.0,   // Not hitting stop loss
+                low: take_profit_level - 1.0,  // Make sure low passes take profit for short
+                close: take_profit_level - 0.5,
+                volume: 1000.0,
+                num_trades: 100,
+            }
         };
         
-        println!("Adding take profit test candle with high: {}", tp_candle.high);
+        println!("Adding take profit test candle with high: {}, low: {}", tp_candle.high, tp_candle.low);
         
         // Process the take profit candle
         let trade_result = strategy.analyze_candle(&tp_candle, &mut state);
@@ -166,98 +185,117 @@ fn test_pivot_detection_and_signals() {
             completed_trades += 1;
             
             // Verify it was closed as a take profit (exit price should match take profit level)
-            assert_eq!(trade.exit_price, take_profit, "Position should exit at take profit level");
-            
-            // Add test for stop loss (will only be reachable if take profit didn't trigger)
-            if state.position.is_none() {
-                // Create a new position with a short signal
-                println!("\nCreating a new position to test stop loss...");
-                
-                // Add candles that will create another set of pivots and entry signals
-                let new_candles = vec![
-                    Candle {
-                        time: "2023-01-17T00:00:00Z".to_string(),
-                        open: 120.0,
-                        high: 125.0,
-                        low: 119.0,
-                        close: 123.0,
-                        volume: 1000.0,
-                        num_trades: 100,
-                    },
-                    Candle {
-                        time: "2023-01-18T00:00:00Z".to_string(),
-                        open: 123.0,
-                        high: 130.0, // New pivot high
-                        low: 120.0,
-                        close: 122.0,
-                        volume: 1000.0,
-                        num_trades: 100,
-                    },
-                    Candle {
-                        time: "2023-01-19T00:00:00Z".to_string(),
-                        open: 122.0,
-                        high: 124.0,
-                        low: 118.0,
-                        close: 119.0,
-                        volume: 1000.0,
-                        num_trades: 100,
-                    },
-                    Candle {
-                        time: "2023-01-20T00:00:00Z".to_string(),
-                        open: 119.0,
-                        high: 120.0,
-                        low: 110.0, // New pivot low
-                        close: 115.0,
-                        volume: 1000.0,
-                        num_trades: 100,
-                    },
-                ];
-                
-                // Process these candles to create new pivots
-                for (i, candle) in new_candles.iter().enumerate() {
-                    strategy.analyze_candle(&candle, &mut state);
-                }
-                
-                // Check if we now have a new position
-                if let Some(pos) = &state.position {
-                    println!("New position created: {:?} at {}", pos.position_type, pos.entry_price);
-                    println!("Take profit: {}, Stop loss: {}", pos.take_profit, pos.stop_loss);
-                    
-                    // Create a stop loss candle
-                    let sl_candle = Candle {
-                        time: "2023-01-21T00:00:00Z".to_string(),
-                        open: pos.entry_price,
-                        high: pos.entry_price + 1.0,
-                        low: pos.stop_loss - 1.0, // Make sure it's below stop loss for long or above for short
-                        close: pos.stop_loss - 0.5,
-                        volume: 1000.0,
-                        num_trades: 100,
-                    };
-                    
-                    println!("Testing stop loss with candle - Low: {}, SL: {}", sl_candle.low, pos.stop_loss);
-                    
-                    // Process the stop loss candle
-                    let trade_result = strategy.analyze_candle(&sl_candle, &mut state);
-                    
-                    // Check if the position was closed
-                    if let Some(trade) = trade_result {
-                        println!("Position closed on stop loss! P&L: {}", trade.pnl);
-                        completed_trades += 1;
-                        
-                        // Verify it was closed as a stop loss (exit price should match stop loss level)
-                        assert_eq!(trade.exit_price, pos.stop_loss, "Position should exit at stop loss level");
-                    } else {
-                        println!("Error: Position not closed at stop loss!");
-                    }
-                }
-            }
+            assert_eq!(trade.exit_price, take_profit_level, "Position should exit at take profit level");
         } else {
             println!("Error: Position not closed at take profit!");
         }
     } else {
         println!("No active position to test closure");
-        take_profit = 0.0;
-        stop_loss = 0.0;
+    }
+    
+    // Test stop loss - first create a new position
+    if state.position.is_none() {
+        println!("\nCreating a new position to test stop loss...");
+        
+        // Add candles that will create another set of pivots and entry signals
+        let new_candles = vec![
+            Candle {
+                time: "2023-01-17T00:00:00Z".to_string(),
+                open: 120.0,
+                high: 125.0,
+                low: 119.0,
+                close: 123.0,
+                volume: 1000.0,
+                num_trades: 100,
+            },
+            Candle {
+                time: "2023-01-18T00:00:00Z".to_string(),
+                open: 123.0,
+                high: 130.0, // New pivot high
+                low: 120.0,
+                close: 122.0,
+                volume: 1000.0,
+                num_trades: 100,
+            },
+            Candle {
+                time: "2023-01-19T00:00:00Z".to_string(),
+                open: 122.0,
+                high: 124.0,
+                low: 118.0,
+                close: 119.0,
+                volume: 1000.0,
+                num_trades: 100,
+            },
+            Candle {
+                time: "2023-01-20T00:00:00Z".to_string(),
+                open: 119.0,
+                high: 120.0,
+                low: 110.0, // New pivot low
+                close: 115.0,
+                volume: 1000.0,
+                num_trades: 100,
+            },
+        ];
+        
+        // Process these candles to create new pivots
+        for candle in new_candles.iter() {
+            strategy.analyze_candle(&candle, &mut state);
+        }
+        
+        // Check if we now have a new position
+        if let Some(pos) = &state.position {
+            println!("New position created: {:?} at {}", pos.position_type, pos.entry_price);
+            println!("Take profit: {}, Stop loss: {}", pos.take_profit, pos.stop_loss);
+            
+            // Store the stop loss level for assertion
+            let stop_loss_to_test = pos.stop_loss;
+            let position_is_long = match pos.position_type {
+                crypto_backtest::models::PositionType::Long => true,
+                crypto_backtest::models::PositionType::Short => false,
+            };
+            
+            // Create a stop loss candle based on position type
+            let sl_candle = if position_is_long {
+                Candle {
+                    time: "2023-01-21T00:00:00Z".to_string(),
+                    open: pos.entry_price,
+                    high: pos.entry_price + 1.0,
+                    low: stop_loss_to_test - 1.0, // Make sure it's below stop loss for long
+                    close: stop_loss_to_test - 0.5,
+                    volume: 1000.0,
+                    num_trades: 100,
+                }
+            } else {
+                Candle {
+                    time: "2023-01-21T00:00:00Z".to_string(),
+                    open: pos.entry_price,
+                    high: stop_loss_to_test + 1.0, // Make sure it's above stop loss for short
+                    low: pos.entry_price - 1.0,
+                    close: stop_loss_to_test + 0.5,
+                    volume: 1000.0,
+                    num_trades: 100,
+                }
+            };
+            
+            println!("Testing stop loss with candle - High: {}, Low: {}, SL: {}", 
+                sl_candle.high, sl_candle.low, stop_loss_to_test);
+            
+            // Process the stop loss candle
+            let trade_result = strategy.analyze_candle(&sl_candle, &mut state);
+            
+            // Check if the position was closed
+            if let Some(trade) = trade_result {
+                println!("Position closed on stop loss! P&L: {}", trade.pnl);
+                completed_trades += 1;
+                
+                // Verify it was closed as a stop loss (exit price should match stop loss level)
+                assert_eq!(trade.exit_price, stop_loss_to_test, "Position should exit at stop loss level");
+            } else {
+                println!("Error: Position not closed at stop loss!");
+            }
+        } else {
+            println!("Failed to create a new position for stop loss testing");
+        }
     }
     
     println!("\nTest Summary:");

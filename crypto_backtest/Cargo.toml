@@ -16,3 +16,11 @@ rayon = "1.7"
 thiserror = "1.0"
 ndarray = "0.15"
 influxdb = { version = "0.7.2", features = ["derive"] }
+
+[[bin]]
+name = "run_backtest"
+path = "src/bin/run_backtest.rs"
+
+[[bin]]
+name = "prepare_data"
+path = "src/bin/prepare_data.rs"

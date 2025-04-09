@@ -1,0 +1,42 @@
+Cryptocurrency Backtesting Report
+===============================
+
+Strategy: Fibonacci Pivot Points
+Date Range: 2024-08-06T08:00:00Z to 2025-04-07T00:22:00Z
+Instrument: BTC
+
+Strategy Configuration:
+  Initial Balance: $10000.00
+  Leverage: 10x
+  Max Risk Per Trade: 1.00%
+  Pivot Lookback: 5 candles
+  Signal Lookback: 1 candles
+  Fibonacci Entry Level: 0.382
+  Fibonacci Take Profit: 0.618
+  Fibonacci Stop Loss: 0.236
+
+Performance Metrics:
+  Total Trades: 476
+  Win Rate: 100.00%
+  Profit Factor: inf
+  Final Balance: $22437.48
+  Total Profit: $12437.48
+  Total Return: 124.37%
+  Max Drawdown: 0.00%
+  Sharpe Ratio: 16.73
+  Sortino Ratio: 0.00
+  Risk/Reward Ratio: 0.00
+
+Trade Statistics:
+  Winning Trades: 476
+  Losing Trades: 0
+  Average Win: $26.13
+  Average Loss: $-0.00
+  Largest Win: $100.11
+  Largest Loss: $0.00
+
+Direction Analysis:
+  Long Trades: 310 (65.13%)
+  Long P&L: $7999.93
+  Short Trades: 166 (34.87%)
+  Short P&L: $4437.55

@@ -1,0 +1,33 @@
+{
+  "execution_info": {
+    "candle_count": 24001,
+    "end_date": "2025-04-07T00:22:00Z",
+    "execution_time_ms": 7,
+    "start_date": "2024-08-06T08:00:00Z"
+  },
+  "performance": {
+    "final_balance": 22437.48021014384,
+    "losing_trades": 0,
+    "max_drawdown": 0.0,
+    "profit_factor": null,
+    "risk_reward_ratio": 0.0,
+    "sharpe_ratio": 16.72825101363292,
+    "sortino_ratio": 0.0,
+    "total_profit": 12437.480210143842,
+    "total_return_percent": 124.3748021014384,
+    "total_trades": 476,
+    "win_rate": 1.0,
+    "winning_trades": 476
+  },
+  "strategy_config": {
+    "fib_initial": 0.382,
+    "fib_sl": 0.236,
+    "fib_threshold": 10.0,
+    "fib_tp": 0.618,
+    "initial_balance": 10000.0,
+    "leverage": 10.0,
+    "max_risk_per_trade": 0.01,
+    "pivot_lookback": 5,
+    "signal_lookback": 1
+  }
+}
