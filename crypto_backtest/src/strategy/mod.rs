@@ -49,6 +49,9 @@ pub struct Strategy {
     prev_pivot_low: Option<f64>,
     long_signal: bool,
     short_signal: bool,
+    // New fields to track actual detected pivots
+    detected_pivot_highs: Vec<f64>,
+    detected_pivot_lows: Vec<f64>,
 }
 
 impl Strategy {
@@ -80,6 +83,9 @@ impl Strategy {
             prev_pivot_low: None,
             long_signal: false,
             short_signal: false,
+            // Initialize the new fields
+            detected_pivot_highs: Vec::new(),
+            detected_pivot_lows: Vec::new(),
         }
     }
 
@@ -93,6 +99,7 @@ impl Strategy {
             current_candle.low,
         );
 
+        // Keep the existing history logic for compatibility
         self.pivot_high_history.push_back(pivot_high);
         self.pivot_low_history.push_back(pivot_low);
 
@@ -101,18 +108,26 @@ impl Strategy {
             self.pivot_low_history.pop_front();
         }
 
+        // Add newly detected pivots to our vectors of actual detected pivots
         if let Some(high) = pivot_high {
+            self.detected_pivot_highs.push(high);
             self.prev_pivot_high = Some(high);
         }
 
         if let Some(low) = pivot_low {
+            self.detected_pivot_lows.push(low);
             self.prev_pivot_low = Some(low);
         }
 
+        // Use the original method for compatibility but also check with the new method
         if self.pivot_high_history.len() >= self.config.signal_lookback + 2 {
             self.generate_signals();
         }
 
+        // Also generate signals using the new approach
+        self.generate_signals_from_detected_pivots();
+
+        // Check for exits if we have an open position
         if let Some(position) = &mut state.position {
             if let Some(trade) = self.check_exits(current_candle, position) {
                 state.position = None;
@@ -133,6 +148,7 @@ impl Strategy {
             }
         }
 
+        // Enter positions if we have signals and no current position
         if state.position.is_none() {
             if self.long_signal {
                 if let Some(levels) = self.fib.calculate_long_levels(
@@ -191,7 +207,7 @@ impl Strategy {
                 risk_percent: position_result.final_risk,
                 margin_used: position_result.max_margin,
     
-                // ✅ Scaling fields
+                // Scaling fields
                 limit1_price: Some(levels.limit1),
                 limit2_price: Some(levels.limit2),
                 limit1_hit: false,
@@ -204,7 +220,6 @@ impl Strategy {
         }
     }
     
-
     fn check_exits(&self, candle: &Candle, position: &mut Position) -> Option<Trade> {
         // Check Limit 1
         if !position.limit1_hit {
@@ -287,6 +302,7 @@ impl Strategy {
         None
     }
 
+    // Original method kept for compatibility
     fn generate_signals(&mut self) {
         let prev_idx = 0;
         let curr_idx = 1 + self.config.signal_lookback;
@@ -297,14 +313,50 @@ impl Strategy {
         let prev_pivot_low = self.pivot_low_history[prev_idx];
         let curr_pivot_low = self.pivot_low_history[curr_idx];
 
-        self.long_signal = match (prev_pivot_high, curr_pivot_high) {
-            (Some(prev), Some(curr)) => curr > prev,
-            _ => false,
-        };
+        // Long signal: current pivot high > previous pivot high
+        if let (Some(prev), Some(curr)) = (prev_pivot_high, curr_pivot_high) {
+            if curr > prev {
+                self.long_signal = true;
+            }
+        }
 
-        self.short_signal = match (prev_pivot_low, curr_pivot_low) {
-            (Some(prev), Some(curr)) => curr < prev,
-            _ => false,
-        };
+        // Short signal: current pivot low < previous pivot low
+        if let (Some(prev), Some(curr)) = (prev_pivot_low, curr_pivot_low) {
+            if curr < prev {
+                self.short_signal = true;
+            }
+        }
+    }
+
+    // New method that directly compares detected pivot points
+    fn generate_signals_from_detected_pivots(&mut self) {
+        // Check for higher high pattern (long signal)
+        if self.detected_pivot_highs.len() >= 2 {
+            let latest = self.detected_pivot_highs[self.detected_pivot_highs.len() - 1];
+            let previous = self.detected_pivot_highs[self.detected_pivot_highs.len() - 2];
+            
+            if latest > previous {
+                self.long_signal = true;
+            }
+        }
+        
+        // Check for lower low pattern (short signal)
+        if self.detected_pivot_lows.len() >= 2 {
+            let latest = self.detected_pivot_lows[self.detected_pivot_lows.len() - 1];
+            let previous = self.detected_pivot_lows[self.detected_pivot_lows.len() - 2];
+            
+            if latest < previous {
+                self.short_signal = true;
+            }
+        }
+    }
+
+    // Accessor methods for testing
+    pub fn is_long_signal(&self) -> bool {
+        self.long_signal
+    }
+
+    pub fn is_short_signal(&self) -> bool {
+        self.short_signal
     }
 }
