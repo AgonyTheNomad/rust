@@ -76,22 +76,52 @@ impl Backtester {
     }
 
     fn execute_trade(&mut self, candle: &Candle, mut trade: Trade) {
-        if trade.exit_price >= trade.entry_price && candle.high >= trade.exit_price {
-            trade.pnl = (trade.exit_price - trade.entry_price) * trade.size;
-        } else if trade.exit_price <= trade.entry_price && candle.low <= trade.exit_price {
-            trade.pnl = (trade.entry_price - trade.exit_price) * trade.size;
-        }
-
-        trade.profit_factor = if trade.pnl > 0.0 {
-            trade.pnl / (trade.size * trade.entry_price)
+        // Transaction costs (could be moved to configuration)
+        let transaction_cost = 0.0001; // 0.01% fee
+        let stop_loss_cost = 0.00035;  // Higher cost for stop loss (slippage)
+        
+        // Determine if this is a take profit or stop loss exit
+        let is_take_profit = match trade.position_type.as_str() {
+            "Long" => trade.exit_price >= trade.entry_price,
+            "Short" => trade.exit_price <= trade.entry_price,
+            _ => false,
+        };
+        
+        // Calculate raw P&L
+        let raw_pnl = if trade.position_type == "Long" {
+            (trade.exit_price - trade.entry_price) * trade.size
+        } else { // Short
+            (trade.entry_price - trade.exit_price) * trade.size
+        };
+        
+        // Apply appropriate transaction costs
+        let fee_cost = transaction_cost * trade.size * (trade.entry_price + trade.exit_price);
+        let slippage_cost = if is_take_profit {
+            0.0 // No extra slippage on take profit
+        } else {
+            stop_loss_cost * trade.size * trade.exit_price // Extra slippage on stop loss
+        };
+        
+        // Calculate final P&L
+        let final_pnl = raw_pnl - fee_cost - slippage_cost;
+        
+        // Update trade information
+        trade.pnl = final_pnl;
+        trade.fees = fee_cost;
+        trade.slippage = slippage_cost;
+        
+        // Update profit factor if applicable
+        trade.profit_factor = if final_pnl > 0.0 {
+            final_pnl / (trade.size * trade.entry_price)
         } else {
             0.0
         };
-
-        self.current_balance += trade.pnl;
+    
+        self.current_balance += final_pnl;
         self.trades.push(trade.clone());
-
-        self.stats.record_trade(&trade, self.current_balance); // <-- NEW
+    
+        // Record trade with the stats tracker
+        self.stats.record_trade(&trade, self.current_balance);
     }
 
     fn calculate_metrics(&self) -> BacktestMetrics {

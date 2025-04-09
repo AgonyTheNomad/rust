@@ -16,27 +16,27 @@ Strategy Configuration:
   Fibonacci Stop Loss: 0.236
 
 Performance Metrics:
-  Total Trades: 476
-  Win Rate: 100.00%
-  Profit Factor: inf
-  Final Balance: $22437.48
-  Total Profit: $12437.48
-  Total Return: 124.37%
-  Max Drawdown: 0.00%
-  Sharpe Ratio: 16.73
-  Sortino Ratio: 0.00
-  Risk/Reward Ratio: 0.00
+  Total Trades: 335
+  Win Rate: 44.78%
+  Profit Factor: 0.30
+  Final Balance: $4509.40
+  Total Profit: $-5490.60
+  Total Return: -54.91%
+  Max Drawdown: 57.90%
+  Sharpe Ratio: -6.29
+  Sortino Ratio: -1.08
+  Risk/Reward Ratio: 0.37
 
 Trade Statistics:
-  Winning Trades: 476
-  Losing Trades: 0
-  Average Win: $26.13
-  Average Loss: $-0.00
-  Largest Win: $100.11
-  Largest Loss: $0.00
+  Winning Trades: 150
+  Losing Trades: 185
+  Average Win: $15.88
+  Average Loss: $42.56
+  Largest Win: $21.94
+  Largest Loss: $126.98
 
 Direction Analysis:
-  Long Trades: 310 (65.13%)
-  Long P&L: $7999.93
-  Short Trades: 166 (34.87%)
-  Short P&L: $4437.55
+  Long Trades: 224 (66.87%)
+  Long P&L: $-3599.25
+  Short Trades: 111 (33.13%)
+  Short P&L: $-1891.35

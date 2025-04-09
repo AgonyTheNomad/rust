@@ -1,11 +1,16 @@
 use std::collections::HashMap;
-use crate::models::Account;
+use crate::models::{Account, PositionType};
+
+// Import the position calculator module
+mod position_calculator;
+pub use position_calculator::{PositionResult, calculate_positions};
 
 #[derive(Debug, Clone)]
 pub struct RiskParameters {
     pub max_risk_per_trade: f64,
     pub max_position_size: f64,
     pub max_leverage: f64,
+    pub spread: f64,              // Added spread parameter
 }
 
 impl Default for RiskParameters {
@@ -14,19 +19,9 @@ impl Default for RiskParameters {
             max_risk_per_trade: 0.02,
             max_position_size: 10.0,
             max_leverage: 20.0,
+            spread: 0.0003,        // Default spread of 0.03%
         }
     }
-}
-
-#[derive(Debug)]
-pub struct PositionResult {
-    pub initial_position_size: f64,
-    pub limit1_position_size: f64,
-    pub limit2_position_size: f64,
-    pub new_tp1: f64,
-    pub new_tp2: f64,
-    pub max_margin: f64,
-    pub final_risk: f64,
 }
 
 pub struct RiskManager {
@@ -47,63 +42,35 @@ impl RiskManager {
         limit1: f64,
         limit2: f64,
         leverage: f64,
+        position_type: PositionType,
     ) -> Result<PositionResult, String> {
-        let mut risk = self.parameters.max_risk_per_trade;
-        let account_size = account.balance;
-
-        loop {
-            let g6 = risk * account_size;
-            let a11 = (entry + (limit1 * 3.0)) / 4.0;
-            let a12 = (entry + (limit1 * 3.0) + (limit2 * 5.0)) / 9.0;
-
-            let e8 = if tp > entry { tp - entry } else { entry - tp };
-            let d7 = e8 / entry;
-
-            let d8 = if entry > sl {
-                g6 / (entry - sl)
-            } else {
-                g6 / (sl - entry)
-            };
-
-            let e11 = if tp > entry {
-                let ratio = (d7 / 4.0) * a11;
-                a11 + ratio
-            } else {
-                let ratio = (d7 / 4.0) * a11;
-                a11 - ratio
-            };
-
-            let e12 = if tp > entry {
-                let ratio = (d7 / 6.0) * a12;
-                a12 + ratio
-            } else {
-                let ratio = (d7 / 6.0) * a12;
-                a12 - ratio
-            };
-
-            let d5 = d8 / 9.0;
-            let d11 = d5 * 3.0;
-            let d12 = d5 * 5.0;
-
-            let total_position_size = d5 + d11 + d12;
-            let max_margin = ((total_position_size * a12).abs()) / ((account_size * leverage) * 0.60);
-
-            if max_margin <= 1.0 {
-                return Ok(PositionResult {
-                    initial_position_size: d5,
-                    limit1_position_size: d11,
-                    limit2_position_size: d12,
-                    new_tp1: e11,
-                    new_tp2: e12,
-                    max_margin,
-                    final_risk: risk,
-                });
-            }
-
-            risk -= 0.01;
-            if risk <= 0.0 {
-                return Err("Unable to calculate a safe risk level under margin limit".to_string());
-            }
-        }
+        // Apply spread to prices based on position type
+        let (entry_with_spread, tp_with_spread, sl_with_spread) = match position_type {
+            PositionType::Long => (
+                entry * (1.0 + self.parameters.spread), // Higher entry for long
+                tp * (1.0 - self.parameters.spread),    // Lower TP for long
+                sl * (1.0 + self.parameters.spread),    // Higher SL for long
+            ),
+            PositionType::Short => (
+                entry * (1.0 - self.parameters.spread), // Lower entry for short
+                tp * (1.0 + self.parameters.spread),    // Higher TP for short
+                sl * (1.0 - self.parameters.spread),    // Lower SL for short
+            ),
+        };
+        
+        // Use the position calculator with the spread-adjusted prices
+        calculate_positions(
+            entry_with_spread,
+            tp_with_spread,
+            sl_with_spread,
+            limit1, 
+            limit2,
+            account.balance,
+            self.parameters.max_risk_per_trade,
+            leverage,
+            position_type,
+            4.0, // h11 default value
+            6.0, // h12 default value
+        )
     }
 }

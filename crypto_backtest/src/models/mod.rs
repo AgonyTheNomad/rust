@@ -52,6 +52,8 @@ pub struct Trade {
     pub risk_percent: f64,
     pub profit_factor: f64,
     pub margin_used: f64,
+    pub fees: f64,         // Added field for fees
+    pub slippage: f64,     // Added field for slippage
 }
 
 #[derive(Debug)]

@@ -6,18 +6,18 @@
     "start_date": "2024-08-06T08:00:00Z"
   },
   "performance": {
-    "final_balance": 22437.48021014384,
-    "losing_trades": 0,
-    "max_drawdown": 0.0,
-    "profit_factor": null,
-    "risk_reward_ratio": 0.0,
-    "sharpe_ratio": 16.72825101363292,
-    "sortino_ratio": 0.0,
-    "total_profit": 12437.480210143842,
-    "total_return_percent": 124.3748021014384,
-    "total_trades": 476,
-    "win_rate": 1.0,
-    "winning_trades": 476
+    "final_balance": 4509.4000951125345,
+    "losing_trades": 185,
+    "max_drawdown": 0.5790417398710205,
+    "profit_factor": 0.30259718084300635,
+    "risk_reward_ratio": 0.37320318970637445,
+    "sharpe_ratio": -6.290365892528812,
+    "sortino_ratio": -1.0771608979883471,
+    "total_profit": -5490.5999048874655,
+    "total_return_percent": -54.905999048874655,
+    "total_trades": 335,
+    "win_rate": 0.44776119402985076,
+    "winning_trades": 150
   },
   "strategy_config": {
     "fib_initial": 0.382,

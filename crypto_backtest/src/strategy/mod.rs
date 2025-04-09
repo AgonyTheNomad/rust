@@ -186,14 +186,16 @@ impl Strategy {
             positions: HashMap::new(),
         };
     
+        // Pass the position type to calculate_positions_with_risk
         let result = self.risk_manager.calculate_positions_with_risk(
             &account,
             levels.entry_price,
             levels.take_profit,
             levels.stop_loss,
-            self.config.fib_limit1,
-            self.config.fib_limit2,
+            levels.limit1,
+            levels.limit2,
             self.config.leverage,
+            position_type.clone(), // Pass position_type
         );
     
         if let Ok(position_result) = result {
@@ -296,6 +298,8 @@ impl Strategy {
                 risk_percent: position.risk_percent,
                 profit_factor,
                 margin_used: position.margin_used,
+                fees: 0.0,         // Initialize with zero, will be updated in execute_trade
+                slippage: 0.0,     // Initialize with zero, will be updated in execute_trade
             });
         }
 
