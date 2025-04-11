@@ -24,3 +24,7 @@ path = "src/bin/run_backtest.rs"
 [[bin]]
 name = "prepare_data"
 path = "src/bin/prepare_data.rs"
+
+[[bin]]
+name = "optimize_fibonacci"
+path = "src/bin/optimize_fibonacci.rs"

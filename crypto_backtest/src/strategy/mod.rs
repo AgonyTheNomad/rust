@@ -150,7 +150,8 @@ impl Strategy {
 
         // Enter positions if we have signals and no current position
         if state.position.is_none() {
-            if self.long_signal {
+            // FIX: Check if both prev_pivot_high and prev_pivot_low are Some values before unwrapping
+            if self.long_signal && self.prev_pivot_high.is_some() && self.prev_pivot_low.is_some() {
                 if let Some(levels) = self.fib.calculate_long_levels(
                     self.prev_pivot_high.unwrap(),
                     self.prev_pivot_low.unwrap(),
@@ -158,7 +159,7 @@ impl Strategy {
                     self.enter_position(current_candle, state, PositionType::Long, levels);
                     self.long_signal = false;
                 }
-            } else if self.short_signal {
+            } else if self.short_signal && self.prev_pivot_high.is_some() && self.prev_pivot_low.is_some() {
                 if let Some(levels) = self.fib.calculate_short_levels(
                     self.prev_pivot_high.unwrap(),
                     self.prev_pivot_low.unwrap(),
