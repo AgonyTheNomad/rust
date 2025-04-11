@@ -104,8 +104,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         // Create an asset configuration for the symbol
         let asset_config = AssetConfig {
             name: symbol.clone(),
-            leverage: 10.0,  // Default leverage, could be made configurable
-            spread: 0.0005,  // Default spread of 0.05%, could be made configurable
+            leverage: 50.0,  // Default leverage, could be made configurable
+            spread: 0.000005,  // Default spread of 0.05%, could be made configurable
         };
         
         // Create the optimizer

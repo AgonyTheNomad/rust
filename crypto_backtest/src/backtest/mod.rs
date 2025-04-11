@@ -323,7 +323,7 @@ mod tests {
         // Configure a strategy that will work with our test data
         let config = StrategyConfig {
             initial_balance: 10000.0,
-            leverage: 10.0,
+            leverage: 50.0,
             max_risk_per_trade: 0.02,      // Higher risk for test
             pivot_lookback: 2,             // Small lookback for test
             signal_lookback: 1,            // Quick signal generation

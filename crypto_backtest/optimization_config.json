@@ -1,6 +1,6 @@
 {
     "initial_balance": 10000.0,
-    "drop_threshold": 9000.0,
+    "drop_threshold": 5000.0,
     "lookback_periods": [5, 8, 10, 13],
     "initial_levels": [0.236, 0.382, 0.5, 0.618, 0.786],
     "tp_levels": [0.618, 1.0, 1.414, 1.618, 2.0, 2.618],
