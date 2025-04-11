@@ -1,15 +1,15 @@
 {
-    "initial_balance": 10000.0,
-    "drop_threshold": 5000.0,
-    "lookback_periods": [5, 8, 10, 13],
-    "initial_levels": [0.236, 0.382, 0.5, 0.618, 0.786],
-    "tp_levels": [0.618, 1.0, 1.414, 1.618, 2.0, 2.618],
-    "sl_levels": [1.0, 1.618, 2.0, 2.618, 3.618],
-    "limit1_levels": [0.5, 0.618, 1.0, 1.272],
-    "limit2_levels": [1.0, 1.272, 1.618, 2.0],
-    "threshold_factors": [0.75, 1.0, 1.25, 1.5],
-    "data_dir": "data",
-    "output_dir": "results",
-    "parallel": true,
-    "num_best_results": 20
-  }
+  "initial_balance": 10000.0,
+  "drop_threshold": 1000.0,
+  "lookback_periods": [2, 3, 5],
+  "initial_levels": [0.382, 0.5, 0.618],
+  "tp_levels": [1.0, 1.414, 1.618],
+  "sl_levels": [0.5, 0.618, 0.786],
+  "limit1_levels": [0.5, 0.618, 0.786],
+  "limit2_levels": [1.0, 1.272, 1.414],
+  "threshold_factors": [0.75, 1.0, 1.25],
+  "data_dir": "data",
+  "output_dir": "results",
+  "parallel": true,
+  "num_best_results": 20
+}

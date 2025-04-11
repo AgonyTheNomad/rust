@@ -28,3 +28,12 @@ path = "src/bin/prepare_data.rs"
 [[bin]]
 name = "optimize_fibonacci"
 path = "src/bin/optimize_fibonacci.rs"
+
+[[bin]]
+name = "debug_optimizer"
+path = "src/bin/debug_optimizer.rs"
+
+[[bin]]
+name = "debug_strategy"
+path = "src/bin/debug_strategy.rs"
+

@@ -1,53 +1,42 @@
 {
-  "asset": "BTC",
+  "asset": "BTC_small",
   "optimization_config": {
-    "drop_threshold": 10.0,
-    "initial_balance": 40000.0,
+    "drop_threshold": 1000.0,
+    "initial_balance": 10000.0,
     "initial_levels": [
-      0.236,
       0.382,
       0.5,
-      0.618,
-      0.786
+      0.618
     ],
     "limit1_levels": [
       0.5,
       0.618,
-      1.0,
-      1.272
+      0.786
     ],
     "limit2_levels": [
       1.0,
       1.272,
-      1.618,
-      2.0
+      1.414
     ],
     "lookback_periods": [
-      5,
-      8,
-      10,
-      13
+      2,
+      3,
+      5
     ],
     "sl_levels": [
-      1.0,
-      1.618,
-      2.0,
-      2.618,
-      3.618
+      0.5,
+      0.618,
+      0.786
     ],
     "threshold_factors": [
       0.75,
       1.0,
-      1.25,
-      1.5
+      1.25
     ],
     "tp_levels": [
-      0.618,
       1.0,
       1.414,
-      1.618,
-      2.0,
-      2.618
+      1.618
     ]
   },
   "top_results": [],

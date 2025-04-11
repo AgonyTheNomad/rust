@@ -48,7 +48,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Define strategy configuration
     let config = StrategyConfig {
         initial_balance: 10_000.0,
-        leverage: 10.0,
+        leverage: 50.0,
         max_risk_per_trade: 0.01,
         pivot_lookback: 5,
         signal_lookback: 1,

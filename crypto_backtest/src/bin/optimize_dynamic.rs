@@ -7,9 +7,9 @@ use serde_json;
 use crypto_backtest::fetch_data::load_candles_from_csv;
 use crypto_backtest::optimizer::dynamic_optimizer::{
     DynamicFibonacciOptimizer, 
-    DynamicOptimizationConfig, 
-    AssetConfig
+    DynamicOptimizationConfig
 };
+use crypto_backtest::strategy::AssetConfig;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Parse command line arguments
@@ -106,6 +106,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             name: symbol.clone(),
             leverage: 50.0,  // Default leverage, could be made configurable
             spread: 0.000005,  // Default spread of 0.05%, could be made configurable
+            avg_spread: 0.002266021682225036,
         };
         
         // Create the optimizer
