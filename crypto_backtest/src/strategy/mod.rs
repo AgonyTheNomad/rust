@@ -241,33 +241,24 @@ impl Strategy {
                 };
                 if hit {
                     // Store old values for logging
-                    let old_stop_loss = position.stop_loss;
                     let old_take_profit = position.take_profit;
                     
                     position.size += position.limit1_size;
                     position.take_profit = position.new_tp1.unwrap_or(position.take_profit);
                     
-                    // ADDED: Update stop loss when limit1 is hit - move to breakeven
-                    match position.position_type {
-                        PositionType::Long => {
-                            position.stop_loss = position.stop_loss.max(position.entry_price);
-                        },
-                        PositionType::Short => {
-                            position.stop_loss = position.stop_loss.min(position.entry_price);
-                        },
-                    }
+                    // No change to stop loss - removed the code that would adjust it
                     
                     position.limit1_hit = true;
                     
-                    // Optional logging
+                    // Optional logging - only mentioning take profit changes
                     println!(
-                        "Limit1 hit at {}: Stop loss moved from ${:.2} to ${:.2}, TP from ${:.2} to ${:.2}", 
-                        candle.time, old_stop_loss, position.stop_loss, old_take_profit, position.take_profit
+                        "Limit1 hit at {}: TP changed from ${:.2} to ${:.2}", 
+                        candle.time, old_take_profit, position.take_profit
                     );
                 }
             }
         }
-
+    
         // Check Limit 2
         if !position.limit2_hit {
             if let Some(limit2) = position.limit2_price {
@@ -277,39 +268,24 @@ impl Strategy {
                 };
                 if hit {
                     // Store old values for logging
-                    let old_stop_loss = position.stop_loss;
                     let old_take_profit = position.take_profit;
                     
                     position.size += position.limit2_size;
                     position.take_profit = position.new_tp2.unwrap_or(position.take_profit);
                     
-                    // ADDED: Update stop loss when limit2 is hit - move to profit
-                    // For long positions, move stop loss to previous entry point plus a small buffer
-                    // For short positions, move stop loss to previous entry point minus a small buffer
-                    match position.position_type {
-                        PositionType::Long => {
-                            // Move SL to entry + 25% of initial price to limit + buffer
-                            let buffer = (limit2 - position.entry_price) * 0.25;
-                            position.stop_loss = position.entry_price + buffer;
-                        },
-                        PositionType::Short => {
-                            // Move SL to entry - 25% of entry price to limit + buffer
-                            let buffer = (position.entry_price - limit2) * 0.25;
-                            position.stop_loss = position.entry_price - buffer;
-                        },
-                    }
+                    // No change to stop loss - removed the code that would adjust it
                     
                     position.limit2_hit = true;
                     
-                    // Optional logging
+                    // Optional logging - only mentioning take profit changes
                     println!(
-                        "Limit2 hit at {}: Stop loss moved from ${:.2} to ${:.2}, TP from ${:.2} to ${:.2}", 
-                        candle.time, old_stop_loss, position.stop_loss, old_take_profit, position.take_profit
+                        "Limit2 hit at {}: TP changed from ${:.2} to ${:.2}", 
+                        candle.time, old_take_profit, position.take_profit
                     );
                 }
             }
         }
-
+    
         // Check TP or SL
         let (exit_price, should_exit, exit_type) = match position.position_type {
             PositionType::Long => {
@@ -331,7 +307,7 @@ impl Strategy {
                 }
             }
         };
-
+    
         if should_exit {
             // Log the exit type
             println!("Position exit at {}: {} triggered!", candle.time, exit_type);
@@ -340,13 +316,13 @@ impl Strategy {
                 PositionType::Long => (exit_price - position.entry_price) * position.size,
                 PositionType::Short => (position.entry_price - exit_price) * position.size,
             };
-
+    
             let profit_factor = if pnl > 0.0 {
                 pnl / (position.size * position.entry_price)
             } else {
                 0.0
             };
-
+    
             return Some(Trade {
                 entry_time: position.entry_time.clone(),
                 exit_time: candle.time.clone(),
@@ -362,7 +338,7 @@ impl Strategy {
                 slippage: 0.0,     // Initialize with zero, will be updated in execute_trade
             });
         }
-
+    
         None
     }
 
