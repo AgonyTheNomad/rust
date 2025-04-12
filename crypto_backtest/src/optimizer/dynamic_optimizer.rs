@@ -4,7 +4,6 @@ use crate::strategy::{Strategy, StrategyConfig, AssetConfig};
 use crate::indicators::PivotPoints;
 use rayon::prelude::*;
 use std::error::Error;
-use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;

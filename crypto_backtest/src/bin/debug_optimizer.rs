@@ -1,7 +1,6 @@
 // src/bin/debug_optimizer.rs
 use std::error::Error;
 use std::path::Path;
-use std::collections::HashMap;
 
 use crypto_backtest::fetch_data::load_candles_from_csv;
 use crypto_backtest::strategy::{Strategy, StrategyConfig};
