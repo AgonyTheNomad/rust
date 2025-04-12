@@ -1,3 +1,4 @@
+// src/bin/optimize_dynamic.rs
 use std::error::Error;
 use std::env;
 use std::path::Path;
@@ -78,6 +79,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         num_best_results: json_config["num_best_results"].as_u64().unwrap_or(20) as usize,
     };
     
+    // Display the loaded configuration
+    println!("Loaded optimization configuration:");
+    println!("  Lookback periods: {:?}", opt_config.lookback_periods);
+    println!("  Initial levels: {:?}", opt_config.initial_levels);
+    println!("  Take-profit levels: {:?}", opt_config.tp_levels);
+    println!("  Stop-loss levels: {:?}", opt_config.sl_levels);
+    println!("  Limit1 levels: {:?}", opt_config.limit1_levels);
+    println!("  Limit2 levels: {:?}", opt_config.limit2_levels);
+    println!("  Threshold factors: {:?}", opt_config.threshold_factors);
+    
     // Get data directory from config
     let data_dir = json_config["data_dir"].as_str().unwrap_or("data");
     
@@ -109,48 +120,85 @@ fn main() -> Result<(), Box<dyn Error>> {
             avg_spread: 0.002266021682225036,
         };
         
-        // Create the optimizer
-        let optimizer = DynamicFibonacciOptimizer::new(opt_config);
-        
-        // Run the optimization
-        println!("Starting dynamic Fibonacci optimization for {}...", symbol);
-        let results = optimizer.optimize_asset(symbol, &candles, asset_config.leverage, asset_config.spread)?;
-        
-        if !results.is_empty() {
-            // Run a final backtest with the best parameters
-            let best_result = &results[0];
+        // Try a hardcoded simple config if the normal one doesn't work
+        if true {  // Change to false to use your regular config
+            println!("\nTrying with a hardcoded test configuration...");
+            let test_config = DynamicOptimizationConfig {
+                initial_balance: 10_000.0,
+                drop_threshold: 9_000.0,
+                lookback_periods: vec![5, 10],
+                initial_levels: vec![0.382, 0.5],
+                tp_levels: vec![1.0, 1.618],
+                sl_levels: vec![2.0, 3.0],  // Make sure these are higher than limit2_levels
+                limit1_levels: vec![0.5, 0.618],
+                limit2_levels: vec![1.0, 1.272],  // Make sure these are higher than limit1_levels
+                threshold_factors: vec![1.0, 1.25],
+                output_dir: "results".to_string(),
+                parallel: true,
+                num_best_results: 20,
+            };
             
-            println!("\nBest Parameters:");
-            println!("Lookback Period: {}", best_result.lookback_period);
-            println!("Initial Level: {:.3}", best_result.initial_level);
-            println!("Take Profit Level: {:.3}", best_result.tp_level);
-            println!("Stop Loss Level: {:.3}", best_result.sl_level);
-            println!("Limit 1 Level: {:.3}", best_result.limit1_level);
-            println!("Limit 2 Level: {:.3}", best_result.limit2_level);
-            println!("Threshold Factor: {:.2}", best_result.threshold_factor);
-            println!("Actual Threshold: {:.2}", best_result.actual_threshold);
+            // Create the optimizer
+            let optimizer = DynamicFibonacciOptimizer::new(test_config);
             
-            println!("\nPerformance:");
-            if let Some(trades) = best_result.performance.get("Total Trades") {
-                println!("Total Trades: {}", *trades as usize);
-            }
-            if let Some(win_rate) = best_result.performance.get("Win Rate") {
-                println!("Win Rate: {:.2}%", win_rate * 100.0);
-            }
-            if let Some(profit) = best_result.performance.get("Total Profit") {
-                println!("Total Profit: ${:.2}", profit);
-            }
-            if let Some(drawdown) = best_result.performance.get("Max Drawdown") {
-                println!("Max Drawdown: {:.2}%", drawdown * 100.0);
-            }
-            if let Some(sharpe) = best_result.performance.get("Sharpe Ratio") {
-                println!("Sharpe Ratio: {:.2}", sharpe);
+            // Custom debugging for base thresholds
+            println!("\nCalculating base thresholds for sample lookback periods:");
+            for &lookback in &[5, 10] {
+                let base_threshold = optimizer.calculate_base_threshold(&candles, lookback);
+                println!("  Lookback {}: base threshold = {}", lookback, base_threshold);
+                
+                // Show some sample combinations that would be created
+                println!("  Sample combinations that would be created for lookback {}:", lookback);
+                for &threshold_factor in &[1.0, 1.25][..1] {
+                    let actual_threshold = base_threshold * threshold_factor;
+                    println!("    - With factor {}: actual threshold = {}", threshold_factor, actual_threshold);
+                    
+                    for &initial in &[0.382, 0.5][..1] {
+                        for &tp in &[1.0, 1.618][..1] {
+                            for &sl in &[2.0, 3.0][..1] {
+                                for &limit1 in &[0.5, 0.618][..1] {
+                                    for &limit2 in &[1.0, 1.272][..1] {
+                                        // Check if this would be a valid combination
+                                        if limit1 >= limit2 || sl <= limit2 {
+                                            println!("      ❌ INVALID: initial={}, tp={}, sl={}, limit1={}, limit2={}", 
+                                                initial, tp, sl, limit1, limit2);
+                                        } else {
+                                            println!("      ✓ VALID: initial={}, tp={}, sl={}, limit1={}, limit2={}", 
+                                                initial, tp, sl, limit1, limit2);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
             
-            // Run final backtest with best parameters
-            optimizer.run_final_backtest(symbol, &candles, best_result, asset_config.leverage, asset_config.spread)?;
+            // Run the optimization with hardcoded values
+            let results = optimizer.optimize_asset(symbol, &candles, asset_config.leverage, asset_config.spread)?;
+            
+            if !results.is_empty() {
+                // Run a final backtest with the best parameters
+                let best_result = &results[0];
+                optimizer.run_final_backtest(symbol, &candles, best_result, asset_config.leverage, asset_config.spread)?;
+            } else {
+                println!("No valid optimization results found for {}", symbol);
+            }
         } else {
-            println!("No valid optimization results found for {}", symbol);
+            // Create the optimizer with original config
+            let optimizer = DynamicFibonacciOptimizer::new(opt_config);
+            
+            // Run the optimization
+            println!("Starting dynamic Fibonacci optimization for {}...", symbol);
+            let results = optimizer.optimize_asset(symbol, &candles, asset_config.leverage, asset_config.spread)?;
+            
+            if !results.is_empty() {
+                // Run a final backtest with the best parameters
+                let best_result = &results[0];
+                optimizer.run_final_backtest(symbol, &candles, best_result, asset_config.leverage, asset_config.spread)?;
+            } else {
+                println!("No valid optimization results found for {}", symbol);
+            }
         }
     } else if optimization_type == "all" {
         // Check if assets.json exists

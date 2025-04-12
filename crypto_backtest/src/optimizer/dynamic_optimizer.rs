@@ -600,20 +600,3 @@ pub fn optimize_assets_from_config(
     Ok(())
 }
 
-/// Default dynamic Fibonacci optimization configuration that matches the Python script's parameters.
-pub fn python_like_optimization_config() -> DynamicOptimizationConfig {
-    DynamicOptimizationConfig {
-        initial_balance: 10_000.0,
-        drop_threshold: 9_000.0,
-        lookback_periods: vec![10, 13],
-        initial_levels: vec![0.618, 0.786],
-        tp_levels: vec![0.0, 0.618, 1.414],
-        sl_levels: vec![2.618, 3.618, 4.618, 5.618],
-        limit1_levels: vec![1.0, 1.618, 2.618],
-        limit2_levels: vec![1.618, 2.618, 3.618],
-        threshold_factors: vec![1.0, 1.25, 1.5],
-        output_dir: "optimized".to_string(),
-        parallel: true,
-        num_best_results: 20,
-    }
-}
