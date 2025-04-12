@@ -1,6 +1,6 @@
-use crate::models::{Candle, Trade, BacktestState};
+use crate::models::{Candle, Trade};
 use crate::backtest::{Backtester, BacktestMetrics};
-use crate::strategy::{Strategy, StrategyConfig, AssetConfig}; // AssetConfig imported from strategy module
+use crate::strategy::{Strategy, StrategyConfig, AssetConfig};
 use crate::indicators::PivotPoints;
 use rayon::prelude::*;
 use std::error::Error;
@@ -44,13 +44,13 @@ impl Default for DynamicOptimizationConfig {
             lookback_periods: vec![5, 8, 10, 13],
             
             initial_levels: vec![0.236, 0.382, 0.5, 0.618, 0.786],
-            tp_levels: vec![0.0, 0.618, 1.0, 1.414, 1.618, 2.0, 2.618],
-            sl_levels: vec![2.0, 2.618, 3.0, 3.618, 4.0, 4.618, 5.0, 5.618],
-            limit1_levels: vec![1.0, 1.272, 1.414, 1.618, 2.0, 2.618],
-            limit2_levels: vec![1.618, 2.0, 2.618, 3.0, 3.618],
-            threshold_factors: vec![0.75, 1.0, 1.25, 1.5, 2.0],
+            tp_levels: vec![0.618, 1.0, 1.414, 1.618, 2.0, 2.618],
+            sl_levels: vec![0.236, 0.382, 0.5, 0.618, 0.786],
+            limit1_levels: vec![0.382, 0.5, 0.618, 0.786],
+            limit2_levels: vec![0.786, 1.0, 1.272, 1.618],
+            threshold_factors: vec![0.75, 1.0, 1.25, 1.5],
             
-            output_dir: "optimized".to_string(),
+            output_dir: "results".to_string(),
             parallel: true,
             num_best_results: 20,
         }
@@ -80,14 +80,25 @@ impl DynamicFibonacciOptimizer {
         Self { config }
     }
     
-    /// Calculate a base threshold from candle data.
+    /// Create a new optimizer using configuration from a file
+    pub fn from_file(file_path: &str) -> Result<Self, Box<dyn Error>> {
+        let config = load_config_from_file(file_path)?;
+        Ok(Self { config })
+    }
+    
+    /// Get a clone of the current configuration
+    pub fn get_config(&self) -> DynamicOptimizationConfig {
+        self.config.clone()
+    }
+    
+    /// Calculate a base threshold from candle data
     pub fn calculate_base_threshold(&self, candles: &[Candle], lookback: usize) -> f64 {
-        // Use PivotPoints to identify pivots.
+        // Use PivotPoints to identify pivots
         let mut pivot_detector = PivotPoints::new(lookback);
         let mut pivot_highs = Vec::new();
         let mut pivot_lows = Vec::new();
         
-        // Identify all pivot points.
+        // Identify all pivot points
         for candle in candles {
             let (pivot_high, pivot_low) = pivot_detector.identify_pivots(candle.high, candle.low);
             if let Some(high) = pivot_high {
@@ -98,29 +109,29 @@ impl DynamicFibonacciOptimizer {
             }
         }
         
-        // Calculate average range between highs and lows.
+        // Calculate average range between highs and lows
         let mut ranges = Vec::new();
-        for i in 0..pivot_highs.len() {
-            for j in 0..pivot_lows.len() {
-                if i < pivot_lows.len() && j > 0 {
-                    let range = (pivot_highs[i] - pivot_lows[j]).abs();
-                    ranges.push(range);
-                }
+        for i in 0..pivot_highs.len().min(pivot_lows.len()) {
+            if i > 0 {
+                let range = (pivot_highs[i] - pivot_lows[i - 1]).abs();
+                ranges.push(range);
             }
         }
         
-        // Calculate average range.
+        // Calculate average range
         if ranges.is_empty() {
+            // Default threshold if we can't calculate
             return 10.0;
         }
+        
         ranges.iter().sum::<f64>() / ranges.len() as f64
     }
     
-    /// Optimize for a specific asset.
+    /// Optimize for a specific asset
     pub fn optimize_asset(&self, asset_name: &str, candles: &[Candle], leverage: f64, spread: f64) -> Result<Vec<OptimizationResult>, Box<dyn Error>> {
         println!("Starting optimization for {} with leverage {}", asset_name, leverage);
         
-        // Create output directory.
+        // Create output directory
         let asset_output_dir = format!("{}/{}", self.config.output_dir, asset_name);
         std::fs::create_dir_all(&asset_output_dir)?;
         
@@ -128,14 +139,14 @@ impl DynamicFibonacciOptimizer {
         let total_combinations = param_combinations.len();
         println!("Created {} parameter combinations to test", total_combinations);
         
-        // Run optimizations.
+        // Run optimizations
         let results = if self.config.parallel {
             self.run_parallel_optimizations(asset_name, candles, &param_combinations, leverage, spread)
         } else {
             self.run_sequential_optimizations(asset_name, candles, &param_combinations, leverage, spread)
         }?;
         
-        // Sort results by total profit.
+        // Sort results by total profit
         let mut sorted_results = results;
         sorted_results.sort_by(|a, b| {
             let a_profit = a.performance.get("Total Profit").unwrap_or(&0.0);
@@ -143,10 +154,12 @@ impl DynamicFibonacciOptimizer {
             b_profit.partial_cmp(a_profit).unwrap_or(std::cmp::Ordering::Equal)
         });
         
-        // Take the top N results.
-        let top_results: Vec<OptimizationResult> = sorted_results.into_iter().take(self.config.num_best_results).collect();
+        // Take the top N results
+        let top_results: Vec<OptimizationResult> = sorted_results.into_iter()
+            .take(self.config.num_best_results)
+            .collect();
             
-        // Save results to file.
+        // Save results to file
         self.save_results_to_file(asset_name, &top_results, &asset_output_dir)?;
         
         println!("Optimization complete for {}!", asset_name);
@@ -156,11 +169,11 @@ impl DynamicFibonacciOptimizer {
         Ok(top_results)
     }
     
-    /// Generate all valid parameter combinations.
+    /// Generate all valid parameter combinations
     fn generate_parameter_combinations(&self, candles: &[Candle]) -> Vec<(usize, f64, f64, f64, f64, f64, f64, f64)> {
         let mut combinations = Vec::new();
         
-        // Calculate base thresholds for each lookback period.
+        // Calculate base thresholds for each lookback period
         let mut base_thresholds = HashMap::new();
         for &lookback in &self.config.lookback_periods {
             let base_threshold = self.calculate_base_threshold(candles, lookback);
@@ -175,14 +188,13 @@ impl DynamicFibonacciOptimizer {
                     for &sl in &self.config.sl_levels {
                         for &limit1 in &self.config.limit1_levels {
                             for &limit2 in &self.config.limit2_levels {
+                                // Skip invalid combinations
+                                if limit1 >= limit2 || sl >= limit1 {
+                                    continue;
+                                }
+                                
                                 for &threshold_factor in &self.config.threshold_factors {
-                                    // Skip invalid combinations.
-                                    if limit1 >= limit2 || sl <= limit2 {
-                                        continue;
-                                    }
-                                    
                                     let actual_threshold = base_threshold * threshold_factor;
-                                    
                                     combinations.push((lookback, initial, limit1, limit2, sl, tp, threshold_factor, actual_threshold));
                                 }
                             }
@@ -195,7 +207,7 @@ impl DynamicFibonacciOptimizer {
         combinations
     }
     
-    /// Run optimizations in parallel.
+    /// Run optimizations in parallel
     fn run_parallel_optimizations(
         &self,
         asset_name: &str,
@@ -206,13 +218,14 @@ impl DynamicFibonacciOptimizer {
     ) -> Result<Vec<OptimizationResult>, Box<dyn Error>> {
         println!("Running parallel optimizations for {} using {} combinations...", 
                  asset_name, parameter_combinations.len());
+        
         let drop_threshold = self.config.drop_threshold;
         let initial_balance = self.config.initial_balance;
         
         let results: Vec<OptimizationResult> = parameter_combinations
             .par_iter()
             .filter_map(|&(lookback, initial, limit1, limit2, sl, tp, threshold_factor, actual_threshold)| {
-                // Create strategy configuration.
+                // Create strategy configuration
                 let config = StrategyConfig {
                     initial_balance,
                     leverage,
@@ -226,20 +239,24 @@ impl DynamicFibonacciOptimizer {
                     fib_limit1: limit1,
                     fib_limit2: limit2,
                 };
+                
                 let asset_config = AssetConfig {
                     name: asset_name.to_string(),
                     leverage,
                     spread,
-                    avg_spread: spread, // Adjust as needed.
+                    avg_spread: spread * 2.0, // A simple heuristic 
                 };
-                let strategy = Strategy::new(config, asset_config);
+                
+                let strategy = Strategy::new(config.clone(), asset_config);
                 let mut backtester = Backtester::new(initial_balance, strategy);
+                
                 match backtester.run(candles) {
                     Ok(result) => {
                         let final_balance = initial_balance + result.metrics.total_profit;
                         if final_balance < drop_threshold {
                             return None;
                         }
+                        
                         let mut performance = HashMap::new();
                         performance.insert("Total Trades".to_string(), result.metrics.total_trades as f64);
                         performance.insert("Win Rate".to_string(), result.metrics.win_rate);
@@ -273,7 +290,7 @@ impl DynamicFibonacciOptimizer {
         Ok(results)
     }
     
-    /// Run optimizations sequentially—with progress reporting.
+    /// Run optimizations sequentially—with progress reporting
     fn run_sequential_optimizations(
         &self,
         asset_name: &str,
@@ -291,7 +308,7 @@ impl DynamicFibonacciOptimizer {
         let initial_balance = self.config.initial_balance;
         
         for (i, &(lookback, initial, limit1, limit2, sl, tp, threshold_factor, actual_threshold)) in parameter_combinations.iter().enumerate() {
-            // Report progress for every 100 combinations.
+            // Report progress every 100 combinations
             if i % 100 == 0 {
                 let progress = (i as f64 / total_combinations as f64) * 100.0;
                 println!("Processing combination {} of {} ({:.2}% complete)", i + 1, total_combinations, progress);
@@ -310,13 +327,15 @@ impl DynamicFibonacciOptimizer {
                 fib_limit1: limit1,
                 fib_limit2: limit2,
             };
+            
             let asset_config = AssetConfig {
                 name: asset_name.to_string(),
                 leverage,
                 spread,
-                avg_spread: spread,
+                avg_spread: spread * 2.0,
             };
-            let strategy = Strategy::new(config, asset_config);
+            
+            let strategy = Strategy::new(config.clone(), asset_config);
             let mut backtester = Backtester::new(initial_balance, strategy);
             
             match backtester.run(candles) {
@@ -356,18 +375,18 @@ impl DynamicFibonacciOptimizer {
         Ok(results)
     }
     
-    /// Save the optimization results to CSV and JSON files.
+    /// Save the optimization results to CSV and JSON files
     fn save_results_to_file(
         &self,
         asset_name: &str,
         results: &[OptimizationResult],
         output_dir: &str,
     ) -> Result<(), Box<dyn Error>> {
-        // Save to CSV.
+        // Save to CSV
         let csv_path = format!("{}/{}_optimization_results.csv", output_dir, asset_name);
         let mut writer = csv::Writer::from_path(&csv_path)?;
         
-        // Write header.
+        // Write header
         writer.write_record(&[
             "lookback_period",
             "initial_level",
@@ -386,7 +405,7 @@ impl DynamicFibonacciOptimizer {
             "Sortino Ratio",
         ])?;
         
-        // Write data rows.
+        // Write data rows
         for result in results {
             writer.write_record(&[
                 result.lookback_period.to_string(),
@@ -409,7 +428,7 @@ impl DynamicFibonacciOptimizer {
         
         writer.flush()?;
         
-        // Save to JSON.
+        // Save to JSON
         let json_path = format!("{}/{}_optimization_results.json", output_dir, asset_name);
         let mut json_file = File::create(&json_path)?;
         
@@ -435,18 +454,19 @@ impl DynamicFibonacciOptimizer {
         Ok(())
     }
     
-    /// Run a final backtest using the best parameters.
+    /// Run a final backtest using the best parameters
     pub fn run_final_backtest(
         &self,
         asset_name: &str,
         candles: &[Candle],
         best_result: &OptimizationResult,
         leverage: f64,
-        _spread: f64,
+        spread: f64,
     ) -> Result<(), Box<dyn Error>> {
         println!("Running final backtest for {} with best parameters...", asset_name);
         
         let asset_output_dir = format!("{}/{}", self.config.output_dir, asset_name);
+        
         let config = StrategyConfig {
             initial_balance: self.config.initial_balance,
             leverage,
@@ -460,17 +480,20 @@ impl DynamicFibonacciOptimizer {
             fib_limit1: best_result.limit1_level,
             fib_limit2: best_result.limit2_level,
         };
-        let asset_config = crate::strategy::AssetConfig {
+        
+        let asset_config = AssetConfig {
             name: asset_name.to_string(),
             leverage,
-            spread: _spread,
-            avg_spread: _spread,
+            spread,
+            avg_spread: spread * 2.0,
         };
+        
         let strategy = Strategy::new(config.clone(), asset_config);
         let mut backtester = Backtester::new(self.config.initial_balance, strategy);
         
         let results = backtester.run(candles)?;
         
+        // Save trades to CSV if there are any
         if !results.trades.is_empty() {
             let trade_file = format!("{}/{}_trades.csv", asset_output_dir, asset_name);
             let mut writer = csv::Writer::from_path(trade_file)?;
@@ -498,9 +521,11 @@ impl DynamicFibonacciOptimizer {
             writer.flush()?;
         }
         
+        // Calculate winning and losing trades
         let winning_trades = (results.metrics.win_rate * results.metrics.total_trades as f64).round() as usize;
         let losing_trades = results.metrics.total_trades - winning_trades;
         
+        // Save metrics to JSON
         let metrics_file = format!("{}/{}_metrics.json", asset_output_dir, asset_name);
         let mut metrics_file = File::create(metrics_file)?;
         
@@ -545,58 +570,212 @@ impl DynamicFibonacciOptimizer {
     }
 }
 
-/// Process multiple assets from a configuration file.
+/// Function to load assets from a JSON configuration file and optimize each one
 pub fn optimize_assets_from_config(
-    config_file: &str,
+    assets_file: &str,
     optimization_config: DynamicOptimizationConfig,
 ) -> Result<(), Box<dyn Error>> {
-    // Read assets configuration.
-    let config_content = std::fs::read_to_string(config_file)?;
-    let assets: HashMap<String, Vec<AssetConfig>> = serde_json::from_str(&config_content)?;
+    // Read assets configuration
+    let file_content = std::fs::read_to_string(assets_file)?;
+    let json_data: serde_json::Value = serde_json::from_str(&file_content)?;
     
-    // Get the assets list (assuming it's under a key like "assets").
-    let assets_list = assets.get("assets").ok_or("No 'assets' key in config file")?;
+    // Extract the assets array
+    let assets = json_data["assets"].as_array()
+        .ok_or_else(|| format!("No 'assets' array found in {}", assets_file))?;
     
-    let optimizer = DynamicFibonacciOptimizer::new(optimization_config);
+    let optimizer = DynamicFibonacciOptimizer::new(optimization_config.clone());
+    
+    // Create output directory
     std::fs::create_dir_all(&optimizer.config.output_dir)?;
     
-    for asset in assets_list {
-        let asset_name = &asset.name;
+    println!("Found {} assets to optimize", assets.len());
+    
+    for asset_json in assets {
+        let asset_name = asset_json["name"].as_str()
+            .ok_or_else(|| format!("Asset missing 'name' field in {}", assets_file))?;
         
-        let candle_path = format!("./candles/{}.csv", asset_name);
+        let leverage = asset_json["leverage"].as_f64()
+            .ok_or_else(|| format!("Asset '{}' missing 'leverage' field", asset_name))?;
+        
+        let spread = asset_json["spread"].as_f64()
+            .ok_or_else(|| format!("Asset '{}' missing 'spread' field", asset_name))?;
+        
+        println!("\nOptimizing {} (leverage: {}, spread: {})", asset_name, leverage, spread);
+        
+        // Try to load candle data
+        let candle_path = format!("data/{}.csv", asset_name);
         
         if !Path::new(&candle_path).exists() {
-            println!("Candle data not found for {}, skipping", asset_name);
+            println!("Warning: Candle data not found for {}, skipping", asset_name);
             continue;
         }
         
         match crate::fetch_data::load_candles_from_csv(&candle_path) {
             Ok(mut candles) => {
+                // Filter out invalid candles
                 candles.retain(|c| c.volume > 0.0);
                 
                 if candles.is_empty() {
-                    println!("No valid candles for {}, skipping", asset_name);
+                    println!("Warning: No valid candles for {}, skipping", asset_name);
                     continue;
                 }
                 
-                match optimizer.optimize_asset(asset_name, &candles, asset.leverage, asset.spread) {
+                println!("Loaded {} valid candles for {}", candles.len(), asset_name);
+                
+                // Run optimization
+                match optimizer.optimize_asset(asset_name, &candles, leverage, spread) {
                     Ok(results) => {
                         if !results.is_empty() {
+                            println!("Running final backtest with best parameters for {}", asset_name);
                             let best_result = &results[0];
-                            if let Err(e) = optimizer.run_final_backtest(asset_name, &candles, best_result, asset.leverage, asset.spread) {
+                            if let Err(e) = optimizer.run_final_backtest(asset_name, &candles, best_result, leverage, spread) {
                                 println!("Error running final backtest for {}: {}", asset_name, e);
                             }
                         } else {
-                            println!("No valid results found for {}", asset_name);
+                            println!("No valid optimization results found for {}", asset_name);
                         }
-                    }
+                    },
                     Err(e) => println!("Error optimizing {}: {}", asset_name, e),
                 }
-            }
+            },
             Err(e) => println!("Error loading candles for {}: {}", asset_name, e),
         }
     }
     
+    println!("\nOptimization of all assets complete!");
     Ok(())
 }
 
+/// Helper function to create a python-like default optimization config
+pub fn python_like_optimization_config() -> DynamicOptimizationConfig {
+    // First try to load from the optimization_config.json file
+    if let Ok(config) = load_config_from_file("optimization_config.json") {
+        return config;
+    }
+    
+    // Fall back to hardcoded defaults if file loading fails
+    DynamicOptimizationConfig {
+        initial_balance: 10_000.0,
+        drop_threshold: 9_000.0,
+        
+        lookback_periods: vec![5, 8, 10, 13],
+        
+        initial_levels: vec![0.236, 0.382, 0.5, 0.618, 0.786],
+        tp_levels: vec![0.618, 1.0, 1.414, 1.618, 2.0, 2.618],
+        sl_levels: vec![0.236, 0.382, 0.5, 0.618],
+        limit1_levels: vec![0.382, 0.5, 0.618, 0.786],
+        limit2_levels: vec![0.786, 1.0, 1.272, 1.618],
+        threshold_factors: vec![0.75, 1.0, 1.25, 1.5],
+        
+        output_dir: "results".to_string(),
+        parallel: true,
+        num_best_results: 20,
+    }
+}
+
+/// Load optimization configuration from a JSON file
+pub fn load_config_from_file(file_path: &str) -> Result<DynamicOptimizationConfig, Box<dyn Error>> {
+    println!("Loading optimization configuration from {}", file_path);
+    
+    // Read the file content
+    let file_content = std::fs::read_to_string(file_path)?;
+    
+    // Parse JSON
+    let json_config: serde_json::Value = serde_json::from_str(&file_content)?;
+    
+    // Extract configuration values with proper error handling
+    let config = DynamicOptimizationConfig {
+        initial_balance: json_config["initial_balance"].as_f64()
+            .ok_or_else(|| format!("Missing or invalid 'initial_balance' in {}", file_path))?,
+            
+        drop_threshold: json_config["drop_threshold"].as_f64()
+            .ok_or_else(|| format!("Missing or invalid 'drop_threshold' in {}", file_path))?,
+            
+        lookback_periods: json_config["lookback_periods"].as_array()
+            .ok_or_else(|| format!("Missing 'lookback_periods' array in {}", file_path))?
+            .iter()
+            .filter_map(|v| v.as_u64().map(|i| i as usize))
+            .collect(),
+            
+        initial_levels: json_config["initial_levels"].as_array()
+            .ok_or_else(|| format!("Missing 'initial_levels' array in {}", file_path))?
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect(),
+            
+        tp_levels: json_config["tp_levels"].as_array()
+            .ok_or_else(|| format!("Missing 'tp_levels' array in {}", file_path))?
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect(),
+            
+        sl_levels: json_config["sl_levels"].as_array()
+            .ok_or_else(|| format!("Missing 'sl_levels' array in {}", file_path))?
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect(),
+            
+        limit1_levels: json_config["limit1_levels"].as_array()
+            .ok_or_else(|| format!("Missing 'limit1_levels' array in {}", file_path))?
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect(),
+            
+        limit2_levels: json_config["limit2_levels"].as_array()
+            .ok_or_else(|| format!("Missing 'limit2_levels' array in {}", file_path))?
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect(),
+            
+        threshold_factors: json_config["threshold_factors"].as_array()
+            .ok_or_else(|| format!("Missing 'threshold_factors' array in {}", file_path))?
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect(),
+            
+        output_dir: json_config["output_dir"].as_str()
+            .unwrap_or("results")
+            .to_string(),
+            
+        parallel: json_config["parallel"].as_bool()
+            .unwrap_or(true),
+            
+        num_best_results: json_config["num_best_results"].as_u64()
+            .unwrap_or(20) as usize,
+    };
+    
+    // Validate the configuration
+    if config.lookback_periods.is_empty() {
+        return Err("No valid lookback periods provided".into());
+    }
+    if config.initial_levels.is_empty() {
+        return Err("No valid initial levels provided".into());
+    }
+    if config.tp_levels.is_empty() {
+        return Err("No valid take profit levels provided".into());
+    }
+    if config.sl_levels.is_empty() {
+        return Err("No valid stop loss levels provided".into());
+    }
+    if config.limit1_levels.is_empty() {
+        return Err("No valid limit1 levels provided".into());
+    }
+    if config.limit2_levels.is_empty() {
+        return Err("No valid limit2 levels provided".into());
+    }
+    if config.threshold_factors.is_empty() {
+        return Err("No valid threshold factors provided".into());
+    }
+    
+    println!("Successfully loaded optimization configuration:");
+    println!("  Lookback periods: {:?}", config.lookback_periods);
+    println!("  Initial levels: {:?}", config.initial_levels);
+    println!("  Take profit levels: {:?}", config.tp_levels);
+    println!("  Stop loss levels: {:?}", config.sl_levels);
+    println!("  Limit1 levels: {:?}", config.limit1_levels);
+    println!("  Limit2 levels: {:?}", config.limit2_levels);
+    println!("  Threshold factors: {:?}", config.threshold_factors);
+    println!("  Output directory: {}", config.output_dir);
+    
+    Ok(config)
+}

@@ -2,6 +2,10 @@
 use std::fs;
 use serde_json;
 
+// First declare all modules
+pub mod dynamic_optimizer;  // This needs to be declared before it's used
+pub mod grid_optimizer;
+
 pub mod fibonacci_optimizer {
     // Re-export everything from dynamic_optimizer under the fibonacci_optimizer namespace.
     pub use super::dynamic_optimizer::*;
