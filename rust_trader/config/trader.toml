@@ -1,0 +1,77 @@
+# Rust Trader Configuration
+
+[general]
+refresh_interval = 60  # seconds between updates
+data_dir = "data"
+log_level = "info"
+max_candles = 5000
+historical_days = 30
+
+[exchange]
+name = "hyperliquid"
+api_key = ""  # Set via environment variable
+api_secret = ""  # Set via environment variable
+base_url = "https://api.hyperliquid.xyz"
+websocket_url = "wss://api.hyperliquid.xyz/ws"
+testnet = false
+
+[influxdb]
+url = "http://localhost:8086"
+token = ""  # Set via environment variable
+org = "ValhallaVault"
+bucket = "hyper_candles"
+
+[risk]
+max_risk_per_trade = 0.02
+max_position_size = 10.0
+max_leverage = 20.0
+spread = 0.0005
+max_open_positions = 5
+max_drawdown = 0.20
+max_daily_loss = 0.05
+kelly_fraction = 0.5
+
+[strategy]
+name = "fibonacci_pivot"
+pivot_lookback = 5
+signal_lookback = 1
+fib_threshold = 10.0
+fib_initial = 0.382
+fib_tp = 0.618
+fib_sl = 0.236
+fib_limit1 = 0.5
+fib_limit2 = 0.786
+min_signal_strength = 0.5
+
+# Individual asset configurations
+# These override the default settings when trading specific assets
+
+[assets.BTC]
+name = "BTC"
+leverage = 50.0
+spread = 0.0003782993723669504
+avg_spread = 0.002266021682225036
+
+[assets.ETH]
+name = "ETH"
+leverage = 50.0
+spread = 0.0004693458492226459
+avg_spread = 0.0037985826276241185
+
+[assets.SOL]
+name = "SOL"
+leverage = 20.0
+spread = 0.000786895879661958
+avg_spread = 0.009552678512755163
+
+[assets.DOGE]
+name = "DOGE"
+leverage = 20.0
+spread = 0.0007593014426727411
+avg_spread = 0.012681238989507114
+
+[assets.XRP]
+name = "XRP"
+leverage = 20.0
+spread = 0.0008582323547012266
+avg_spread = 0.023248550657501726
