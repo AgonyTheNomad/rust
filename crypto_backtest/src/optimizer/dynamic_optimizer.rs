@@ -9,6 +9,8 @@ use std::io::Write;
 use std::path::Path;
 use serde::{Serialize, Deserialize};
 use serde_json::json;
+use std::collections::HashMap;
+
 
 /// Configuration for the dynamic Fibonacci optimization
 #[derive(Debug, Clone, Serialize, Deserialize)]

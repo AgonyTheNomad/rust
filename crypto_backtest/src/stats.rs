@@ -1,4 +1,6 @@
 use crate::models::Trade;
+use std::collections::HashMap;
+
 
 #[derive(Debug, Default)]
 pub struct StatsTracker {
