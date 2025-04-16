@@ -1,0 +1,13 @@
+{
+    "use_testnet": true,
+    "max_positions": 5,
+    "risk_per_trade": 0.01,
+    "max_signal_age_minutes": 5,
+    "symbol_mapping": {
+      "BTC": "BTC",
+      "ETH": "ETH",
+      "SOL": "SOL",
+      "XRP": "XRP",
+      "DOGE": "DOGE"
+    }
+  }
