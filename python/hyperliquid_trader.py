@@ -12,6 +12,7 @@ import json
 import time
 import argparse
 import logging
+import shutil
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
@@ -47,6 +48,7 @@ class Signal:
     strength: float
     take_profit: float
     stop_loss: float
+    metadata: dict = None
     processed: bool = False
 
 @dataclass
@@ -67,16 +69,246 @@ class Position:
     sl_order_id: Optional[str] = None
     tp_order_id: Optional[str] = None
 
+class SignalProcessor:
+    """Handles reading and processing signal files from Rust"""
+    
+    def __init__(self, trader, signals_dir):
+        self.trader = trader
+        self.signals_dir = signals_dir
+        self.processed_signals = set()
+        
+    async def scan_existing_signals(self):
+        """Scan for existing signal files on startup"""
+        try:
+            if not os.path.exists(self.signals_dir):
+                os.makedirs(self.signals_dir, exist_ok=True)
+                logger.info(f"Created signals directory: {self.signals_dir}")
+                return
+                
+            signal_files = [f for f in os.listdir(self.signals_dir) 
+                           if f.endswith('.json')]
+            
+            logger.info(f"Found {len(signal_files)} existing signal files")
+            
+            # Process files by age (oldest first)
+            signal_files.sort()
+            
+            for filename in signal_files:
+                file_path = os.path.join(self.signals_dir, filename)
+                await self.process_signal_file(file_path)
+                
+        except Exception as e:
+            logger.error(f"Error scanning existing signals: {e}")
+    
+    async def process_signal_file(self, file_path):
+        """Process a signal file and execute trade if appropriate"""
+        try:
+            # Skip if already processed this session
+            if file_path in self.processed_signals:
+                return
+                
+            self.processed_signals.add(file_path)
+            
+            with open(file_path, 'r') as f:
+                signal_data = json.load(f)
+                
+            # Skip if already processed
+            if signal_data.get('processed', False):
+                logger.info(f"Signal {os.path.basename(file_path)} already processed, skipping")
+                return
+                
+            # Convert to Signal object
+            signal = Signal(
+                id=signal_data.get('id'),
+                symbol=signal_data.get('symbol'),
+                timestamp=datetime.fromisoformat(signal_data.get('timestamp').replace('Z', '+00:00')),
+                position_type=signal_data.get('position_type'),
+                price=float(signal_data.get('price')),
+                reason=signal_data.get('reason'),
+                strength=float(signal_data.get('strength')),
+                take_profit=float(signal_data.get('take_profit')),
+                stop_loss=float(signal_data.get('stop_loss')),
+                metadata=signal_data.get('metadata', {}),
+                processed=signal_data.get('processed', False)
+            )
+            
+            # Check signal age
+            signal_age = datetime.now(signal.timestamp.tzinfo) - signal.timestamp
+            if signal_age > timedelta(minutes=self.trader.max_signal_age_minutes):
+                logger.warning(f"Signal {signal.id} is too old ({signal_age.total_seconds()/60:.1f} minutes), skipping")
+                await self.mark_signal_processed(file_path)
+                return
+                
+            # Validate and execute if appropriate
+            await self.trader.validate_and_execute_signal(signal, file_path)
+                
+        except Exception as e:
+            logger.error(f"Error processing signal file {file_path}: {e}", exc_info=True)
+            
+    async def mark_signal_processed(self, file_path):
+        """Mark a signal file as processed"""
+        try:
+            with open(file_path, 'r') as f:
+                signal_data = json.load(f)
+                
+            signal_data['processed'] = True
+            signal_data['processed_at'] = datetime.now().isoformat()
+            
+            with open(file_path, 'w') as f:
+                json.dump(signal_data, f, indent=2)
+                
+            logger.info(f"Marked signal {os.path.basename(file_path)} as processed")
+            
+        except Exception as e:
+            logger.error(f"Error marking signal as processed: {e}")
+
+class SystemMonitor:
+    """Monitors system health and component status"""
+    
+    def __init__(self, signals_dir):
+        self.signals_dir = signals_dir
+        self.last_signal_time = None
+        self.signal_count = 0
+        
+    async def run_heartbeat(self):
+        """Run heartbeat check at regular intervals"""
+        while True:
+            try:
+                await self.check_system_status()
+                await asyncio.sleep(60)  # Check every minute
+            except Exception as e:
+                logger.error(f"Error in heartbeat check: {e}")
+                await asyncio.sleep(120)  # Longer delay on error
+                
+    async def check_system_status(self):
+        """Check system components status"""
+        try:
+            # Check signal directory
+            signal_files = [f for f in os.listdir(self.signals_dir) 
+                           if f.endswith('.json')]
+            
+            current_count = len(signal_files)
+            
+            # Check if we're getting new signals
+            if current_count > self.signal_count:
+                if signal_files:
+                    newest_file = max(signal_files, 
+                                      key=lambda f: os.path.getmtime(os.path.join(self.signals_dir, f)))
+                    newest_time = datetime.fromtimestamp(
+                        os.path.getmtime(os.path.join(self.signals_dir, newest_file)))
+                    
+                    if self.last_signal_time is None:
+                        logger.info(f"Initial signal count: {current_count}, newest: {newest_file}")
+                    else:
+                        logger.info(f"New signals detected: {current_count - self.signal_count}, newest: {newest_file}")
+                    
+                    self.last_signal_time = newest_time
+            
+            self.signal_count = current_count
+            
+            # Check if signal generator is silent for too long
+            if self.last_signal_time is not None:
+                time_since_last = datetime.now() - self.last_signal_time
+                if time_since_last > timedelta(hours=12):
+                    logger.warning(f"No new signals in {time_since_last.total_seconds() / 3600:.1f} hours. Check signal generator.")
+            
+        except Exception as e:
+            logger.error(f"Error checking system status: {e}")
+
+class SignalArchiver:
+    """Archives old signal files"""
+    
+    def __init__(self, signals_dir, archive_dir, max_age_days=7):
+        self.signals_dir = signals_dir
+        self.archive_dir = archive_dir
+        self.max_age_days = max_age_days
+        
+        # Create archive directory if it doesn't exist
+        os.makedirs(archive_dir, exist_ok=True)
+        
+    async def run_archiver(self):
+        """Run archiver at regular intervals"""
+        while True:
+            try:
+                await self.archive_old_signals()
+                await asyncio.sleep(3600)  # Run every hour
+            except Exception as e:
+                logger.error(f"Error in signal archiver: {e}")
+                await asyncio.sleep(7200)
+                
+    async def archive_old_signals(self):
+        """Archive signal files older than max_age_days"""
+        try:
+            signal_files = [f for f in os.listdir(self.signals_dir) 
+                           if f.endswith('.json')]
+            
+            now = datetime.now()
+            archive_count = 0
+            
+            for filename in signal_files:
+                file_path = os.path.join(self.signals_dir, filename)
+                
+                # Check file age
+                file_time = datetime.fromtimestamp(os.path.getmtime(file_path))
+                age_days = (now - file_time).total_seconds() / 86400
+                
+                if age_days > self.max_age_days:
+                    # Check if it's processed
+                    try:
+                        with open(file_path, 'r') as f:
+                            data = json.load(f)
+                            if not data.get('processed', False):
+                                # Skip unprocessed signals
+                                continue
+                    except:
+                        # If we can't read the file, better to leave it alone
+                        continue
+                        
+                    # Archive the file
+                    archive_path = os.path.join(self.archive_dir, filename)
+                    shutil.move(file_path, archive_path)
+                    archive_count += 1
+            
+            if archive_count > 0:
+                logger.info(f"Archived {archive_count} old signal files")
+                
+        except Exception as e:
+            logger.error(f"Error archiving signals: {e}")
+
 class SignalHandler(FileSystemEventHandler):
     """Watchdog handler for new signal files"""
     
-    def __init__(self, trader):
-        self.trader = trader
+    def __init__(self, signal_processor):
+        self.signal_processor = signal_processor
         
     def on_created(self, event):
         if not event.is_directory and event.src_path.endswith('.json'):
             logger.info(f"New signal file detected: {event.src_path}")
-            asyncio.run(self.trader.process_signal_file(event.src_path))
+            asyncio.create_task(self.signal_processor.process_signal_file(event.src_path))
+
+def send_command(command_dir, command_type, **params):
+    """Send a command to the Rust component"""
+    try:
+        os.makedirs(command_dir, exist_ok=True)
+        
+        command = {
+            "type": command_type,
+            **params
+        }
+        
+        timestamp = int(time.time())
+        filename = f"{command_type}_{timestamp}.cmd"
+        file_path = os.path.join(command_dir, filename)
+        
+        with open(file_path, 'w') as f:
+            json.dump(command, f)
+            
+        logger.info(f"Sent command {command_type} to signal generator")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error sending command: {e}")
+        return False
 
 class HyperliquidTrader:
     """Main trader class for interacting with Hyperliquid"""
@@ -186,42 +418,16 @@ class HyperliquidTrader:
         """Map our internal symbol to Hyperliquid asset name"""
         return self.symbol_mapping.get(symbol, symbol)
             
-    async def process_signal_file(self, file_path: str):
-        """Process a signal file and execute trade if appropriate"""
+    async def validate_and_execute_signal(self, signal: Signal, file_path: str):
+        """Validate a signal and execute a trade if appropriate"""
         try:
-            with open(file_path, 'r') as f:
-                signal_data = json.load(f)
-                
-            # Convert to Signal object
-            signal = Signal(
-                id=signal_data.get('id'),
-                symbol=signal_data.get('symbol'),
-                timestamp=datetime.fromisoformat(signal_data.get('timestamp').replace('Z', '+00:00')),
-                position_type=signal_data.get('position_type'),
-                price=float(signal_data.get('price')),
-                reason=signal_data.get('reason'),
-                strength=float(signal_data.get('strength')),
-                take_profit=float(signal_data.get('take_profit')),
-                stop_loss=float(signal_data.get('stop_loss')),
-                processed=signal_data.get('processed', False)
-            )
+            logger.info(f"Validating signal {signal.id} for {signal.symbol} ({signal.position_type})")
             
-            if signal.processed:
-                logger.info(f"Signal {signal.id} already processed, skipping")
-                return
-                
-            # Check if signal is recent
-            signal_age = datetime.now(signal.timestamp.tzinfo) - signal.timestamp
-            if signal_age > timedelta(minutes=self.max_signal_age_minutes):
-                logger.warning(f"Signal {signal.id} is too old ({signal_age.total_seconds()/60:.1f} minutes), skipping")
-                self.mark_signal_processed(file_path)
-                return
-                
             # Check if we can take this trade
             current_positions = await self.get_current_positions()
             if len(current_positions) >= self.max_positions:
                 logger.warning(f"Maximum positions ({self.max_positions}) reached, skipping signal {signal.id}")
-                self.mark_signal_processed(file_path)
+                await self.signal_processor.mark_signal_processed(file_path)
                 return
                 
             # Get current price to validate signal
@@ -234,14 +440,14 @@ class HyperliquidTrader:
             price_diff_pct = abs(current_price - signal.price) / signal.price
             if price_diff_pct > 0.02:
                 logger.warning(f"Price moved too much for {signal.symbol} ({price_diff_pct:.2%}), skipping signal {signal.id}")
-                self.mark_signal_processed(file_path)
+                await self.signal_processor.mark_signal_processed(file_path)
                 return
                 
             # Execute trade
             await self.execute_trade(signal, current_price, file_path)
                 
         except Exception as e:
-            logger.error(f"Error processing signal file {file_path}: {e}")
+            logger.error(f"Error validating signal: {e}", exc_info=True)
             
     async def execute_trade(self, signal: Signal, current_price: float, file_path: str):
         """Execute a trade based on a signal"""
@@ -250,7 +456,7 @@ class HyperliquidTrader:
             
             if self.dry_run:
                 logger.info(f"[DRY RUN] Would open {signal.position_type} position for {signal.symbol}")
-                self.mark_signal_processed(file_path)
+                await self.signal_processor.mark_signal_processed(file_path)
                 return
                 
             # Calculate position size using risk management parameters
@@ -355,26 +561,11 @@ class HyperliquidTrader:
             self.positions[signal.symbol] = position
             
             # Mark signal as processed
-            self.mark_signal_processed(file_path)
+            await self.signal_processor.mark_signal_processed(file_path)
             
         except Exception as e:
-            logger.error(f"Error executing trade: {e}")
-            
-    def mark_signal_processed(self, file_path: str):
-        """Mark a signal file as processed"""
-        try:
-            with open(file_path, 'r') as f:
-                signal_data = json.load(f)
-                
-            signal_data['processed'] = True
-            
-            with open(file_path, 'w') as f:
-                json.dump(signal_data, f, indent=2)
-                
-            logger.info(f"Marked signal file {file_path} as processed")
-        except Exception as e:
-            logger.error(f"Error marking signal as processed: {e}")
-            
+            logger.error(f"Error executing trade: {e}", exc_info=True)
+    
     async def monitor_positions(self):
         """Monitor and manage open positions"""
         while True:
@@ -398,6 +589,17 @@ class HyperliquidTrader:
                         logger.info(f"Position {position.id} for {symbol} has been closed, removing from tracking")
                         del self.positions[symbol]
                         continue
+                    
+                    # Log current position status if we have price
+                    if symbol in prices and prices[symbol]:
+                        current_price = prices[symbol]
+                        # Calculate unrealized PnL
+                        if position.position_type == "Long":
+                            pnl_pct = (current_price - position.entry_price) / position.entry_price * 100
+                        else:  # Short
+                            pnl_pct = (position.entry_price - current_price) / position.entry_price * 100
+                            
+                        logger.info(f"Position {position.id} for {symbol}: Entry: {position.entry_price}, Current: {current_price}, PnL: {pnl_pct:.2f}%")
                         
                 # Sleep to avoid too frequent API calls
                 await asyncio.sleep(10)  # Check every 10 seconds
@@ -410,34 +612,71 @@ async def main_async():
     parser = argparse.ArgumentParser(description='Hyperliquid Trader')
     parser.add_argument('--config', type=str, default='config.json', help='Path to config file')
     parser.add_argument('--signals', type=str, default='../signals', help='Directory to watch for signals')
+    parser.add_argument('--archive', type=str, default='../signals/archive', help='Directory to archive old signals')
+    parser.add_argument('--commands', type=str, default='../commands', help='Directory for command files')
     parser.add_argument('--dry-run', action='store_true', help='Run in dry-run mode (no actual trades)')
     
     args = parser.parse_args()
     
+    # Create directories if they don't exist
+    os.makedirs(args.signals, exist_ok=True)
+    os.makedirs(args.archive, exist_ok=True)
+    os.makedirs(args.commands, exist_ok=True)
+    
+    # Initialize trader
     trader = HyperliquidTrader(args.config, args.signals, args.dry_run)
     
-    # Start the position monitor
+    # Create system components
+    signal_processor = SignalProcessor(trader, args.signals)
+    system_monitor = SystemMonitor(args.signals)
+    signal_archiver = SignalArchiver(args.signals, args.archive)
+    
+    # Attach signal processor to trader for callbacks
+    trader.signal_processor = signal_processor
+    
+    # Start tasks
     position_monitor_task = asyncio.create_task(trader.monitor_positions())
+    heartbeat_task = asyncio.create_task(system_monitor.run_heartbeat())
+    archiver_task = asyncio.create_task(signal_archiver.run_archiver())
+    
+    # Process existing signals on startup
+    await signal_processor.scan_existing_signals()
     
     # Watch for new signal files
-    event_handler = SignalHandler(trader)
+    event_handler = SignalHandler(signal_processor)
     observer = Observer()
     observer.schedule(event_handler, args.signals, recursive=False)
     observer.start()
     
     try:
-        logger.info(f"Watching for signals in {args.signals}")
+        logger.info(f"Hyperliquid Trader started. Watching for signals in {args.signals}")
+        # Output initial account info
+        account_state = await trader.get_account_state()
+        if account_state:
+            account_value = float(account_state.get('crossMarginSummary', {}).get('accountValue', 0))
+            logger.info(f"Initial account value: ${account_value:.2f}")
+        
         # Keep the asyncio event loop running
         while True:
             await asyncio.sleep(1)
     except KeyboardInterrupt:
+        logger.info("Shutdown requested")
         observer.stop()
         position_monitor_task.cancel()
+        heartbeat_task.cancel()
+        archiver_task.cancel()
     finally:
         observer.join()
+        logger.info("Hyperliquid Trader shutdown complete")
 
 def main():
-    asyncio.run(main_async())
+    """Main entry point"""
+    try:
+        asyncio.run(main_async())
+    except Exception as e:
+        logger.critical(f"Fatal error: {e}", exc_info=True)
+        sys.exit(1)
 
 if __name__ == "__main__":
+    import sys
     main()

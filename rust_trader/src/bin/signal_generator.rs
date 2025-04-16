@@ -7,16 +7,19 @@ use rust_trader::{
     influxdb::{InfluxDBClient, InfluxDBConfig},
     models::{Candle, Signal, PositionType},
     setup_logging,
-    signals::{fibonacci::FibonacciLevels, pivots::PivotPoints},
+    signals::{fibonacci::FibonacciLevels, pivots::PivotPoints, file_manager::SignalFileManager},
     strategy::{Strategy, StrategyConfig, AssetConfig},
 };
-use serde_json;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 use std::time::Duration as StdDuration;
 use tokio::time;
+
+// Define version constants
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+const GENERATOR_NAME: &str = "fibonacci_pivot";
 
 // CLI Arguments
 #[derive(Parser)]
@@ -34,9 +37,21 @@ struct Args {
     #[clap(short, long, default_value = "signals")]
     output: PathBuf,
     
+    /// Archive directory for old signals
+    #[clap(long, default_value = "signals/archive")]
+    archive: PathBuf,
+    
+    /// Command directory for IPC
+    #[clap(long, default_value = "commands")]
+    commands: PathBuf,
+    
     /// Interval in seconds between updates
     #[clap(short, long, default_value = "60")]
     interval: u64,
+    
+    /// Max age in hours for archiving signals
+    #[clap(long, default_value = "24")]
+    max_age: i64,
 }
 
 // Configuration structure
@@ -77,8 +92,13 @@ async fn main() -> Result<()> {
     // Load configuration
     let config = load_config(&args.config)?;
     
-    // Create output directory if it doesn't exist
+    // Create directories if they don't exist
     std::fs::create_dir_all(&args.output)?;
+    std::fs::create_dir_all(&args.archive)?;
+    std::fs::create_dir_all(&args.commands)?;
+    
+    // Initialize signal file manager
+    let signal_manager = SignalFileManager::new(&args.output.to_string_lossy(), VERSION);
     
     // Connect to InfluxDB
     let influx_client = InfluxDBClient::new(config.influxdb)?;
@@ -95,7 +115,8 @@ async fn main() -> Result<()> {
         }
     };
     
-    info!("Analyzing {} symbols: {}", symbols.len(), symbols.join(", "));
+    info!("Signal Generator v{} started. Analyzing {} symbols: {}", 
+          VERSION, symbols.len(), symbols.join(", "));
     
     // Create a map to track last update time and strategy instance for each symbol
     let mut symbol_states: HashMap<String, (Strategy, DateTime<Utc>)> = HashMap::new();
@@ -149,12 +170,41 @@ async fn main() -> Result<()> {
         symbol_states.insert(symbol.clone(), (strategy, last_update));
     }
     
+    // Variable to track total signals generated
+    let mut total_signals = 0;
+    
     // Main loop - run continuously
     let mut interval = time::interval(StdDuration::from_secs(args.interval));
     
     loop {
         interval.tick().await;
         
+        // Check for command files
+        match signal_manager.check_commands(&args.commands.to_string_lossy()) {
+            Ok(commands) => {
+                for command in commands {
+                    info!("Processing command: {}", command);
+                    // TODO: Handle commands (stop, pause, etc.)
+                }
+            },
+            Err(e) => {
+                error!("Error checking commands: {}", e);
+            }
+        }
+        
+        // Archive old signals
+        match signal_manager.archive_old_signals(&args.archive.to_string_lossy(), args.max_age) {
+            Ok(count) => {
+                if count > 0 {
+                    debug!("Archived {} old signal files", count);
+                }
+            },
+            Err(e) => {
+                error!("Error archiving old signals: {}", e);
+            }
+        }
+        
+        // Process each symbol
         for (symbol, (strategy, last_update)) in &mut symbol_states {
             // Get new candles since last update
             let now = Utc::now();
@@ -171,7 +221,14 @@ async fn main() -> Result<()> {
                     // Output any signals
                     if !signals.is_empty() {
                         for signal in &signals {
-                            output_signal(signal, &args.output).await?;
+                            match signal_manager.write_signal(signal) {
+                                Ok(_) => {
+                                    total_signals += 1;
+                                },
+                                Err(e) => {
+                                    error!("Error writing signal file: {}", e);
+                                }
+                            }
                         }
                     }
                 }
@@ -184,33 +241,10 @@ async fn main() -> Result<()> {
                 }
             }
         }
-    }
-}
-
-// Helper to output a signal to a JSON file
-async fn output_signal(signal: &Signal, output_dir: &PathBuf) -> Result<()> {
-    let timestamp = signal.timestamp.timestamp_millis();
-    let filename = format!("{}_{}_{}_{}.json", 
-        signal.symbol, 
-        match signal.position_type {
-            PositionType::Long => "LONG",
-            PositionType::Short => "SHORT", 
-        },
-        timestamp,
-        signal.id.split('-').next().unwrap_or("signal")
-    );
-    
-    let path = output_dir.join(filename);
-    
-    // Convert signal to JSON
-    let json = serde_json::to_string_pretty(signal)?;
-    
-    // Write to file
-    let mut file = File::create(path)?;
-    file.write_all(json.as_bytes())?;
-    
-    info!("Signal generated for {}: {:?} at ${:.2} (TP: ${:.2}, SL: ${:.2})",
-        signal.symbol, signal.position_type, signal.price, signal.take_profit, signal.stop_loss);
         
-    Ok(())
+        // Log a heartbeat message periodically
+        if total_signals > 0 && total_signals % 10 == 0 {
+            info!("Signal generator heartbeat: {} total signals generated", total_signals);
+        }
+    }
 }
