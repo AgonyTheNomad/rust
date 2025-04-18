@@ -11,13 +11,13 @@ historical_days = 30
 name = "hyperliquid"
 api_key = ""  # Set via environment variable
 api_secret = ""  # Set via environment variable
-base_url = "https://api.hyperliquid.xyz"
-websocket_url = "wss://api.hyperliquid.xyz/ws"
-testnet = false
+base_url = "https://api.hyperliquid-testnet.xyz"  # Change to testnet URL
+websocket_url = "wss://api.hyperliquid-testnet.xyz/ws"  # Change to testnet URL
+testnet = true  # Set to true for testnet
 
 [influxdb]
-url = "http://localhost:8086"
-token = ""  # Set via environment variable
+url = "http://192.168.68.52:30086"
+token = "gqRGGfpdf2EAj9Yu-ISLY5QFoFtY4HyYXm_EgT8ywVD_r0A49f5TttA4dikcFlXOGYVzRL5V3mVrWJlQYDF5qw=="
 org = "ValhallaVault"
 bucket = "hyper_candles"
 

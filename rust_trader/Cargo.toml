@@ -31,7 +31,7 @@ clap = { version = "4.3", features = ["derive"] }
 
 # For InfluxDB connectivity
 influxdb2 = "0.4"
-influxdb2_structmap = "0.2"
+influxdb2-structmap = "0.2"
 
 # For statistics and number handling
 num = "0.4"
