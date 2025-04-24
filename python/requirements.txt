@@ -1,0 +1,5 @@
+hyperliquid-py
+watchdog
+python-dotenv
+aiohttp
+asyncio
