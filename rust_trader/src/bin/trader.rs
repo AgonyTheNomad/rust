@@ -3,10 +3,10 @@ use chrono::{DateTime, Duration, Utc};
 use clap::{Parser, Subcommand};
 use log::*;
 use rust_trader::{
-    exchange::{Exchange, ExchangeConfig, create_exchange},
+    exchange::{Exchange, ExchangeConfig, create_exchange, ExchangeError},
     influxdb::{InfluxDBClient, InfluxDBConfig},
-    models::{Candle, Position, PositionType, Signal},
-    risk::{RiskManager, RiskParameters},
+    models::{Candle, Position, PositionType, Signal, PositionStatus},
+    risk::{RiskManager, RiskParameters, PositionResult},
     setup_logging,
     strategy::{Strategy, StrategyConfig, AssetConfig},
 };
@@ -15,7 +15,7 @@ use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::time::{Duration as StdDuration, Instant};
+use std::time::{Duration as StdDuration};
 use tokio::sync::Mutex;
 use tokio::time;
 use toml;
@@ -79,7 +79,7 @@ struct Config {
     assets: HashMap<String, AssetConfig>,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 struct GeneralConfig {
     refresh_interval: u64,  // seconds
     data_dir: PathBuf,
@@ -147,8 +147,7 @@ async fn trade(config_path: PathBuf, symbol_list: Option<String>, dry_run: bool)
     // Create exchange client
     let exchange = if dry_run {
         info!("Using mock exchange for dry-run mode");
-        // In a real implementation, you would create a mock exchange here
-        unimplemented!("Mock exchange not implemented yet");
+        create_exchange(config.exchange)?
     } else {
         info!("Connecting to {} exchange", config.exchange.name);
         create_exchange(config.exchange)?
@@ -170,12 +169,13 @@ async fn trade(config_path: PathBuf, symbol_list: Option<String>, dry_run: bool)
     let mut handles = Vec::new();
     
     for symbol in symbols {
-        // Clone our shared state
-        let exchange_clone = exchange.clone();
+        // Clone our shared state and create a new Arc for the exchange
+        let exchange_ref = Arc::new(exchange.clone_box());
         let influx_clone = Arc::new(influx_client.clone());
         let risk_clone = Arc::clone(&risk_manager);
         let state_clone = Arc::clone(&trading_state);
         let config_clone = config.general.clone();
+        let symbol_cloned = symbol.clone();
         
         // Look up asset config or use default
         let asset_config = match config.assets.get(&symbol) {
@@ -197,18 +197,18 @@ async fn trade(config_path: PathBuf, symbol_list: Option<String>, dry_run: bool)
         // Start processing task
         let handle = tokio::spawn(async move {
             let result = process_symbol(
-                exchange_clone,
+                exchange_ref,
                 influx_clone,
                 risk_clone,
                 state_clone,
                 strategy,
-                &symbol,
+                &symbol_cloned,
                 config_clone,
                 dry_run,
             ).await;
             
             if let Err(e) = result {
-                error!("Error processing symbol {}: {}", symbol, e);
+                error!("Error processing symbol {}: {}", symbol_cloned, e);
             }
         });
         
@@ -217,7 +217,7 @@ async fn trade(config_path: PathBuf, symbol_list: Option<String>, dry_run: bool)
     
     // Wait for all tasks to complete (which they shouldn't unless there's an error)
     for handle in handles {
-        if let Ok(Err(e)) = handle.await {
+        if let Err(e) = handle.await {
             error!("Task error: {}", e);
         }
     }
@@ -233,9 +233,24 @@ struct TradingState {
     account_balance: f64,
 }
 
+// Add clone_box method to Exchange trait in exchange/mod.rs
+// This allows us to clone the boxed trait object
+trait CloneBox: Exchange {
+    fn clone_box(&self) -> Box<dyn Exchange>;
+}
+
+impl<T> CloneBox for T
+where
+    T: 'static + Exchange + Clone,
+{
+    fn clone_box(&self) -> Box<dyn Exchange> {
+        Box::new(self.clone())
+    }
+}
+
 // Process a single symbol
 async fn process_symbol(
-    exchange: Box<dyn Exchange>,
+    exchange: Arc<Box<dyn Exchange>>,
     influx_client: Arc<InfluxDBClient>,
     risk_manager: Arc<Mutex<RiskManager>>,
     trading_state: Arc<Mutex<TradingState>>,
@@ -311,7 +326,8 @@ async fn process_symbol(
             // Process each new candle
             for candle in &new_candles {
                 process_candle(
-                    &exchange,
+                    exchange.as_ref(),
+                    influx_client.clone(),
                     Arc::clone(&risk_manager),
                     Arc::clone(&trading_state),
                     &mut strategy,
@@ -332,7 +348,7 @@ async fn process_symbol(
         
         // Check for open positions that might need updating
         update_positions(
-            &exchange,
+            exchange.as_ref(),
             Arc::clone(&trading_state),
             symbol,
             dry_run
@@ -343,6 +359,7 @@ async fn process_symbol(
 // Process a single candle
 async fn process_candle(
     exchange: &Box<dyn Exchange>,
+    influx_client: Arc<InfluxDBClient>,
     risk_manager: Arc<Mutex<RiskManager>>,
     trading_state: Arc<Mutex<TradingState>>,
     strategy: &mut Strategy,
@@ -365,8 +382,8 @@ async fn process_candle(
                 state.signals.push(signal.clone());
             }
             
-            // Log to InfluxDB
-            if let Err(e) = Arc::clone(&exchange.as_ref().influx).write_signal(&signal).await {
+            // Log to InfluxDB directly using influx_client
+            if let Err(e) = influx_client.write_signal(&signal).await {
                 warn!("Failed to log signal to InfluxDB: {}", e);
             }
             
@@ -407,7 +424,7 @@ async fn process_candle(
                     );
                     
                     // Open the position on the exchange
-                    info!("Opening {} position for {} at {}: size = {}, SL = {}, TP = {}", 
+                    info!("Opening {:?} position for {} at {}: size = {}, SL = {}, TP = {}", 
                         position.position_type, symbol, position.entry_price,
                         position.size, position.stop_loss, position.take_profit);
                     
@@ -427,7 +444,7 @@ async fn process_candle(
                     info!("Skipping trade due to risk management constraints");
                 }
             } else {
-                info!("[DRY RUN] Would open {} position for {} at {} (SL: {}, TP: {})",
+                info!("[DRY RUN] Would open {:?} position for {} at {} (SL: {}, TP: {})",
                     signal.position_type, symbol, signal.price, signal.stop_loss, signal.take_profit);
             }
         }
@@ -456,7 +473,7 @@ fn create_position(
         position_type: signal.position_type,
         risk_percent,
         margin_used: (size * signal.price) / leverage,
-        status: rust_trader::models::PositionStatus::Pending,
+        status: PositionStatus::Pending,
         limit1_price: None, // Would be set based on scaling strategy
         limit2_price: None,
         limit1_hit: false,
@@ -659,7 +676,7 @@ async fn monitor_positions(config_path: PathBuf) -> Result<()> {
                             format!("\x1b[31m-${:.2} ({:.2}%)\x1b[0m", pnl.abs(), pnl_percent)
                         };
                         
-                        info!("{} {} position: Entry=${:.2}, Current=${:.2}, Size={:.6}, PnL={}",
+                        info!("{} {:?} position: Entry=${:.2}, Current=${:.2}, Size={:.6}, PnL={}",
                             position.symbol, position.position_type, position.entry_price, 
                             current_price, position.size, status);
                     }
