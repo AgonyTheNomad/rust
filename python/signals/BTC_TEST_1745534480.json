@@ -1,0 +1,15 @@
+{
+  "id": "372a36db-6414-4fdb-ae5e-88c78b963aef",
+  "symbol": "BTC",
+  "timestamp": "2025-04-24T22:41:20.727265+00:00",
+  "position_type": "Short",
+  "price": 93427.0,
+  "reason": "Test Signal",
+  "strength": 0.8,
+  "take_profit": "9100",
+  "stop_loss": 95000,
+  "metadata": {
+    "test": true
+  },
+  "processed": false
+}

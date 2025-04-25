@@ -14,6 +14,7 @@ api_secret = ""  # Set via environment variable
 base_url = "https://api.hyperliquid-testnet.xyz"  # Change to testnet URL
 websocket_url = "wss://api.hyperliquid-testnet.xyz/ws"  # Change to testnet URL
 testnet = true  # Set to true for testnet
+additional_params = { }  # Empty HashMap, but required field
 
 [influxdb]
 url = "http://192.168.68.52:30086"
