@@ -1,3 +1,4 @@
+// src/bin/trader.rs
 use anyhow::{Context, Result};
 use chrono::{DateTime, Duration, Utc};
 use clap::{Parser, Subcommand};
@@ -9,6 +10,7 @@ use rust_trader::{
     risk::{RiskManager, RiskParameters, PositionResult},
     setup_logging,
     strategy::{Strategy, StrategyConfig, AssetConfig},
+    backtest::{load_backtest_config, load_best_backtest, get_symbol_performance, filter_symbols, SymbolPerformance},
 };
 use std::collections::HashMap;
 use std::fs::File;
@@ -43,6 +45,14 @@ enum Commands {
         /// Run in dry-run mode (no real trades)
         #[clap(long)]
         dry_run: bool,
+        
+        /// Path to backtest results directory for optimized parameters
+        #[clap(long)]
+        backtest_dir: Option<PathBuf>,
+        
+        /// Minimum win rate threshold for trading (0.0-1.0)
+        #[clap(long, default_value = "0.5")]
+        min_win_rate: f64,
     },
     
     /// Fetch historical data and save to CSV
@@ -106,8 +116,8 @@ async fn main() -> Result<()> {
     setup_logging();
     
     match args.command {
-        Commands::Trade { config, symbols, dry_run } => {
-            trade(config, symbols, dry_run).await?;
+        Commands::Trade { config, symbols, dry_run, backtest_dir, min_win_rate } => {
+            trade(config, symbols, dry_run, backtest_dir, min_win_rate).await?;
         },
         Commands::Fetch { symbol, days, output } => {
             fetch_historical_data(&symbol, days, &output).await?;
@@ -121,28 +131,113 @@ async fn main() -> Result<()> {
 }
 
 // Main trading function
-async fn trade(config_path: PathBuf, symbol_list: Option<String>, dry_run: bool) -> Result<()> {
+async fn trade(
+    config_path: PathBuf, 
+    symbol_list: Option<String>, 
+    dry_run: bool, 
+    backtest_dir: Option<PathBuf>,
+    min_win_rate: f64
+) -> Result<()> {
     // Load configuration
-    let config = load_config(config_path)?;
+    let mut config = load_config(config_path)?;
     
-    info!("Starting trading system in {} mode", if dry_run { "dry-run" } else { "live" });
-    
-    // Connect to InfluxDB
-    let influx_client = InfluxDBClient::new(config.influxdb)?;
-    
-    // Get list of symbols to trade
-    let symbols = match symbol_list {
+    // Get list of symbols to analyze
+    let mut symbols = match symbol_list {
         Some(list) => list.split(',').map(|s| s.trim().to_uppercase()).collect::<Vec<_>>(),
         None => {
-            let symbols_from_db = influx_client.get_symbols().await?;
-            if symbols_from_db.is_empty() {
-                return Err(anyhow::anyhow!("No symbols found in InfluxDB"));
+            // Try to get symbols from InfluxDB
+            let influx_client = InfluxDBClient::new(config.influxdb.clone())?;
+            match influx_client.get_symbols().await {
+                Ok(symbols) => {
+                    if symbols.is_empty() {
+                        warn!("No symbols found in InfluxDB, using default list");
+                        vec!["BTC".to_string(), "ETH".to_string()]
+                    } else {
+                        symbols
+                    }
+                },
+                Err(e) => {
+                    warn!("Failed to get symbols from InfluxDB: {}", e);
+                    vec!["BTC".to_string(), "ETH".to_string()]
+                }
             }
-            symbols_from_db
         }
     };
     
+    info!("Starting trading system in {} mode", if dry_run { "dry-run" } else { "live" });
+    
+    // Load optimized parameters and filter symbols by win rate if backtest directory is provided
+    if let Some(dir) = backtest_dir {
+        info!("Loading optimized parameters from backtest results");
+        
+        // Load optimized strategy parameters
+        match load_best_backtest(&dir, "profit_factor") {
+            Ok(optimized_config) => {
+                info!("Found optimal configuration with profit_factor: {}", 
+                      optimized_config.profit_factor);
+                
+                // Update the strategy config with optimized parameters
+                config.strategy.fib_threshold = optimized_config.fib_threshold;
+                config.strategy.fib_initial = optimized_config.fib_initial;
+                config.strategy.fib_tp = optimized_config.fib_tp;
+                config.strategy.fib_sl = optimized_config.fib_sl;
+                config.strategy.fib_limit1 = optimized_config.fib_limit1;
+                config.strategy.fib_limit2 = optimized_config.fib_limit2;
+                config.strategy.pivot_lookback = optimized_config.pivot_lookback;
+                config.strategy.signal_lookback = optimized_config.signal_lookback;
+                
+                // Update risk parameters if included in backtest
+                config.risk.max_risk_per_trade = optimized_config.max_risk_per_trade;
+                
+                info!("Strategy updated with optimized parameters: pivot_lookback={}, signal_lookback={}, fib_threshold={:.4}, fib_initial={:.4}, fib_tp={:.4}, fib_sl={:.4}",
+                      config.strategy.pivot_lookback,
+                      config.strategy.signal_lookback,
+                      config.strategy.fib_threshold,
+                      config.strategy.fib_initial,
+                      config.strategy.fib_tp,
+                      config.strategy.fib_sl);
+            },
+            Err(e) => {
+                warn!("Could not load optimized parameters: {}", e);
+                info!("Proceeding with default configuration");
+            }
+        }
+        
+        // Filter symbols by win rate
+        match get_symbol_performance(&dir) {
+            Ok(performance_map) => {
+                info!("Found performance data for {} symbols", performance_map.len());
+                
+                // Filter symbols with win rate >= min_win_rate
+                let original_count = symbols.len();
+                symbols = filter_symbols(&performance_map, min_win_rate, &symbols);
+                
+                info!("Filtered symbols from {} to {} based on win rate >= {:.1}%", 
+                     original_count, symbols.len(), min_win_rate * 100.0);
+                
+                // Log the included symbols with their performance
+                for symbol in &symbols {
+                    if let Some(perf) = performance_map.get(symbol) {
+                        info!("{}: Win Rate = {:.2}%, Profit Factor = {:.2}, Trades = {}", 
+                             symbol, perf.win_rate * 100.0, perf.profit_factor, perf.total_trades);
+                    }
+                }
+            },
+            Err(e) => {
+                warn!("Could not load symbol performance data: {}", e);
+                info!("Proceeding with all symbols without filtering");
+            }
+        }
+    }
+    
+    if symbols.is_empty() {
+        return Err(anyhow::anyhow!("No symbols to trade after filtering"));
+    }
+    
     info!("Trading {} symbols: {}", symbols.len(), symbols.join(", "));
+    
+    // Connect to InfluxDB
+    let influx_client = InfluxDBClient::new(config.influxdb)?;
     
     // Create exchange client
     let exchange = if dry_run {
@@ -231,21 +326,6 @@ struct TradingState {
     signals: Vec<Signal>,
     last_update: HashMap<String, DateTime<Utc>>,
     account_balance: f64,
-}
-
-// Add clone_box method to Exchange trait in exchange/mod.rs
-// This allows us to clone the boxed trait object
-trait CloneBox: Exchange {
-    fn clone_box(&self) -> Box<dyn Exchange>;
-}
-
-impl<T> CloneBox for T
-where
-    T: 'static + Exchange + Clone,
-{
-    fn clone_box(&self) -> Box<dyn Exchange> {
-        Box::new(self.clone())
-    }
 }
 
 // Process a single symbol

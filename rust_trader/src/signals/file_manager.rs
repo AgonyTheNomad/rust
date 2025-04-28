@@ -1,3 +1,4 @@
+// src/signals/file_manager.rs
 use crate::models::Signal;
 use anyhow::{Context, Result};
 use std::fs::{self, File};
@@ -5,6 +6,7 @@ use std::io::Write;
 use std::path::Path;
 use log::*;
 use serde_json::{json, to_string_pretty};
+use chrono::{DateTime, Utc, Duration};
 
 /// Manages writing signal files that can be read by the Python trader
 pub struct SignalFileManager {
@@ -59,3 +61,91 @@ impl SignalFileManager {
             "strength": signal.strength,
             "processed": signal.processed,
             "metadata": {
+                "generator_version": self.version,
+                "timestamp_ms": timestamp,
+                "test": false
+            }
+        });
+
+        // Write to file
+        let mut file = File::create(&file_path)
+            .context(format!("Failed to create signal file: {}", file_path.display()))?;
+        
+        let json_str = to_string_pretty(&signal_json)
+            .context("Failed to serialize signal to JSON")?;
+        
+        file.write_all(json_str.as_bytes())
+            .context("Failed to write signal to file")?;
+        
+        info!("Wrote signal to {}", file_path.display());
+        
+        Ok(filename)
+    }
+
+    /// Check for command files in the commands directory
+    pub fn check_commands(&self, commands_dir: &str) -> Result<Vec<String>> {
+        let dir = Path::new(commands_dir);
+        if !dir.exists() {
+            return Ok(Vec::new());
+        }
+        
+        let mut commands = Vec::new();
+        
+        for entry in fs::read_dir(dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            
+            if path.extension().and_then(|s| s.to_str()) == Some("cmd") {
+                if let Some(filename) = path.file_name().and_then(|s| s.to_str()) {
+                    commands.push(filename.to_string());
+                    
+                    // Process the command file
+                    if let Ok(content) = fs::read_to_string(&path) {
+                        debug!("Command file content: {}", content);
+                    }
+                    
+                    // Remove the command file after processing
+                    let _ = fs::remove_file(&path);
+                }
+            }
+        }
+        
+        Ok(commands)
+    }
+
+    /// Archive old signal files
+    pub fn archive_old_signals(&self, archive_dir: &str, max_age_hours: i64) -> Result<usize> {
+        let src_dir = Path::new(&self.output_dir);
+        let dst_dir = Path::new(archive_dir);
+        
+        // Create archive directory if it doesn't exist
+        fs::create_dir_all(dst_dir)
+            .context("Failed to create archive directory")?;
+            
+        let cutoff_time = Utc::now() - Duration::hours(max_age_hours);
+        let mut archived_count = 0;
+        
+        for entry in fs::read_dir(src_dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            
+            if path.extension().and_then(|s| s.to_str()) == Some("json") {
+                // Check file modification time
+                let metadata = fs::metadata(&path)?;
+                let modified = metadata.modified()?;
+                let modified_time: DateTime<Utc> = modified.into();
+                
+                if modified_time < cutoff_time {
+                    // Move file to archive
+                    if let Some(filename) = path.file_name() {
+                        let dst_path = dst_dir.join(filename);
+                        fs::rename(&path, &dst_path)?;
+                        archived_count += 1;
+                    }
+                }
+            }
+        }
+        
+        Ok(archived_count)
+    }
+}

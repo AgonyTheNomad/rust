@@ -1,4 +1,7 @@
-# utils.py
+#!/usr/bin/env python3
+"""
+Utility functions for Hyperliquid Trader
+"""
 
 import os
 from dotenv import load_dotenv
@@ -14,6 +17,9 @@ load_dotenv()
 def setup(skip_ws: bool = False):
     """
     Builds (address, info, exchange) entirely from ENV vars loaded from .env.
+    
+    Returns:
+        Tuple of (address, info, exchange) for interacting with Hyperliquid
     """
     # 1) Get private key and derive account
     priv_key = os.getenv("HYPERLIQUID_API_SECRET")
@@ -30,10 +36,10 @@ def setup(skip_ws: bool = False):
 
     # 3) Choose network
     use_test = os.getenv("HYPERLIQUID_TESTNET", "true").lower() == "true"
-    api_url  = constants.TESTNET_API_URL if use_test else constants.MAINNET_API_URL
+    api_url = constants.TESTNET_API_URL if use_test else constants.MAINNET_API_URL
 
     # 4) Instantiate Info & Exchange
-    info     = Info(api_url, skip_ws)
+    info = Info(api_url, skip_ws)
     exchange = Exchange(acct, api_url, account_address=address)
 
     return address, info, exchange
