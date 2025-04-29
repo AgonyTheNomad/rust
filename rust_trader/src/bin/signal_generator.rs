@@ -7,7 +7,8 @@ use rust_trader::{
     influxdb::{InfluxDBClient, InfluxDBConfig},
     models::{Candle, Signal, PositionType},
     setup_logging,
-    signals::{fibonacci::FibonacciLevels, pivots::PivotPoints, file_manager::SignalFileManager},
+    signals::{fibonacci::FibonacciLevels, pivots::PivotPoints},
+    SignalFileManager, // Use the re-exported SignalFileManager
     strategy::{Strategy, StrategyConfig, AssetConfig},
 };
 use std::collections::HashMap;
@@ -16,6 +17,7 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::time::Duration as StdDuration;
 use tokio::time;
+
 
 // Define version constants
 const VERSION: &str = env!("CARGO_PKG_VERSION");

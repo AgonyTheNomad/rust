@@ -132,6 +132,27 @@ pub struct Account {
 }
 
 impl Position {
+    // Status helper methods
+    pub fn mark_as_open(&mut self) {
+        self.status = PositionStatus::Open;
+    }
+    
+    pub fn mark_as_closed(&mut self) {
+        self.status = PositionStatus::Closed;
+    }
+    
+    pub fn is_open(&self) -> bool {
+        self.status == PositionStatus::Open
+    }
+    
+    pub fn is_pending(&self) -> bool {
+        self.status == PositionStatus::Pending
+    }
+    
+    pub fn is_closed(&self) -> bool {
+        self.status == PositionStatus::Closed
+    }
+
     pub fn current_pnl(&self, current_price: f64) -> f64 {
         match self.position_type {
             PositionType::Long => (current_price - self.entry_price) * self.size,

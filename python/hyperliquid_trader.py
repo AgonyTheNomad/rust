@@ -225,6 +225,18 @@ class HyperliquidTrader:
         # Sort by creation time
         signal_files.sort(key=lambda p: p.stat().st_mtime)
         
+        # Get current positions to check for symbols with open positions
+        current_positions = await self.info.user_positions(self.address)
+        
+        # Create a set of symbols that already have open positions
+        symbols_with_positions = set()
+        for pos in current_positions:
+            if abs(float(pos.get("szi", 0))) > 0:
+                # Add the symbol to our set
+                symbols_with_positions.add(pos["coin"])
+                
+        logger.info(f"Symbols with existing positions: {symbols_with_positions}")
+        
         for signal_file in signal_files:
             # Skip files we've already processed
             if signal_file.name in self.processed_signals:
@@ -249,17 +261,33 @@ class HyperliquidTrader:
                 # Process the signal
                 logger.info(f"Processing signal: {signal_file.name}")
                 
+                # Map the symbol if needed
+                symbol = signal['symbol']
+                exchange_symbol = self.symbol_mapping.get(symbol, symbol)
+                
+                # Check if we already have a position for this symbol
+                if exchange_symbol in symbols_with_positions:
+                    logger.warning(f"Already have an open position for {exchange_symbol}. Ignoring signal.")
+                    
+                    # Mark signal as processed but add a note about why it was ignored
+                    signal['processed'] = True
+                    signal['ignored_reason'] = "Symbol already has an open position"
+                    
+                    with open(signal_file, 'w') as f:
+                        json.dump(signal, f, indent=2)
+                    
+                    # Archive the signal file
+                    target = self.archive_dir / signal_file.name
+                    signal_file.rename(target)
+                    self.processed_signals.add(signal_file.name)
+                    continue
+                
                 # Check if we're at max positions
-                current_positions = await self.info.user_positions(self.address)
-                active_positions = len([p for p in current_positions if abs(float(p.get("szi", 0))) > 0])
+                active_positions = len(symbols_with_positions)
                 
                 if active_positions >= self.max_positions:
                     logger.warning(f"Reached maximum number of positions ({self.max_positions}). Skipping signal.")
                     continue
-                
-                # Map the symbol if needed
-                symbol = signal['symbol']
-                exchange_symbol = self.symbol_mapping.get(symbol, symbol)
                 
                 # Check position type
                 position_type = signal.get('position_type')
@@ -341,6 +369,9 @@ class HyperliquidTrader:
                     signal_file.rename(target)
                     self.processed_signals.add(signal_file.name)
                     logger.info(f"Signal {signal_file.name} processed and archived")
+                    
+                    # Add to symbols_with_positions if we placed a trade
+                    symbols_with_positions.add(exchange_symbol)
                 else:
                     logger.warning(f"Failed to process signal {signal_file.name} - will retry later")
                 

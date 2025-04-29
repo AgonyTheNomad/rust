@@ -328,6 +328,39 @@ struct TradingState {
     account_balance: f64,
 }
 
+impl TradingState {
+    // Check if a symbol has an open position
+    pub fn has_open_position_for_symbol(&self, symbol: &str) -> bool {
+        self.positions.values().any(|pos| 
+            pos.symbol == symbol && pos.status == PositionStatus::Open
+        )
+    }
+    
+    // Add a new position
+    pub fn add_position(&mut self, position: Position) {
+        self.positions.insert(position.id.clone(), position);
+    }
+    
+    // Update an existing position
+    pub fn update_position(&mut self, position: Position) {
+        if let Some(existing) = self.positions.get_mut(&position.id) {
+            *existing = position;
+        }
+    }
+    
+    // Close a position by ID
+    pub fn close_position(&mut self, position_id: &str) {
+        if let Some(position) = self.positions.get_mut(position_id) {
+            position.mark_as_closed();
+        }
+    }
+    
+    // Remove a closed position by ID
+    pub fn remove_position(&mut self, position_id: &str) {
+        self.positions.remove(position_id);
+    }
+}
+
 // Process a single symbol
 async fn process_symbol(
     exchange: Arc<Box<dyn Exchange>>,
@@ -447,6 +480,18 @@ async fn process_candle(
     candle: &Candle,
     dry_run: bool,
 ) -> Result<()> {
+    // Check if we already have an open position for this symbol
+    let has_open_position = {
+        let state = trading_state.lock().await;
+        state.has_open_position_for_symbol(symbol)
+    };
+    
+    // Skip signal generation if we already have an open position for this symbol
+    if has_open_position {
+        debug!("Already have an open position for {}. Skipping signal generation.", symbol);
+        return Ok(());
+    }
+    
     // Analyze candle with strategy
     let signals = strategy.analyze_candle(candle)?;
     
@@ -514,7 +559,7 @@ async fn process_candle(
                             
                             // Store position in state
                             let mut state = trading_state.lock().await;
-                            state.positions.insert(updated_position.id.clone(), updated_position);
+                            state.add_position(updated_position);
                         },
                         Err(e) => {
                             error!("Failed to open position: {}", e);
@@ -585,8 +630,18 @@ async fn update_positions(
     let current_price = exchange.get_ticker(symbol).await
         .map_err(|e| anyhow::anyhow!("Failed to get ticker: {}", e))?;
     
-    // Get positions for this symbol
-    let positions = {
+    // Get all positions from the exchange
+    let exchange_positions = exchange.get_positions().await
+        .map_err(|e| anyhow::anyhow!("Failed to get positions from exchange: {}", e))?;
+    
+    // Create a set of position IDs still open on the exchange
+    let exchange_position_ids: std::collections::HashSet<String> = exchange_positions
+        .iter()
+        .map(|p| p.id.clone())
+        .collect();
+    
+    // Get positions for this symbol from our state
+    let positions_to_update = {
         let state = trading_state.lock().await;
         state.positions.iter()
             .filter(|(_, pos)| pos.symbol == symbol)
@@ -594,7 +649,21 @@ async fn update_positions(
             .collect::<Vec<_>>()
     };
     
-    for position in positions {
+    // Check for closed positions and update our state
+    for position in positions_to_update {
+        // Check if this position still exists on the exchange
+        let position_closed = !exchange_position_ids.contains(&position.id);
+        
+        if position_closed {
+            info!("Position {} for {} has been closed", position.id, symbol);
+            
+            // Remove from our state
+            let mut state = trading_state.lock().await;
+            state.remove_position(&position.id);
+            
+            // Now we can process new signals for this symbol
+        }
+        
         // Check if any limit orders have been hit
         if position.is_hit_limit1(current_price) && !position.limit1_hit {
             info!("Limit 1 hit for position {} at {}", position.id, current_price);
@@ -616,7 +685,7 @@ async fn update_positions(
                         
                         // Update in state
                         let mut state = trading_state.lock().await;
-                        state.positions.insert(updated.id.clone(), updated);
+                        state.update_position(updated);
                     },
                     Err(e) => {
                         error!("Failed to update position for limit1 hit: {}", e);
@@ -645,7 +714,7 @@ async fn update_positions(
                         
                         // Update in state
                         let mut state = trading_state.lock().await;
-                        state.positions.insert(updated.id.clone(), updated);
+                        state.update_position(updated);
                     },
                     Err(e) => {
                         error!("Failed to update position for limit2 hit: {}", e);

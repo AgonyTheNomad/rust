@@ -175,6 +175,20 @@ pub trait Exchange: Send + Sync + CloneBox {
             PositionType::Short => OrderSide::Buy,
         }
     }
+    
+    // New helper method to check if a symbol has an open position
+    async fn has_open_position_for_symbol(&self, symbol: &str) -> Result<bool, ExchangeError> {
+        // Get all positions
+        let positions = self.get_positions().await?;
+        
+        // Check if any position matches the symbol and is open
+        let has_position = positions.iter().any(|pos| 
+            pos.symbol == symbol && 
+            pos.status == crate::models::PositionStatus::Open
+        );
+        
+        Ok(has_position)
+    }
 }
 
 // Implement the CloneBox trait for any type that implements Exchange and Clone
@@ -241,7 +255,11 @@ impl Exchange for MockExchange {
     }
     
     async fn open_position(&self, position: &Position) -> Result<Position, ExchangeError> {
-        Ok(position.clone()) // Just return a clone of the position
+        // Create a copy of the position with updated status
+        let mut updated_position = position.clone();
+        updated_position.status = crate::models::PositionStatus::Open;
+        
+        Ok(updated_position) // Return the updated position
     }
     
     async fn close_position(&self, _position_id: &str) -> Result<Trade, ExchangeError> {
@@ -250,6 +268,18 @@ impl Exchange for MockExchange {
     
     async fn update_position(&self, position: &Position) -> Result<Position, ExchangeError> {
         Ok(position.clone()) // Just return a clone of the position
+    }
+    
+    async fn has_open_position_for_symbol(&self, symbol: &str) -> Result<bool, ExchangeError> {
+        // For mock, we'll just leverage the default implementation which calls get_positions
+        let positions = self.get_positions().await?;
+        
+        let has_position = positions.iter().any(|pos| 
+            pos.symbol == symbol && 
+            pos.status == crate::models::PositionStatus::Open
+        );
+        
+        Ok(has_position)
     }
 }
 

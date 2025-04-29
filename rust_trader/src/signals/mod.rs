@@ -1,5 +1,6 @@
 pub mod fibonacci;
 pub mod pivots;
+pub mod file_manager;  // Add this line
 
 use crate::models::{Candle, Signal, PositionType};
 use fibonacci::FibonacciLevels;
