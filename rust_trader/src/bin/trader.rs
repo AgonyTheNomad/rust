@@ -4,13 +4,13 @@ use chrono::{DateTime, Duration, Utc};
 use clap::{Parser, Subcommand};
 use log::*;
 use rust_trader::{
-    exchange::{Exchange, ExchangeConfig, create_exchange, ExchangeError},
+    exchange::{Exchange, ExchangeConfig, create_exchange},
     influxdb::{InfluxDBClient, InfluxDBConfig},
-    models::{Candle, Position, PositionType, Signal, PositionStatus},
-    risk::{RiskManager, RiskParameters, PositionResult},
+    models::{Candle, Position, Signal, PositionStatus},
+    risk::{RiskManager, RiskParameters},
     setup_logging,
     strategy::{Strategy, StrategyConfig, AssetConfig},
-    backtest::{load_backtest_config, load_best_backtest, get_symbol_performance, filter_symbols, SymbolPerformance},
+    backtest::{load_best_backtest, get_symbol_performance, filter_symbols},
 };
 use std::collections::HashMap;
 use std::fs::File;
@@ -173,8 +173,7 @@ async fn trade(
         // Load optimized strategy parameters
         match load_best_backtest(&dir, "profit_factor") {
             Ok(optimized_config) => {
-                info!("Found optimal configuration with profit_factor: {}", 
-                      optimized_config.profit_factor);
+                info!("Found optimal configuration");
                 
                 // Update the strategy config with optimized parameters
                 config.strategy.fib_threshold = optimized_config.fib_threshold;
@@ -515,8 +514,8 @@ async fn process_candle(
             if !dry_run {
                 // Check if we can take this trade
                 let can_trade = {
-                    let mut rm = risk_manager.lock().await;
-                    let state = trading_state.lock().await;
+                    let rm = risk_manager.lock().await;
+                    let _state = trading_state.lock().await;
                     
                     let account = exchange.get_account_info().await
                         .map_err(|e| anyhow::anyhow!("Failed to get account info: {}", e))?;

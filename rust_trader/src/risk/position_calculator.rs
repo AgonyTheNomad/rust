@@ -1,3 +1,4 @@
+// src/risk/position_calculator.rs
 use crate::models::PositionType;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -66,7 +67,7 @@ pub fn calculate_positions(
         
         let d7 = e8 / initial;
         
-        // Modified: Calculate d8 using a12 instead of initial
+        // Calculate d8 using a12 instead of initial
         let d8 = match position_type {
             PositionType::Long => g6 / (a12 - sl),
             PositionType::Short => g6 / (sl - a12),

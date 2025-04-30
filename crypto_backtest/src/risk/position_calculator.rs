@@ -1,14 +1,42 @@
+// src/risk/position_calculator.rs
 use crate::models::PositionType;
+use anyhow::Result;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PositionCalculator {
+    pub scale_limit1: f64, // Scale factor for limit1 price
+    pub scale_limit2: f64, // Scale factor for limit2 price
+    pub size_ratio1: f64,  // Size ratio for limit1 order
+    pub size_ratio2: f64,  // Size ratio for limit2 order
+    pub tp_ratio1: f64,    // TP adjustment ratio after limit1
+    pub tp_ratio2: f64,    // TP adjustment ratio after limit2
+}
+
+impl Default for PositionCalculator {
+    fn default() -> Self {
+        Self {
+            scale_limit1: 3.0,
+            scale_limit2: 5.0,
+            size_ratio1: 3.0,
+            size_ratio2: 5.0,
+            tp_ratio1: 4.0,
+            tp_ratio2: 6.0,
+        }
+    }
+}
+
+impl PositionCalculator {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct PositionResult {
-    pub initial_position_size: f64,
-    pub limit1_position_size: f64,
-    pub limit2_position_size: f64,
-    pub new_tp1: f64,
-    pub new_tp2: f64,
-    pub max_margin: f64,
-    pub final_risk: f64,
+    pub size: f64,
+    pub risk_amount: f64,
+    pub margin_required: f64,
 }
 
 pub fn calculate_positions(
@@ -23,7 +51,7 @@ pub fn calculate_positions(
     position_type: PositionType,
     h11: f64, // Default value of 4.0
     h12: f64, // Default value of 6.0
-) -> Result<PositionResult, String> {
+) -> Result<PositionScaleResult> {
     let mut current_risk = risk;
 
     loop {
@@ -39,7 +67,7 @@ pub fn calculate_positions(
         
         let d7 = e8 / initial;
         
-        // Modified: Calculate d8 using a12 instead of initial
+        // Calculate d8 using a12 instead of initial
         let d8 = match position_type {
             PositionType::Long => g6 / (a12 - sl),
             PositionType::Short => g6 / (sl - a12),
@@ -80,7 +108,7 @@ pub fn calculate_positions(
         
         // If margin is acceptable, return the result
         if max_margin <= 1.0 {
-            return Ok(PositionResult {
+            return Ok(PositionScaleResult {
                 initial_position_size: d5,
                 limit1_position_size: d11,
                 limit2_position_size: d12,
@@ -96,7 +124,18 @@ pub fn calculate_positions(
         
         // Safety check to prevent infinite loop
         if current_risk <= 0.0 {
-            return Err("Unable to calculate a safe risk level under margin limit".to_string());
+            return Err(anyhow::anyhow!("Unable to calculate a safe risk level under margin limit"));
         }
     }
+}
+
+#[derive(Debug, Clone)]
+pub struct PositionScaleResult {
+    pub initial_position_size: f64,
+    pub limit1_position_size: f64,
+    pub limit2_position_size: f64,
+    pub new_tp1: f64,
+    pub new_tp2: f64,
+    pub max_margin: f64,
+    pub final_risk: f64,
 }
