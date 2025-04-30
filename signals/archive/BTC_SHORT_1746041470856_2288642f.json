@@ -1,0 +1,18 @@
+{
+  "id": "2288642f-02c5-4629-a08d-db2d52fbbb3a",
+  "metadata": {
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1746041470856
+  },
+  "position_type": "SHORT",
+  "price": 93917.41,
+  "processed": true,
+  "reason": "Pivot high: 94011, Pivot low: 93766",
+  "stop_loss": 94068.82,
+  "strength": 0.8999999999999999,
+  "symbol": "BTC",
+  "take_profit": 93614.59,
+  "timestamp": "2025-04-30T19:31:10.856838800+00:00",
+  "ignored_reason": "Symbol already has an open position"
+}

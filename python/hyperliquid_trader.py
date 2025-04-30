@@ -139,9 +139,9 @@ class HyperliquidTrader:
                 if tick_size is None:
                     # Use known common values for major coins
                     if symbol == "BTC":
-                        tick_size = 0.1  # BTC typically uses 0.1
-                    elif symbol in ["ETH", "SOL"]:
-                        tick_size = 0.01  # ETH, SOL typically use 0.01
+                        tick_size = 1  # BTC typically uses 0.1
+                    elif symbol == "ETH":
+                        tick_size = 0.1  # ETH, SOL typically use 0.01
                     else:
                         # Default to 0.001 or use szDecimals if available
                         sz_decimals = asset.get("szDecimals", 3)
@@ -154,6 +154,14 @@ class HyperliquidTrader:
                 # If we couldn't extract tick sizes, use defaults
                 self.set_default_tick_sizes()
             
+            # Apply critical overrides regardless of what the API returned
+            # This ensures BTC and MKR always use the correct tick sizes
+            manual_overrides = {
+                "BTC": 1.0,   # Force BTC to whole dollars
+                "MKR": 0.1    # Force MKR to 0.1 increments
+            }
+            self.tick_sizes.update(manual_overrides)
+            
             logger.info(f"Loaded tick sizes for {len(self.tick_sizes)} symbols:")
             for symbol, tick in sorted(self.tick_sizes.items()):
                 logger.info(f"  {symbol}: {tick}")
@@ -162,12 +170,19 @@ class HyperliquidTrader:
             logger.error(f"Error fetching asset metadata: {e}", exc_info=True)
             # Use defaults if API fetch failed
             self.set_default_tick_sizes()
+            
+            # Even after setting defaults, make sure to apply critical overrides
+            manual_overrides = {
+                "BTC": 1.0,   # Force BTC to whole dollars
+                "MKR": 0.1    # Force MKR to 0.1 increments
+            }
+            self.tick_sizes.update(manual_overrides)
     
     def set_default_tick_sizes(self):
         """Set default tick sizes for common symbols"""
         default_tick_sizes = {
-            "BTC": 0.1,
-            "ETH": 0.01,
+            "BTC": 1.0,  # BTC uses whole dollar increments
+            "ETH": 0.1,
             "SOL": 0.01,
             "APT": 0.001,
             "ARB": 0.001,
@@ -177,7 +192,7 @@ class HyperliquidTrader:
             "MATIC": 0.0001,
             "XRP": 0.0001,
             "BNB": 0.01,
-            "MKR": 0.01
+            "MKR": 0.1  # MKR uses 0.1 increments
         }
         self.tick_sizes.update(default_tick_sizes)
         logger.info(f"Using default tick sizes: {self.tick_sizes}")
@@ -191,7 +206,12 @@ class HyperliquidTrader:
         
         # Format to avoid floating point errors
         decimals = max(0, int(-math.log10(tick_size))) if tick_size > 0 else 0
-        return round(rounded_price, decimals)
+        rounded_price = round(rounded_price, decimals)
+        
+        # Add logging to see exact rounded price
+        logger.info(f"Final rounded price for {symbol}: ${rounded_price} (tick size: {tick_size})")
+        
+        return rounded_price
     
     async def print_account_info(self):
         """Print account information and balances"""
@@ -695,8 +715,6 @@ class HyperliquidTrader:
                     raise
                 wait = backoff * (2 ** (attempt - 1))
                 logger.warning(f"{fn.__name__} error ({e}), retrying in {wait:.1f}s...")
-                wait = backoff * (2 ** (attempt - 1))
-                logger.warning(f"{fn.__name__} error ({e}), retrying in {wait:.1f}s...")
                 await asyncio.sleep(wait)
     
     async def wait_for_fill(self, info: Info, address: str, oid: int, max_wait_time=60):
@@ -798,6 +816,7 @@ def parse_args():
     
     return parser.parse_args()
 
+
 async def main():
     """Main function"""
     args = parse_args()
@@ -812,6 +831,7 @@ async def main():
     
     # Start trading
     await trader.start()
+
 
 if __name__ == "__main__":
     # Run the main function

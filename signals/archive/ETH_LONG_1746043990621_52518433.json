@@ -1,0 +1,17 @@
+{
+  "id": "52518433-260d-44f9-90be-48e28698f6f2",
+  "metadata": {
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1746043990621
+  },
+  "position_type": "LONG",
+  "price": 1792.6254,
+  "processed": false,
+  "reason": "Pivot high: 1804.8, Pivot low: 1785.1",
+  "stop_loss": 1780.4507999999998,
+  "strength": 0.7999999999999999,
+  "symbol": "ETH",
+  "take_profit": 1816.9746,
+  "timestamp": "2025-04-30T20:13:10.621940700+00:00"
+}
