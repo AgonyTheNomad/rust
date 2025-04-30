@@ -122,6 +122,7 @@ class HyperliquidTrader:
             state = self.info.user_state(self.address)
             if isinstance(state, dict):
                 withdrawable = float(state.get("withdrawable", 0))
+                account_value = 0.0
                 if "crossMarginSummary" in state:
                     cross_margin_summary = state["crossMarginSummary"]
                     account_value = float(cross_margin_summary.get("accountValue", 0))
@@ -244,11 +245,20 @@ class HyperliquidTrader:
             
             logger.info(f"Symbols with existing positions: {active_symbols}")
             
+            # Process up to 3 signals at once to avoid overloading
+            processed_count = 0
+            max_signals_per_run = 3
+            
             # Now process each signal file
             for signal_file in signal_files:
                 # Skip files we've already processed
                 if signal_file.name in self.processed_signals:
                     continue
+                
+                # Limit the number of signals processed per run
+                if processed_count >= max_signals_per_run:
+                    logger.info(f"Reached max signals per run ({max_signals_per_run}). Will process remaining signals next cycle.")
+                    break
                 
                 try:
                     # Load signal data
@@ -312,6 +322,33 @@ class HyperliquidTrader:
                     stop_loss_raw = signal.get('stop_loss', 0)
                     stop_loss = float(stop_loss_raw) if stop_loss_raw else 0
                     
+                    # Validate take profit and stop loss
+                    # For LONG: TP > entry > SL
+                    # For SHORT: TP < entry < SL
+                    valid_tpsl = True
+                    if is_long:
+                        if take_profit <= entry_price:
+                            logger.warning(f"Invalid TP for LONG: {take_profit} should be > {entry_price}")
+                            take_profit = entry_price * 1.01  # Use 1% above entry as default
+                            logger.info(f"Using default TP: {take_profit}")
+                            valid_tpsl = False
+                        if stop_loss >= entry_price:
+                            logger.warning(f"Invalid SL for LONG: {stop_loss} should be < {entry_price}")
+                            stop_loss = entry_price * 0.99  # Use 1% below entry as default
+                            logger.info(f"Using default SL: {stop_loss}")
+                            valid_tpsl = False
+                    else:  # SHORT
+                        if take_profit >= entry_price:
+                            logger.warning(f"Invalid TP for SHORT: {take_profit} should be < {entry_price}")
+                            take_profit = entry_price * 0.99  # Use 1% below entry as default
+                            logger.info(f"Using default TP: {take_profit}")
+                            valid_tpsl = False
+                        if stop_loss <= entry_price:
+                            logger.warning(f"Invalid SL for SHORT: {stop_loss} should be > {entry_price}")
+                            stop_loss = entry_price * 1.01  # Use 1% above entry as default
+                            logger.info(f"Using default SL: {stop_loss}")
+                            valid_tpsl = False
+                    
                     # Use signal strength or risk_per_trade from config
                     strength = float(signal.get('strength', 0.8))
                     risk_per_trade = self.config.get('risk_per_trade', 0.01)
@@ -358,6 +395,12 @@ class HyperliquidTrader:
                             logger.error(f"Error calculating position size: {e}")
                             position_size = 0.01  # Default to minimum size on error
                     
+                    # Make sure position size is at least the minimum
+                    min_size = 0.001 if exchange_symbol == "BTC" else 0.01
+                    if position_size < min_size:
+                        logger.warning(f"Position size {position_size} below minimum. Using {min_size} for {exchange_symbol}")
+                        position_size = min_size
+                    
                     logger.info(f"Using position size for {exchange_symbol}: {position_size} contracts")
                     
                     # Execute the trade
@@ -371,7 +414,7 @@ class HyperliquidTrader:
                         stop_loss=stop_loss
                     )
                     
-                    if result:
+                    if result is True:
                         # Mark signal as processed in the file
                         signal['processed'] = True
                         with open(signal_file, 'w') as f:
@@ -385,15 +428,20 @@ class HyperliquidTrader:
                         
                         # Add to active symbols
                         active_symbols.add(exchange_symbol)
+                        
+                        # Increment processed count
+                        processed_count += 1
                     else:
-                        logger.warning(f"Failed to process signal {signal_file.name} - will retry later")
+                        error_reason = str(result) if result is not False else "Unknown error"
+                        logger.warning(f"Failed to process signal {signal_file.name} - will retry later. Reason: {error_reason}")
                     
                 except Exception as e:
                     logger.error(f"Error processing signal {signal_file}: {e}", exc_info=True)
+                    logger.warning(f"Failed to process signal {signal_file.name} - will retry later. Reason: {str(e)}")
         
         except Exception as e:
             logger.error(f"Error in process_signals: {e}", exc_info=True)
-    
+            
     async def execute_trade(
         self,
         signal_id,
@@ -410,83 +458,171 @@ class HyperliquidTrader:
             current_price = entry_price
             logger.info(f"Using signal entry price for {symbol}: ${current_price}")
             
-            # Use market order as default since we can't check current price
-            use_market = True
-            logger.info(f"Executing {'LONG' if is_long else 'SHORT'} for {symbol} using MARKET order")
+            # Revised entry message for limit order
+            logger.info(f"Executing {'LONG' if is_long else 'SHORT'} for {symbol} using LIMIT order")
             logger.info(f"Size: {size}, Entry: ${entry_price}, TP: ${take_profit}, SL: ${stop_loss}")
+            
+            # Validate take_profit and stop_loss values
+            if is_long:
+                if take_profit <= entry_price:
+                    error_msg = f"Invalid take_profit for LONG position: {take_profit} <= {entry_price}"
+                    logger.error(error_msg)
+                    return error_msg
+                if stop_loss >= entry_price:
+                    error_msg = f"Invalid stop_loss for LONG position: {stop_loss} >= {entry_price}"
+                    logger.error(error_msg)
+                    return error_msg
+            else:  # SHORT
+                if take_profit >= entry_price:
+                    error_msg = f"Invalid take_profit for SHORT position: {take_profit} >= {entry_price}"
+                    logger.error(error_msg)
+                    return error_msg
+                if stop_loss <= entry_price:
+                    error_msg = f"Invalid stop_loss for SHORT position: {stop_loss} <= {entry_price}"
+                    logger.error(error_msg)
+                    return error_msg
             
             # Place entry order
             try:
-                # Market order
+                # Revised order placement to match the working example
+                logger.info(f"Placing {'LONG' if is_long else 'SHORT'} limit: size={size}, price={entry_price}")
                 entry_order = self.exchange.order(
-                    symbol, is_long, size, None,
-                    {"market": {}},
+                    symbol, is_long, size, entry_price,
+                    {"limit": {"tif": "Gtc"}},
                     reduce_only=False
                 )
                 
                 logger.info(f"Entry order placed")
                 
-                # Check response for order ID
+                # Process the entry order response
                 if "response" in entry_order and "data" in entry_order["response"] and "statuses" in entry_order["response"]["data"]:
                     statuses = entry_order["response"]["data"]["statuses"]
+                    resting_status = next((s for s in statuses if "resting" in s), None)
                     filled_status = next((s for s in statuses if "filled" in s), None)
                     
-                    if filled_status:
+                    # Get the order ID (either from resting or filled status)
+                    if resting_status:
+                        entry_oid = resting_status["resting"]["oid"]
+                        logger.info(f"Entry order resting: {entry_oid}, waiting for fill...")
+                        
+                        # Wait for the order to be filled
+                        try:
+                            filled_resp = await self.wait_for_fill(self.info, self.address, entry_oid)
+                            logger.info(f"Order {entry_oid} filled")
+                        except Exception as e:
+                            logger.error(f"Error waiting for order fill: {e}")
+                            return f"Error waiting for order fill: {e}"
+                    
+                    elif filled_status:
                         entry_oid = filled_status["filled"]["oid"]
-                        logger.info(f"Entry order filled: {entry_oid}")
-                        
-                        # Place stop loss order
-                        if stop_loss > 0:
-                            try:
-                                sl_order = self.exchange.order(
-                                    symbol, not is_long, size, None,
-                                    {"trigger": {"tpsl": "sl", "triggerPx": stop_loss, "isMarket": True}},
-                                    reduce_only=True
-                                )
-                                logger.info(f"Stop loss order placed")
-                            except Exception as e:
-                                logger.error(f"Error placing stop loss: {e}")
-                        
-                        # Place take profit order
-                        if take_profit > 0:
-                            try:
-                                tp_order = self.exchange.order(
-                                    symbol, not is_long, size, None,
-                                    {"trigger": {"tpsl": "tp", "triggerPx": take_profit, "isMarket": True}},
-                                    reduce_only=True
-                                )
-                                logger.info(f"Take profit order placed")
-                            except Exception as e:
-                                logger.error(f"Error placing take profit: {e}")
-                        
-                        # Store position information
-                        position_id = f"{symbol}_{entry_oid}"
-                        self.open_positions[position_id] = {
-                            "signal_id": signal_id,
-                            "symbol": symbol,
-                            "is_long": is_long,
-                            "entry_price": entry_price,
-                            "current_size": size,
-                            "take_profit": take_profit,
-                            "stop_loss": stop_loss,
-                            "entry_time": time.time()
-                        }
-                        
-                        return True
+                        logger.info(f"Entry order immediately filled: {entry_oid}")
+                    
                     else:
-                        logger.error("No filled status found in order response")
-                        return False
+                        logger.error("No filled or resting status found in order response")
+                        # Print the full response for debugging
+                        logger.error(f"Full response: {json.dumps(entry_order, indent=2)}")
+                        return "No filled or resting status found in order response"
+                    
+                    # Now that we have a filled order (either immediately or after waiting)
+                    # Place both stop loss and take profit orders
+                    
+                    # Place stop loss order
+                    if stop_loss > 0:
+                        try:
+                            sl_order = self.exchange.order(
+                                symbol, not is_long, size, entry_price,
+                                {"trigger": {"tpsl": "sl", "triggerPx": stop_loss, "isMarket": True}},
+                                reduce_only=True
+                            )
+                            logger.info(f"Stop loss order placed")
+                        except Exception as e:
+                            logger.error(f"Error placing stop loss: {e}")
+                    
+                    # Place take profit order
+                    if take_profit > 0:
+                        try:
+                            tp_order = self.exchange.order(
+                                symbol, not is_long, size, entry_price,
+                                {"trigger": {"tpsl": "tp", "triggerPx": take_profit, "isMarket": True}},
+                                reduce_only=True
+                            )
+                            logger.info(f"Take profit order placed")
+                        except Exception as e:
+                            logger.error(f"Error placing take profit: {e}")
+                    
+                    # Store position information
+                    position_id = f"{symbol}_{entry_oid}"
+                    self.open_positions[position_id] = {
+                        "signal_id": signal_id,
+                        "symbol": symbol,
+                        "is_long": is_long,
+                        "entry_price": entry_price,
+                        "current_size": size,
+                        "take_profit": take_profit,
+                        "stop_loss": stop_loss,
+                        "entry_time": time.time()
+                    }
+                    
+                    return True
                 else:
-                    logger.warning("Unexpected response format from order placement")
-                    return False
+                    logger.error("Invalid order response format")
+                    logger.error(f"Full response: {json.dumps(entry_order, indent=2)}")
+                    return "Invalid order response format"
                 
             except Exception as e:
                 logger.error(f"Error placing entry order: {e}")
-                return False
+                return f"Error placing entry order: {e}"
             
         except Exception as e:
             logger.error(f"Error executing trade: {e}", exc_info=True)
-            return False
+            return f"Error executing trade: {e}"
+
+    async def with_retries(self, fn, *args, retries=3, backoff=1, **kwargs):
+        """Execute a function with retries and exponential backoff"""
+        attempt = 0
+        while True:
+            try:
+                r = fn(*args, **kwargs)
+                return await r if asyncio.iscoroutine(r) else r
+            except Exception as e:
+                attempt += 1
+                if attempt > retries:
+                    logger.error(f"{fn.__name__} failed after {retries} retries: {e}")
+                    raise
+                wait = backoff * (2 ** (attempt - 1))
+                logger.warning(f"{fn.__name__} error ({e}), retrying in {wait:.1f}s...")
+                await asyncio.sleep(wait)
+    
+    async def wait_for_fill(self, info: Info, address: str, oid: int, max_wait_time=60):
+        """Wait for an order to be filled, with timeout"""
+        start_time = time.time()
+        
+        while True:
+            try:
+                # Check if we've waited too long
+                current_time = time.time()
+                if current_time - start_time > max_wait_time:
+                    raise TimeoutError(f"Order {oid} not filled after {max_wait_time} seconds")
+                
+                # Query order status
+                resp = await self.with_retries(info.query_order_by_oid, address, oid)
+                status = resp.get("order", {}).get("status")
+                logger.info(f"Order {oid} status: {status}")
+                
+                if status == "filled":
+                    logger.info(f"Order {oid} has been filled!")
+                    return resp
+                elif status == "canceled":
+                    raise Exception(f"Order {oid} was canceled")
+                
+                # Wait before checking again
+                await asyncio.sleep(1.0)
+            except TimeoutError as e:
+                logger.error(f"{e}")
+                raise
+            except Exception as e:
+                logger.error(f"Error checking order status: {e}")
+                await asyncio.sleep(2.0)
     
     async def check_positions(self):
         """Check status of open positions and pending orders"""

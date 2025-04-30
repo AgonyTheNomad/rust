@@ -1,24 +1,23 @@
 [general]
-refresh_interval = 60
-data_dir = "./data"
-log_level = "info"
+refresh_interval = 60  # seconds
+data_dir = "data"
+log_level = "debug"
 max_candles = 1000
 historical_days = 30
 
+[influxdb]
+url = "http://192.168.68.52:30086"
+token = "gqRGGfpdf2EAj9Yu-ISLY5QFoFtY4HyYXm_EgT8ywVD_r0A49f5TttA4dikcFlXOGYVzRL5V3mVrWJlQYDF5qw=="
+org = "ValhallaVault"
+bucket = "hyper_candles"
+
 [exchange]
 name = "hyperliquid"
-api_key = ""
-api_secret = ""
+api_key = "your_api_key_here"
+api_secret = "your_api_secret_here"
 base_url = "https://api.hyperliquid.xyz"
 websocket_url = "wss://api.hyperliquid.xyz/ws"
 testnet = true
-additional_params = {}
-
-[influxdb]
-url = "http://localhost:8086"
-token = "my-token"
-org = "my-org"
-bucket = "trading"
 
 [risk]
 max_risk_per_trade = 0.02
@@ -42,6 +41,7 @@ fib_limit1 = 0.5
 fib_limit2 = 0.786
 min_signal_strength = 0.5
 
+# Example asset configurations
 [assets.BTC]
 name = "BTC"
 leverage = 20.0
@@ -51,5 +51,5 @@ avg_spread = 0.001
 [assets.ETH]
 name = "ETH"
 leverage = 20.0
-spread = 0.0005
-avg_spread = 0.001
+spread = 0.0006
+avg_spread = 0.0012
