@@ -17,7 +17,7 @@ pub use crate::backtest::{load_backtest_config, load_best_backtest, get_symbol_p
 pub use crate::signals::file_manager::SignalFileManager;  // Add this line
 
 use tracing_subscriber::{fmt, EnvFilter};
-use log::{error, info, warn, debug};
+use log::info;
 
 pub fn setup_logging() {
     let env_filter = EnvFilter::try_from_default_env()

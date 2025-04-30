@@ -2,11 +2,10 @@ use crate::models::Candle;
 use chrono::{DateTime, Utc};
 use reqwest::{Client, StatusCode};
 use serde::{Deserialize, Serialize};
-use std::error::Error;
 use std::time::Duration;
 use anyhow::{Context, Result};
 use std::collections::HashMap;
-use log::{debug, info, warn, error};
+use log::{debug, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InfluxDBConfig {

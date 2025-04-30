@@ -2,4 +2,4 @@
 
 # Just a wrapper to call the Python script
 $argString = $args -join " "
-python python/trading_command.py $argString
+python trading_command.py $argString

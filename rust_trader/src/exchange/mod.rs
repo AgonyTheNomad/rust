@@ -1,4 +1,4 @@
-use crate::models::{Position, Trade, PositionType, Account, Signal};
+use crate::models::{Position, Trade, PositionType, Account};
 use crate::influxdb::InfluxDBClient;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};

@@ -47,7 +47,7 @@ impl SignalGenerator {
         let (pivot_high, pivot_low) = self.pivot_detector.identify_pivots(candle.high, candle.low);
         
         // Generate signals based on detected pivots and Fibonacci levels
-        let mut signals = Vec::new();
+        let signals = Vec::new();
         
         // Implement your signal logic here
         // For example, if a new pivot high is detected and it's higher than the previous one

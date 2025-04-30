@@ -1,0 +1,130 @@
+   Compiling rust_trader v0.1.0 (C:\Users\Kolton\Desktop\rust_projects\rust_trader)
+warning: use of deprecated method `chrono::DateTime::<Tz>::timestamp_nanos`: use `timestamp_nanos_opt()` instead
+   --> src\influxdb\mod.rs:298:45
+    |
+298 |         let timestamp_ns = signal.timestamp.timestamp_nanos();
+    |                                             ^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `chrono::DateTime::<Tz>::timestamp_nanos`: use `timestamp_nanos_opt()` instead
+   --> src\influxdb\mod.rs:332:44
+    |
+332 |         let timestamp_ns = trade.exit_time.timestamp_nanos();
+    |                                            ^^^^^^^^^^^^^^^
+
+warning: unused variable: `pivot_high`
+  --> src\signals\mod.rs:47:14
+   |
+47 |         let (pivot_high, pivot_low) = self.pivot_detector.identify_pivots(candle.high, candle.low);
+   |              ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_pivot_high`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: unused variable: `pivot_low`
+  --> src\signals\mod.rs:47:26
+   |
+47 |         let (pivot_high, pivot_low) = self.pivot_detector.identify_pivots(candle.high, candle.low);
+   |                          ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_pivot_low`
+
+warning: unused variable: `symbol`
+  --> src\signals\mod.rs:45:38
+   |
+45 |     pub fn process_candle(&mut self, symbol: &str, candle: &Candle) -> Result<Vec<Signal>> {
+   |                                      ^^^^^^ help: if this is intentional, prefix it with an underscore: `_symbol`
+
+warning: unused variable: `is_long`
+  --> src\signals\mod.rs:60:41
+   |
+60 |     fn calculate_signal_strength(&self, is_long: bool, price_context: &[Candle]) -> f64 {
+   |                                         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_is_long`
+
+warning: unused variable: `price_context`
+  --> src\signals\mod.rs:60:56
+   |
+60 |     fn calculate_signal_strength(&self, is_long: bool, price_context: &[Candle]) -> f64 {
+   |                                                        ^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_price_context`
+
+warning: function `calculate_positions` is never used
+  --> src\risk\position_calculator.rs:42:8
+   |
+42 | pub fn calculate_positions(
+   |        ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: struct `PositionScaleResult` is never constructed
+   --> src\risk\position_calculator.rs:133:12
+    |
+133 | pub struct PositionScaleResult {
+    |            ^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `PositionScaleResult` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: fields `fib_levels` and `min_signal_strength` are never read
+  --> src\signals\mod.rs:13:5
+   |
+12 | pub struct SignalGenerator {
+   |            --------------- fields in this struct
+13 |     fib_levels: FibonacciLevels,
+   |     ^^^^^^^^^^
+...
+16 |     min_signal_strength: f64,
+   |     ^^^^^^^^^^^^^^^^^^^
+
+warning: methods `calculate_signal_strength` and `create_signal` are never used
+  --> src\signals\mod.rs:60:8
+   |
+19 | impl SignalGenerator {
+   | -------------------- methods in this implementation
+...
+60 |     fn calculate_signal_strength(&self, is_long: bool, price_context: &[Candle]) -> f64 {
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+67 |     fn create_signal(
+   |        ^^^^^^^^^^^^^
+
+warning: struct `SymbolPerformance` is never constructed
+  --> src\backtest\config_loader.rs:49:12
+   |
+49 | pub struct SymbolPerformance {
+   |            ^^^^^^^^^^^^^^^^^
+   |
+   = note: `SymbolPerformance` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: function `load_backtest_config` is never used
+  --> src\backtest\config_loader.rs:56:8
+   |
+56 | pub fn load_backtest_config<P: AsRef<Path>>(path: P) -> Result<StrategyConfig> {
+   |        ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `load_best_backtest` is never used
+  --> src\backtest\config_loader.rs:66:8
+   |
+66 | pub fn load_best_backtest<P: AsRef<Path>>(dir: P, metric: &str) -> Result<StrategyConfig> {
+   |        ^^^^^^^^^^^^^^^^^^
+
+warning: function `load_backtest_result` is never used
+  --> src\backtest\config_loader.rs:97:4
+   |
+97 | fn load_backtest_result<P: AsRef<Path>>(path: P) -> Result<BacktestResult> {
+   |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `get_symbol_performance` is never used
+   --> src\backtest\config_loader.rs:107:8
+    |
+107 | pub fn get_symbol_performance<P: AsRef<Path>>(dir: P) -> Result<HashMap<String, SymbolPerformance>> {
+    |        ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `filter_symbols` is never used
+   --> src\backtest\config_loader.rs:142:8
+    |
+142 | pub fn filter_symbols(performance_map: &HashMap<String, SymbolPerformance>, 
+    |        ^^^^^^^^^^^^^^
+
+warning: `rust_trader` (lib) generated 17 warnings
+error: could not compile `rust_trader` (bin "signal_generator")
+
+Caused by:
+  process didn't exit successfully: `C:\Users\Kolton\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin\rustc.exe --crate-name signal_generator --edition=2021 src\bin\signal_generator.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --check-cfg cfg(docsrs,test) --check-cfg "cfg(feature, values())" -C metadata=ce4eaf58a0a678b5 --out-dir C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps -C incremental=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\incremental -L dependency=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps --extern anyhow=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libanyhow-7d7dd0ce4993f3cf.rlib --extern async_trait=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\async_trait-da6f0ab4c9a94116.dll --extern base64=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libbase64-2d1fe8fdd27849a6.rlib --extern chrono=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libchrono-11a1b2954008d5cf.rlib --extern clap=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libclap-3a4e54aa755cd7aa.rlib --extern csv=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libcsv-e41f3d0a1846d0b5.rlib --extern dotenv=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libdotenv-a0db782b78c80d12.rlib --extern env_logger=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libenv_logger-ad2f103ece4fd185.rlib --extern futures=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libfutures-fc887525cda62981.rlib --extern hex=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libhex-79f4f762133271c1.rlib --extern hmac=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libhmac-9784c59ccf04477c.rlib --extern influxdb2=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libinfluxdb2-2dcf049b5b49d334.rlib --extern influxdb2_structmap=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libinfluxdb2_structmap-b469bcac02a8410a.rlib --extern itertools=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libitertools-7d038aa686001c5e.rlib --extern log=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\liblog-0cedae3a88086422.rlib --extern num=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libnum-57008c44d94e8416.rlib --extern rand=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\librand-15870ac230954469.rlib --extern reqwest=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libreqwest-4810fa0a85290ab3.rlib --extern rust_trader=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\librust_trader-a39df27f8cf14626.rlib --extern serde=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libserde-538c3f2c7b0e38ae.rlib --extern serde_json=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libserde_json-7cba0ff3638ce743.rlib --extern sha2=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libsha2-553ab57f98dcf1d1.rlib --extern statrs=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libstatrs-3b4bbf82a55fd91b.rlib --extern thiserror=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libthiserror-4552654b8c0d7b2d.rlib --extern tokio=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libtokio-e79e7a184c06614e.rlib --extern toml=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libtoml-48f27a5128ac3682.rlib --extern tracing=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libtracing-2c0f4cc5bbc133a4.rlib --extern tracing_subscriber=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libtracing_subscriber-48b47102e6fa4ee1.rlib --extern url=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\liburl-c1bcec6a619d5467.rlib --extern uuid=C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\debug\deps\libuuid-4158f22500525073.rlib -L native=C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\windows_x86_64_msvc-0.52.6\lib -L native=C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\windows_x86_64_msvc-0.48.5\lib` (exit code: 0xc000013a, STATUS_CONTROL_C_EXIT)
+^C

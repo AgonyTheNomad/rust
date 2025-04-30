@@ -1,0 +1,55 @@
+[general]
+refresh_interval = 60
+data_dir = "./data"
+log_level = "info"
+max_candles = 1000
+historical_days = 30
+
+[exchange]
+name = "hyperliquid"
+api_key = ""
+api_secret = ""
+base_url = "https://api.hyperliquid.xyz"
+websocket_url = "wss://api.hyperliquid.xyz/ws"
+testnet = true
+additional_params = {}
+
+[influxdb]
+url = "http://localhost:8086"
+token = "my-token"
+org = "my-org"
+bucket = "trading"
+
+[risk]
+max_risk_per_trade = 0.02
+max_position_size = 10.0
+max_leverage = 20.0
+spread = 0.0003
+max_open_positions = 5
+max_drawdown = 0.20
+max_daily_loss = 0.05
+kelly_fraction = 0.5
+
+[strategy]
+name = "fibonacci_pivot"
+pivot_lookback = 5
+signal_lookback = 1
+fib_threshold = 10.0
+fib_initial = 0.382
+fib_tp = 0.618
+fib_sl = 0.236
+fib_limit1 = 0.5
+fib_limit2 = 0.786
+min_signal_strength = 0.5
+
+[assets.BTC]
+name = "BTC"
+leverage = 20.0
+spread = 0.0005
+avg_spread = 0.001
+
+[assets.ETH]
+name = "ETH"
+leverage = 20.0
+spread = 0.0005
+avg_spread = 0.001
