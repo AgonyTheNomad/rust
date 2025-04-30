@@ -33799,3 +33799,392 @@ TypeError: can't subtract offset-naive and offset-aware datetimes
 2025-04-30 10:18:45,671 [WARNING] Signal BTC_SHORT_1746024852308_bcba31b5.json is too old (84.6 min). Archiving.
 2025-04-30 10:18:45,677 [WARNING] Signal ETH_SHORT_1746024852458_71fb7e05.json is too old (84.6 min). Archiving.
 2025-04-30 10:18:45,684 [WARNING] Signal ETH_SHORT_1746024852459_769ee1b3.json is too old (84.6 min). Archiving.
+2025-04-30 10:19:39,411 [INFO] Symbols with existing positions: set()
+2025-04-30 10:19:39,411 [INFO] Processing signal: BTC_SHORT_1746029978351_b87b573d.json
+2025-04-30 10:19:39,590 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:19:39,593 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:19:39,593 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:19:39,595 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:19:39,597 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:19:40,838 [INFO] Entry order placed
+2025-04-30 10:19:40,841 [ERROR] No filled or resting status found in order response
+2025-04-30 10:19:40,858 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:19:40,866 [WARNING] Failed to process signal BTC_SHORT_1746029978351_b87b573d.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:19:40,869 [INFO] Processing signal: BTC_SHORT_1746029978355_45539557.json
+2025-04-30 10:19:41,046 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:19:41,046 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:19:41,047 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:19:41,047 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:19:41,047 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:19:42,236 [INFO] Entry order placed
+2025-04-30 10:19:42,236 [ERROR] No filled or resting status found in order response
+2025-04-30 10:19:42,237 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:19:42,237 [WARNING] Failed to process signal BTC_SHORT_1746029978355_45539557.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:19:43,420 [INFO] Symbols with existing positions: set()
+2025-04-30 10:19:43,422 [INFO] Processing signal: BTC_SHORT_1746029978351_b87b573d.json
+2025-04-30 10:19:43,602 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:19:43,603 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:19:43,603 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:19:43,603 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:19:43,604 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:19:45,013 [INFO] Entry order placed
+2025-04-30 10:19:45,015 [ERROR] No filled or resting status found in order response
+2025-04-30 10:19:45,017 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:19:45,017 [WARNING] Failed to process signal BTC_SHORT_1746029978351_b87b573d.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:19:45,018 [INFO] Processing signal: BTC_SHORT_1746029978355_45539557.json
+2025-04-30 10:19:45,355 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:19:45,357 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:19:45,357 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:19:45,359 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:19:45,360 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:19:46,802 [INFO] Entry order placed
+2025-04-30 10:19:46,804 [ERROR] No filled or resting status found in order response
+2025-04-30 10:19:46,807 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:19:46,811 [WARNING] Failed to process signal BTC_SHORT_1746029978355_45539557.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:19:48,006 [INFO] Symbols with existing positions: set()
+2025-04-30 10:19:48,008 [INFO] Processing signal: BTC_SHORT_1746029978351_b87b573d.json
+2025-04-30 10:19:48,192 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:19:48,192 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:19:48,192 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:19:48,193 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:19:48,193 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:19:49,522 [INFO] Entry order placed
+2025-04-30 10:19:49,523 [ERROR] No filled or resting status found in order response
+2025-04-30 10:19:49,524 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:19:49,524 [WARNING] Failed to process signal BTC_SHORT_1746029978351_b87b573d.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:19:49,525 [INFO] Processing signal: BTC_SHORT_1746029978355_45539557.json
+2025-04-30 10:19:49,707 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:19:49,707 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:19:49,708 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:19:49,708 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:19:49,708 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:19:50,877 [INFO] Entry order placed
+2025-04-30 10:19:50,886 [ERROR] No filled or resting status found in order response
+2025-04-30 10:19:50,887 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:19:50,889 [WARNING] Failed to process signal BTC_SHORT_1746029978355_45539557.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:19:52,091 [INFO] Symbols with existing positions: set()
+2025-04-30 10:19:52,099 [INFO] Processing signal: BTC_SHORT_1746029978351_b87b573d.json
+2025-04-30 10:19:52,282 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:19:52,282 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:19:52,282 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:19:52,284 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:19:52,284 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:19:53,552 [INFO] Entry order placed
+2025-04-30 10:19:53,554 [ERROR] No filled or resting status found in order response
+2025-04-30 10:19:53,562 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:19:53,570 [WARNING] Failed to process signal BTC_SHORT_1746029978351_b87b573d.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:19:53,575 [INFO] Processing signal: BTC_SHORT_1746029978355_45539557.json
+2025-04-30 10:19:53,755 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:19:53,759 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:19:53,762 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:19:53,762 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:19:53,762 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:19:54,963 [INFO] Entry order placed
+2025-04-30 10:19:54,964 [ERROR] No filled or resting status found in order response
+2025-04-30 10:19:54,964 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:19:54,964 [WARNING] Failed to process signal BTC_SHORT_1746029978355_45539557.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:19:56,150 [INFO] Symbols with existing positions: set()
+2025-04-30 10:19:56,152 [INFO] Processing signal: BTC_SHORT_1746029978351_b87b573d.json
+2025-04-30 10:19:56,331 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:19:56,332 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:19:56,336 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:19:56,338 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:19:56,340 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:19:57,526 [INFO] Entry order placed
+2025-04-30 10:19:57,546 [ERROR] No filled or resting status found in order response
+2025-04-30 10:19:57,547 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:19:57,548 [WARNING] Failed to process signal BTC_SHORT_1746029978351_b87b573d.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:19:57,563 [INFO] Processing signal: BTC_SHORT_1746029978355_45539557.json
+2025-04-30 10:19:57,745 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:19:57,746 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:19:57,747 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:19:57,748 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:19:57,748 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:19:59,066 [INFO] Entry order placed
+2025-04-30 10:19:59,066 [ERROR] No filled or resting status found in order response
+2025-04-30 10:19:59,067 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:19:59,067 [WARNING] Failed to process signal BTC_SHORT_1746029978355_45539557.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:20:00,258 [INFO] Symbols with existing positions: set()
+2025-04-30 10:20:00,260 [INFO] Processing signal: BTC_SHORT_1746029978351_b87b573d.json
+2025-04-30 10:20:01,033 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:20:01,037 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:20:01,038 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:20:01,039 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:20:01,042 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:20:02,193 [INFO] Entry order placed
+2025-04-30 10:20:02,195 [ERROR] No filled or resting status found in order response
+2025-04-30 10:20:02,195 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:20:02,195 [WARNING] Failed to process signal BTC_SHORT_1746029978351_b87b573d.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:20:02,197 [INFO] Processing signal: BTC_SHORT_1746029978355_45539557.json
+2025-04-30 10:20:02,391 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:20:02,400 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:20:02,401 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:20:02,401 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:20:02,401 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:20:03,616 [INFO] Entry order placed
+2025-04-30 10:20:03,618 [ERROR] No filled or resting status found in order response
+2025-04-30 10:20:03,619 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:20:03,619 [WARNING] Failed to process signal BTC_SHORT_1746029978355_45539557.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:20:04,826 [INFO] Symbols with existing positions: set()
+2025-04-30 10:20:04,830 [INFO] Processing signal: BTC_SHORT_1746029978351_b87b573d.json
+2025-04-30 10:20:05,013 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:20:05,017 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:20:05,017 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:20:05,017 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:20:05,018 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:20:06,300 [INFO] Entry order placed
+2025-04-30 10:20:06,302 [ERROR] No filled or resting status found in order response
+2025-04-30 10:20:06,316 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:20:06,318 [WARNING] Failed to process signal BTC_SHORT_1746029978351_b87b573d.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:20:06,320 [INFO] Processing signal: BTC_SHORT_1746029978355_45539557.json
+2025-04-30 10:20:06,649 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:20:06,650 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:20:06,650 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:20:06,652 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:20:06,653 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:20:07,911 [INFO] Entry order placed
+2025-04-30 10:20:07,914 [ERROR] No filled or resting status found in order response
+2025-04-30 10:20:07,915 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:20:07,916 [WARNING] Failed to process signal BTC_SHORT_1746029978355_45539557.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:20:09,119 [INFO] Symbols with existing positions: set()
+2025-04-30 10:20:09,122 [INFO] Processing signal: BTC_SHORT_1746029978351_b87b573d.json
+2025-04-30 10:20:09,455 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:20:09,456 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:20:09,457 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:20:09,462 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:20:09,463 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:20:10,711 [INFO] Entry order placed
+2025-04-30 10:20:10,713 [ERROR] No filled or resting status found in order response
+2025-04-30 10:20:10,725 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:20:10,730 [WARNING] Failed to process signal BTC_SHORT_1746029978351_b87b573d.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:20:10,733 [INFO] Processing signal: BTC_SHORT_1746029978355_45539557.json
+2025-04-30 10:20:10,910 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:20:10,914 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:20:10,915 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:20:10,915 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:20:10,916 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:20:12,141 [INFO] Entry order placed
+2025-04-30 10:20:12,144 [ERROR] No filled or resting status found in order response
+2025-04-30 10:20:12,145 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:20:12,146 [WARNING] Failed to process signal BTC_SHORT_1746029978355_45539557.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:20:13,353 [INFO] Symbols with existing positions: set()
+2025-04-30 10:20:13,360 [INFO] Processing signal: BTC_SHORT_1746029978351_b87b573d.json
+2025-04-30 10:20:13,694 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:20:13,696 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:20:13,697 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:20:13,699 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:20:13,701 [INFO] Placing SHORT limit: size=0.091, price=93949.8
+2025-04-30 10:20:15,163 [INFO] Entry order placed
+2025-04-30 10:20:15,163 [ERROR] No filled or resting status found in order response
+2025-04-30 10:20:15,163 [ERROR] Full response: {
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "error": "Price must be divisible by tick size. asset=3"
+        }
+      ]
+    }
+  }
+}
+2025-04-30 10:20:15,164 [WARNING] Failed to process signal BTC_SHORT_1746029978351_b87b573d.json - will retry later. Reason: No filled or resting status found in order response
+2025-04-30 10:20:15,164 [INFO] Processing signal: BTC_SHORT_1746029978355_45539557.json
+2025-04-30 10:20:15,341 [INFO] Using position size for BTC: 0.091 contracts
+2025-04-30 10:20:15,351 [INFO] Using signal entry price for BTC: $93949.8
+2025-04-30 10:20:15,351 [INFO] Executing SHORT for BTC using LIMIT order
+2025-04-30 10:20:15,352 [INFO] Size: 0.091, Entry: $93949.8, TP: $93826.2, SL: $94011.6
+2025-04-30 10:20:15,352 [INFO] Placing SHORT limit: size=0.091, price=93949.8

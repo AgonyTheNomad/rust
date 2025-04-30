@@ -12,6 +12,7 @@ This script:
 import os
 import json
 import time
+import math
 import asyncio
 import logging
 import argparse
@@ -63,6 +64,9 @@ class HyperliquidTrader:
         self.processed_signals = set()
         self.is_paused = False
         
+        # Tick sizes for symbols
+        self.tick_sizes = {}
+        
         # Max age for signals in minutes
         self.max_signal_age = self.config.get('max_signal_age_minutes', 5)
         
@@ -82,6 +86,9 @@ class HyperliquidTrader:
     async def start(self):
         """Start the trading loop"""
         logger.info("Starting Hyperliquid trader")
+        
+        # Fetch asset metadata including tick sizes
+        await self.fetch_asset_metadata()
         
         # Print account information
         await self.print_account_info()
@@ -105,6 +112,86 @@ class HyperliquidTrader:
             except Exception as e:
                 logger.error(f"Error in trading loop: {e}", exc_info=True)
                 await asyncio.sleep(5.0)
+    
+    async def fetch_asset_metadata(self):
+        """Fetch and store metadata for all assets including tick sizes"""
+        try:
+            # Get metadata from the API
+            meta = self.info.meta()
+            universe = meta.get("universe", [])
+            
+            # First, try to extract tick sizes directly
+            for asset in universe:
+                symbol = asset.get("name")
+                if not symbol:
+                    continue
+                
+                # Try to get tick size from various possible fields
+                tick_size = None
+                if "tickSize" in asset:
+                    tick_size = float(asset.get("tickSize"))
+                elif "px_step" in asset:
+                    tick_size = float(asset.get("px_step"))
+                elif "step" in asset:
+                    tick_size = float(asset.get("step"))
+                
+                # If no explicit tick size, use decimals to calculate
+                if tick_size is None:
+                    # Use known common values for major coins
+                    if symbol == "BTC":
+                        tick_size = 0.1  # BTC typically uses 0.1
+                    elif symbol in ["ETH", "SOL"]:
+                        tick_size = 0.01  # ETH, SOL typically use 0.01
+                    else:
+                        # Default to 0.001 or use szDecimals if available
+                        sz_decimals = asset.get("szDecimals", 3)
+                        tick_size = 10 ** -sz_decimals
+                
+                if tick_size:
+                    self.tick_sizes[symbol] = tick_size
+            
+            if not self.tick_sizes:
+                # If we couldn't extract tick sizes, use defaults
+                self.set_default_tick_sizes()
+            
+            logger.info(f"Loaded tick sizes for {len(self.tick_sizes)} symbols:")
+            for symbol, tick in sorted(self.tick_sizes.items()):
+                logger.info(f"  {symbol}: {tick}")
+            
+        except Exception as e:
+            logger.error(f"Error fetching asset metadata: {e}", exc_info=True)
+            # Use defaults if API fetch failed
+            self.set_default_tick_sizes()
+    
+    def set_default_tick_sizes(self):
+        """Set default tick sizes for common symbols"""
+        default_tick_sizes = {
+            "BTC": 0.1,
+            "ETH": 0.01,
+            "SOL": 0.01,
+            "APT": 0.001,
+            "ARB": 0.001,
+            "AVAX": 0.001,
+            "DOGE": 0.00001,
+            "LINK": 0.001,
+            "MATIC": 0.0001,
+            "XRP": 0.0001,
+            "BNB": 0.01,
+            "MKR": 0.01
+        }
+        self.tick_sizes.update(default_tick_sizes)
+        logger.info(f"Using default tick sizes: {self.tick_sizes}")
+    
+    def round_to_tick_size(self, price, symbol):
+        """Round price to the appropriate tick size for the symbol"""
+        tick_size = self.tick_sizes.get(symbol, 0.001)  # Default to 0.001 if unknown
+        
+        # Round to nearest tick size
+        rounded_price = round(price / tick_size) * tick_size
+        
+        # Format to avoid floating point errors
+        decimals = max(0, int(-math.log10(tick_size))) if tick_size > 0 else 0
+        return round(rounded_price, decimals)
     
     async def print_account_info(self):
         """Print account information and balances"""
@@ -349,6 +436,13 @@ class HyperliquidTrader:
                             logger.info(f"Using default SL: {stop_loss}")
                             valid_tpsl = False
                     
+                    # Round values to tick size
+                    entry_price = self.round_to_tick_size(entry_price, exchange_symbol)
+                    take_profit = self.round_to_tick_size(take_profit, exchange_symbol)
+                    stop_loss = self.round_to_tick_size(stop_loss, exchange_symbol)
+                    
+                    logger.info(f"Rounded prices - Entry: ${entry_price}, TP: ${take_profit}, SL: ${stop_loss}")
+                    
                     # Use signal strength or risk_per_trade from config
                     strength = float(signal.get('strength', 0.8))
                     risk_per_trade = self.config.get('risk_per_trade', 0.01)
@@ -497,6 +591,16 @@ class HyperliquidTrader:
                 # Process the entry order response
                 if "response" in entry_order and "data" in entry_order["response"] and "statuses" in entry_order["response"]["data"]:
                     statuses = entry_order["response"]["data"]["statuses"]
+                    
+                    # Check for errors first
+                    error_status = next((s for s in statuses if "error" in s), None)
+                    if error_status:
+                        error_msg = error_status.get("error", "Unknown error")
+                        logger.error(f"Order error: {error_msg}")
+                        logger.error(f"Full response: {json.dumps(entry_order, indent=2)}")
+                        return f"Order error: {error_msg}"
+                    
+                    # Check for resting or filled status
                     resting_status = next((s for s in statuses if "resting" in s), None)
                     filled_status = next((s for s in statuses if "filled" in s), None)
                     
@@ -589,6 +693,8 @@ class HyperliquidTrader:
                 if attempt > retries:
                     logger.error(f"{fn.__name__} failed after {retries} retries: {e}")
                     raise
+                wait = backoff * (2 ** (attempt - 1))
+                logger.warning(f"{fn.__name__} error ({e}), retrying in {wait:.1f}s...")
                 wait = backoff * (2 ** (attempt - 1))
                 logger.warning(f"{fn.__name__} error ({e}), retrying in {wait:.1f}s...")
                 await asyncio.sleep(wait)
