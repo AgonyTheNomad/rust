@@ -37,3 +37,7 @@ path = "src/bin/debug_optimizer.rs"
 name = "debug_strategy"
 path = "src/bin/debug_strategy.rs"
 
+[[bin
+]]
+name = "influx_fetcher"
+path = "src/bin/influx_fetcher.rs"

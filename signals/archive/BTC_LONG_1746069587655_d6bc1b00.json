@@ -1,0 +1,18 @@
+{
+  "id": "d6bc1b00-751d-4a63-9d5e-57c377f4f0a3",
+  "metadata": {
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1746069587655
+  },
+  "position_type": "LONG",
+  "price": 94835.948,
+  "processed": true,
+  "reason": "Pivot high: 95030, Pivot low: 94716",
+  "stop_loss": 94641.896,
+  "strength": 0.95,
+  "symbol": "BTC",
+  "take_profit": 95224.052,
+  "timestamp": "2025-05-01T03:19:47.655293300+00:00",
+  "ignored_reason": "Symbol already has an open order"
+}

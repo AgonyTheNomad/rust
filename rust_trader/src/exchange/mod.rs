@@ -6,6 +6,10 @@ use std::fmt;
 use thiserror::Error;
 use std::sync::Arc;
 use anyhow::Result;
+use std::collections::HashMap;
+
+mod account_reader;
+pub use account_reader::{AccountReader, AccountInfo, Position as AccountPosition};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExchangeConfig {
@@ -206,6 +210,7 @@ where
 pub struct MockExchange {
     pub name: String,
     pub influx: Arc<InfluxDBClient>,
+    pub account_reader: Arc<AccountReader>,
 }
 
 #[async_trait]
@@ -224,22 +229,128 @@ impl Exchange for MockExchange {
     }
     
     async fn get_balance(&self) -> Result<f64, ExchangeError> {
-        // For dry run testing, return a dummy balance
-        Ok(10000.0)
+        // Get balance from the account info file
+        match self.account_reader.get_balance() {
+            Ok(balance) => Ok(balance),
+            Err(e) => {
+                log::warn!("Failed to read balance from account_info.json: {}", e);
+                // Return a default value for dry run
+                Ok(10000.0)
+            }
+        }
     }
     
     async fn get_positions(&self) -> Result<Vec<Position>, ExchangeError> {
-        Ok(Vec::new()) // Return empty positions list for dry run
+        // Try to get positions from account info file
+        match self.account_reader.read_account_info() {
+            Ok(account_info) => {
+                let mut positions = Vec::new();
+                
+                for p in account_info.positions {
+                    let position_type = if p.side == "LONG" {
+                        PositionType::Long
+                    } else {
+                        PositionType::Short
+                    };
+                    
+                    positions.push(Position {
+                        id: format!("{}_{}", p.symbol, uuid::Uuid::new_v4()),
+                        symbol: p.symbol,
+                        entry_time: chrono::Utc::now(), // We don't have entry time in the file
+                        entry_price: p.entry_price,
+                        size: p.size,
+                        stop_loss: 0.0, // Not available in account info
+                        take_profit: 0.0, // Not available in account info
+                        position_type,
+                        risk_percent: 0.0, // Not available
+                        margin_used: 0.0, // Not available
+                        status: crate::models::PositionStatus::Open,
+                        limit1_price: None,
+                        limit2_price: None,
+                        limit1_hit: false,
+                        limit2_hit: false,
+                        limit1_size: 0.0,
+                        limit2_size: 0.0,
+                        new_tp1: None,
+                        new_tp2: None,
+                        entry_order_id: None,
+                        tp_order_id: None,
+                        sl_order_id: None,
+                        limit1_order_id: None,
+                        limit2_order_id: None,
+                    });
+                }
+                
+                Ok(positions)
+            },
+            Err(e) => {
+                log::warn!("Failed to read positions from account_info.json: {}", e);
+                Ok(Vec::new()) // Return empty positions list for dry run
+            }
+        }
     }
     
     async fn get_account_info(&self) -> Result<Account, ExchangeError> {
-        // Create a mock account
-        Ok(Account {
-            balance: 10000.0,
-            equity: 10000.0,
-            used_margin: 0.0,
-            positions: std::collections::HashMap::new(),
-        })
+        // Get account info from file
+        match self.account_reader.read_account_info() {
+            Ok(account_info) => {
+                // Convert positions from file format to our internal format
+                let mut positions = HashMap::new();
+                for p in &account_info.positions {
+                    let position_type = if p.side == "LONG" {
+                        PositionType::Long
+                    } else {
+                        PositionType::Short
+                    };
+                    
+                    let position = Position {
+                        id: format!("{}_{}", p.symbol, uuid::Uuid::new_v4()),
+                        symbol: p.symbol.clone(),
+                        entry_time: chrono::Utc::now(), // We don't have entry time in the file
+                        entry_price: p.entry_price,
+                        size: p.size,
+                        stop_loss: 0.0, // Not available in account info
+                        take_profit: 0.0, // Not available in account info
+                        position_type,
+                        risk_percent: 0.0, // Not available
+                        margin_used: 0.0, // Not available
+                        status: crate::models::PositionStatus::Open,
+                        limit1_price: None,
+                        limit2_price: None,
+                        limit1_hit: false,
+                        limit2_hit: false,
+                        limit1_size: 0.0,
+                        limit2_size: 0.0,
+                        new_tp1: None,
+                        new_tp2: None,
+                        entry_order_id: None,
+                        tp_order_id: None,
+                        sl_order_id: None,
+                        limit1_order_id: None,
+                        limit2_order_id: None,
+                    };
+                    
+                    positions.insert(position.id.clone(), position);
+                }
+                
+                Ok(Account {
+                    balance: account_info.balance,
+                    equity: account_info.balance, // Use balance as equity
+                    used_margin: account_info.used_margin,
+                    positions,
+                })
+            },
+            Err(e) => {
+                log::warn!("Failed to read account info from account_info.json: {}", e);
+                // Create a mock account with default values
+                Ok(Account {
+                    balance: 10000.0,
+                    equity: 10000.0,
+                    used_margin: 0.0,
+                    positions: HashMap::new(),
+                })
+            }
+        }
     }
     
     async fn create_order(&self, order: Order) -> Result<Order, ExchangeError> {
@@ -271,15 +382,22 @@ impl Exchange for MockExchange {
     }
     
     async fn has_open_position_for_symbol(&self, symbol: &str) -> Result<bool, ExchangeError> {
-        // For mock, we'll just leverage the default implementation which calls get_positions
-        let positions = self.get_positions().await?;
-        
-        let has_position = positions.iter().any(|pos| 
-            pos.symbol == symbol && 
-            pos.status == crate::models::PositionStatus::Open
-        );
-        
-        Ok(has_position)
+        // Check if symbol has an open position from account info file
+        match self.account_reader.has_open_position(symbol) {
+            Ok(has_position) => Ok(has_position),
+            Err(e) => {
+                log::warn!("Failed to check if symbol has open position: {}", e);
+                // Fall back to the default implementation
+                let positions = self.get_positions().await?;
+                
+                let has_position = positions.iter().any(|pos| 
+                    pos.symbol == symbol && 
+                    pos.status == crate::models::PositionStatus::Open
+                );
+                
+                Ok(has_position)
+            }
+        }
     }
 }
 
@@ -291,9 +409,16 @@ pub fn create_exchange(config: ExchangeConfig) -> Result<Box<dyn Exchange>, Exch
     let influx_client = crate::influxdb::InfluxDBClient::new(influx_config)
         .map_err(|e| ExchangeError::ApiError(format!("Failed to create InfluxDB client: {}", e)))?;
     
+    // Create account reader with 120-second max age
+    let account_reader = Arc::new(AccountReader::new(
+        "./account_info.json",
+        120
+    ));
+    
     let exchange = MockExchange {
         name: config.name,
         influx: Arc::new(influx_client),
+        account_reader,
     };
     
     Ok(Box::new(exchange))

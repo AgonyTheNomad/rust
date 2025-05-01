@@ -1,0 +1,18 @@
+{
+  "id": "7fa19452-7a42-4b02-b40a-cc373c0feec4",
+  "metadata": {
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1746101627619
+  },
+  "position_type": "LONG",
+  "price": 1845.9199999999998,
+  "processed": true,
+  "reason": "Pivot high: 1852.1, Pivot low: 1842.1",
+  "stop_loss": 1839.74,
+  "strength": 0.7999999999999999,
+  "symbol": "ETH",
+  "take_profit": 1858.28,
+  "timestamp": "2025-05-01T12:13:47.619806300+00:00",
+  "ignored_reason": "Symbol already has an open order"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "3bd570bb-419b-47d3-b808-4eea31c71cbf",
+  "metadata": {
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1746108227593
+  },
+  "position_type": "SHORT",
+  "price": 1506.3958,
+  "processed": true,
+  "reason": "Pivot high: 1511.4, Pivot low: 1498.3",
+  "stop_loss": 1514.4916,
+  "strength": 0.8999999999999999,
+  "symbol": "MKR",
+  "take_profit": 1490.2042,
+  "timestamp": "2025-05-01T14:03:47.593194+00:00",
+  "ignored_reason": "Symbol already has an open order"
+}
