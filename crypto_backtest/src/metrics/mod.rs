@@ -1,7 +1,8 @@
+
 use serde::{Deserialize, Serialize};
 use std::{fs::File, io::Write};
 use chrono::{DateTime, Utc};
-use crate::models::{Trade, BacktestState};
+use crate::models::Trade;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PerformanceMetrics {
@@ -68,14 +69,14 @@ impl MetricsCalculator {
         let mut winning_trades = 0;
         let mut losing_trades = 0;
         let mut total_profit = 0.0;
-        let mut largest_win = 0.0;
-        let mut largest_loss = 0.0;
+        let mut largest_win: f64 = 0.0;  // Explicitly type as f64
+        let mut largest_loss: f64 = 0.0;  // Explicitly type as f64
         let mut total_wins = 0.0;
         let mut total_losses = 0.0;
-        let mut total_leverage = 0.0;
-        let mut max_leverage = 0.0;
+        let mut total_leverage: f64 = 0.0;  // Explicitly type as f64
+        let mut max_leverage: f64 = 0.0;  // Explicitly type as f64
         let mut total_position_size = 0.0;
-        let mut max_position_size = 0.0;
+        let mut max_position_size: f64 = 0.0;  // Explicitly type as f64
         let mut total_fees = 0.0;
         let mut total_slippage = 0.0;
         let mut total_duration = 0i64;
@@ -270,9 +271,20 @@ impl MetricsCalculator {
             return 0.0;
         }
 
-        let total_time = (self.timestamps.last().unwrap() - self.timestamps.first().unwrap()).num_seconds() as f64;
+        // Use * to dereference the DateTime references
+        let total_time = (*self.timestamps.last().unwrap() - *self.timestamps.first().unwrap()).num_seconds() as f64;
+        
         let time_in_trades = self.trades.iter()
-            .map(|t| (t.exit_time.timestamp() - t.entry_time.timestamp()) as f64)
+            .map(|t| {
+                // Parse strings to DateTime to calculate duration
+                let exit_time = chrono::DateTime::parse_from_rfc3339(&t.exit_time)
+                    .unwrap_or(Utc::now().into())
+                    .with_timezone(&Utc);
+                let entry_time = chrono::DateTime::parse_from_rfc3339(&t.entry_time)
+                    .unwrap_or(Utc::now().into())
+                    .with_timezone(&Utc);
+                (exit_time - entry_time).num_seconds() as f64
+            })
             .sum::<f64>();
 
         time_in_trades / total_time
@@ -283,7 +295,8 @@ impl MetricsCalculator {
             return 0.0;
         }
 
-        let years = (self.timestamps.last().unwrap() - self.timestamps.first().unwrap()).num_days() as f64 / 365.0;
+        // Use * to dereference the DateTime references
+        let years = (*self.timestamps.last().unwrap() - *self.timestamps.first().unwrap()).num_days() as f64 / 365.0;
         if years > 0.0 {
             ((1.0 + total_profit / self.initial_balance).powf(1.0 / years) - 1.0) * 100.0
         } else {

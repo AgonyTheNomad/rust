@@ -6,13 +6,9 @@ use log::*;
 use chrono::Utc;
 
 use crate::models::{Candle, PositionType, Signal, Position, PositionStatus};
-use crate::risk::position_calculator::{calculate_positions, PositionScaleResult};
-
-pub mod fibonacci;
-pub mod pivots;
-
-use fibonacci::FibonacciLevels;
-use pivots::PivotPoints;
+use crate::risk::position_calculator::{PositionResult, calculate_positions};
+use crate::indicators::fibonacci::FibonacciLevels;
+use crate::indicators::pivot_points::PivotPoints;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct StrategyConfig {
@@ -26,8 +22,9 @@ pub struct StrategyConfig {
     pub fib_limit1: f64,
     pub fib_limit2: f64,
     pub min_signal_strength: f64,
-    pub tp_ratio1: f64,     // TP adjustment ratio after limit1 (default 4.0)
-    pub tp_ratio2: f64,     // TP adjustment ratio after limit2 (default 6.0)
+    pub initial_balance: f64,
+    pub leverage: f64,
+    pub max_risk_per_trade: f64,
 }
 
 impl Default for StrategyConfig {
@@ -43,8 +40,9 @@ impl Default for StrategyConfig {
             fib_limit1: 0.5,
             fib_limit2: 0.786,
             min_signal_strength: 0.5,
-            tp_ratio1: 4.0,
-            tp_ratio2: 6.0,
+            initial_balance: 10000.0,
+            leverage: 20.0,
+            max_risk_per_trade: 0.02,
         }
     }
 }
@@ -238,26 +236,25 @@ impl Strategy {
             }
         };
         
-        // Calculate position sizes using scaling algorithm
+        // Use the position calculator with the spread-adjusted prices
         let result = calculate_positions(
-            signal.price,         // Initial entry price
-            signal.take_profit,   // Take profit level
-            signal.stop_loss,     // Stop loss level
-            limit1_price,         // Limit order 1 price
-            limit2_price,         // Limit order 2 price
-            account_size,         // Account size
-            risk,                 // Risk percentage
-            self.asset_config.leverage, // Leverage
-            signal.position_type.clone(), // Position type
-            self.config.tp_ratio1,  // TP adjustment ratio 1
-            self.config.tp_ratio2   // TP adjustment ratio 2
+            signal.price,        // Initial entry price
+            signal.take_profit,  // Take profit level
+            signal.stop_loss,    // Stop loss level
+            limit1_price,
+            limit2_price,
+            account_size,
+            risk,
+            self.asset_config.leverage,
+            signal.position_type.clone(),
+            4.0, // h11 default value
+            6.0, // h12 default value
         )?;
         
-        // Create position object with scaling information
         let position = Position {
             id: uuid::Uuid::new_v4().to_string(),
             symbol: signal.symbol.clone(),
-            entry_time: Utc::now(),
+            entry_time: Utc::now().to_string(),
             entry_price: signal.price,
             size: result.initial_position_size,
             stop_loss: signal.stop_loss,
