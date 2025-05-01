@@ -1,19 +1,18 @@
-// src/bin/run_influx_backtest.rs
+// src/bin/run_backtest.rs
 use crypto_backtest::backtest::Backtester;
 use crypto_backtest::strategy::{Strategy, StrategyConfig, AssetConfig};
-use crypto_backtest::influx::{InfluxConfig, get_candles, get_available_symbols};
+use crypto_backtest::models::{default_strategy_config, default_asset_config};
 use tokio;
 use std::env;
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // Set up logging
     env_logger::init();
-    println!("Starting cryptocurrency backtesting system with InfluxDB data...");
+    println!("Starting cryptocurrency backtesting system...");
     
     // Get command line arguments
     let args: Vec<String> = env::args().collect();
@@ -30,13 +29,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Ensure the output directory exists
     std::fs::create_dir_all(&output_dir)?;
     
-    // Set up InfluxDB connection
-    let influx_config = InfluxConfig::default();
-    println!("Connecting to InfluxDB: {}. Bucket: {}", influx_config.url, influx_config.bucket);
-    
-    // Load candles from InfluxDB
-    println!("Loading candle data for {} from InfluxDB...", symbol);
-    let mut candles = get_candles(&influx_config, &symbol, None).await?;
+    // Load candles - using local CSV file
+    println!("Loading candle data for {} from CSV...", symbol);
+    let candle_path = format!("data/{}.csv", symbol);
+    let mut candles = crypto_backtest::fetch_data::load_candles_from_csv(&candle_path)?;
     
     // Apply data quality filters
     candles.retain(|c| c.volume > 0.0);
@@ -52,27 +48,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("Date range: {} to {}", start_date, end_date);
     
     // Define strategy configuration
-    let config = StrategyConfig {
-        initial_balance: 10_000.0,
-        leverage: 20.0,
-        max_risk_per_trade: 0.01,
-        pivot_lookback: 5,
-        signal_lookback: 1,
-        fib_threshold: 10.0,
-        fib_initial: 0.382,  // Fibonacci level for entry
-        fib_tp: 0.618,       // Take profit level
-        fib_sl: 0.236,       // Stop loss level
-        fib_limit1: 0.5,     // First scaling level
-        fib_limit2: 0.618,   // Second scaling level
-    };
+    let mut config = default_strategy_config();
+    config.name = format!("{} Backtest", symbol);
+    config.leverage = 20.0;
+    config.max_risk_per_trade = 0.01;
+    config.pivot_lookback = 5;
+    config.signal_lookback = 1;
+    config.fib_threshold = 10.0;
+    config.fib_initial = 0.382;
+    config.fib_tp = 0.618;
+    config.fib_sl = 0.236;
+    config.fib_limit1 = 0.5;
+    config.fib_limit2 = 0.618;
     
     // Create asset configuration
-    let asset_config = AssetConfig {
-        name: symbol.clone(),
-        leverage: 20.0,
-        spread: 0.0005,      // 0.05% spread
-        avg_spread: 0.001,   // 0.1% average spread
-    };
+    let asset_config = default_asset_config(&symbol);
     
     // Create strategy and backtester
     let strategy = Strategy::new(config.clone(), asset_config);
@@ -138,6 +128,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("Saving performance metrics to {}...", metrics_file);
     let metrics_json = serde_json::json!({
         "strategy_config": {
+            "name": config.name,
             "initial_balance": config.initial_balance,
             "leverage": config.leverage,
             "max_risk_per_trade": config.max_risk_per_trade,
@@ -167,8 +158,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             "end_date": end_date,
             "candle_count": candles.len(),
             "execution_time_ms": elapsed.as_millis(),
-            "data_source": "InfluxDB",
-            "influx_bucket": influx_config.bucket,
+            "data_source": "CSV",
         }
     });
     
@@ -176,72 +166,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     metrics_file.write_all(serde_json::to_string_pretty(&metrics_json)?.as_bytes())?;
     
     println!("\nBacktest completed successfully. Results saved to {} directory.", output_dir);
-    
-    Ok(())
-}
-
-// Utility function to run backtest for all available symbols
-#[allow(dead_code)]
-async fn run_all_symbols(influx_config: &InfluxConfig, output_dir: &str) -> Result<(), Box<dyn Error>> {
-    println!("Fetching all available symbols from InfluxDB...");
-    let symbols = get_available_symbols(influx_config).await?;
-    
-    println!("Found {} symbols: {:?}", symbols.len(), symbols);
-    
-    for symbol in symbols {
-        println!("\n==================================================");
-        println!("Running backtest for {}", symbol);
-        println!("==================================================");
-        
-        let mut candles = get_candles(influx_config, &symbol, None).await?;
-        candles.retain(|c| c.volume > 0.0);
-        
-        if candles.is_empty() {
-            println!("No valid candles for {}, skipping", symbol);
-            continue;
-        }
-        
-        println!("Loaded {} valid candles for {}", candles.len(), symbol);
-        
-        // Define strategy configuration
-        let config = StrategyConfig {
-            initial_balance: 10_000.0,
-            leverage: 20.0,
-            max_risk_per_trade: 0.01,
-            pivot_lookback: 5,
-            signal_lookback: 1,
-            fib_threshold: 10.0,
-            fib_initial: 0.382,
-            fib_tp: 0.618,
-            fib_sl: 0.236,
-            fib_limit1: 0.5,
-            fib_limit2: 0.618,
-        };
-        
-        let asset_config = AssetConfig {
-            name: symbol.clone(),
-            leverage: 20.0,
-            spread: 0.0005,
-            avg_spread: 0.001,
-        };
-        
-        let strategy = Strategy::new(config.clone(), asset_config);
-        let mut backtester = Backtester::new(config.initial_balance, strategy);
-        
-        match backtester.run(&candles) {
-            Ok(results) => {
-                println!("Backtest complete for {}:", symbol);
-                println!("  Trades: {}", results.metrics.total_trades);
-                println!("  Win rate: {:.2}%", results.metrics.win_rate * 100.0);
-                println!("  Profit: ${:.2}", results.metrics.total_profit);
-                println!("  Return: {:.2}%", 
-                         (results.metrics.total_profit / config.initial_balance) * 100.0);
-            },
-            Err(e) => {
-                println!("Error running backtest for {}: {}", symbol, e);
-            }
-        }
-    }
     
     Ok(())
 }

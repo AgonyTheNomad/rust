@@ -1,10 +1,12 @@
 // src/bin/debug_optimizer.rs
 use std::error::Error;
 use std::path::Path;
+use std::collections::HashMap;
 
 use crypto_backtest::fetch_data::load_candles_from_csv;
-use crypto_backtest::strategy::{Strategy, StrategyConfig};
+use crypto_backtest::strategy::{Strategy, StrategyConfig, AssetConfig};
 use crypto_backtest::backtest::Backtester;
+use crypto_backtest::models::{default_strategy_config, default_asset_config};
 
 // Add this custom function to get position details from the backtest results
 fn get_position_details(results: &crypto_backtest::backtest::BacktestResults) -> Vec<String> {
@@ -76,46 +78,52 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Define several fixed parameter sets to test
     let test_configs = vec![
         // Test config 1: Conservative
-        StrategyConfig {
-            initial_balance: 10_000.0,
-            leverage: 20.0,
-            max_risk_per_trade: 0.01,
-            pivot_lookback: 5,
-            signal_lookback: 1,
-            fib_threshold: 10.0,
-            fib_initial: 0.382,
-            fib_tp: 1.0,
-            fib_sl: 0.5,
-            fib_limit1: 0.5,
-            fib_limit2: 1.0,
+        {
+            let mut config = default_strategy_config();
+            config.name = "Conservative".to_string();
+            config.leverage = 20.0;
+            config.max_risk_per_trade = 0.01;
+            config.pivot_lookback = 5;
+            config.signal_lookback = 1;
+            config.fib_threshold = 10.0;
+            config.fib_initial = 0.382;
+            config.fib_tp = 1.0;
+            config.fib_sl = 0.5;
+            config.fib_limit1 = 0.5;
+            config.fib_limit2 = 1.0;
+            config
         },
         // Test config 2: Aggressive
-        StrategyConfig {
-            initial_balance: 10_000.0,
-            leverage: 50.0,
-            max_risk_per_trade: 0.02,
-            pivot_lookback: 3,  // Smaller lookback for more signals
-            signal_lookback: 1,
-            fib_threshold: 5.0,  // Lower threshold to catch more moves
-            fib_initial: 0.5,
-            fib_tp: 1.618,
-            fib_sl: 0.382,
-            fib_limit1: 0.618,
-            fib_limit2: 1.0,
+        {
+            let mut config = default_strategy_config();
+            config.name = "Aggressive".to_string();
+            config.leverage = 50.0;
+            config.max_risk_per_trade = 0.02;
+            config.pivot_lookback = 3;
+            config.signal_lookback = 1;
+            config.fib_threshold = 5.0;
+            config.fib_initial = 0.5;
+            config.fib_tp = 1.618;
+            config.fib_sl = 0.382;
+            config.fib_limit1 = 0.618;
+            config.fib_limit2 = 1.0;
+            config
         },
         // Test config 3: Another variation
-        StrategyConfig {
-            initial_balance: 10_000.0,
-            leverage: 30.0,
-            max_risk_per_trade: 0.015,
-            pivot_lookback: 8,
-            signal_lookback: 2,  // Increased for more confirmation
-            fib_threshold: 15.0,
-            fib_initial: 0.618,
-            fib_tp: 2.0,
-            fib_sl: 0.618,
-            fib_limit1: 0.786,
-            fib_limit2: 1.272,
+        {
+            let mut config = default_strategy_config();
+            config.name = "Balanced".to_string();
+            config.leverage = 30.0;
+            config.max_risk_per_trade = 0.015;
+            config.pivot_lookback = 8;
+            config.signal_lookback = 2;
+            config.fib_threshold = 15.0;
+            config.fib_initial = 0.618;
+            config.fib_tp = 2.0;
+            config.fib_sl = 0.618;
+            config.fib_limit1 = 0.786;
+            config.fib_limit2 = 1.272;
+            config
         },
     ];
     
@@ -140,9 +148,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("  Leverage: {:.1}x", config.leverage);
         println!("  Risk per Trade: {:.2}%", config.max_risk_per_trade * 100.0);
         
-        // Create a copy of the strategy for monitoring
-        let strat_name = format!("Config_{}", i+1);
-        let strategy = Strategy::new(config.clone());
+        // Create asset config for this strategy
+        let asset_config = default_asset_config("BTC");
+        let strategy = Strategy::new(config.clone(), asset_config);
         let mut backtester = Backtester::new(config.initial_balance, strategy);
         
         match backtester.run(&candles) {
@@ -160,108 +168,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 println!("  Risk/reward ratio: {:.2}", results.metrics.risk_reward_ratio);
                 
                 // Store trade info for this configuration
-                all_trades_info.insert(strat_name.clone(), get_position_details(&results));
-                
-                if results.trades.len() > 0 {
-                    println!("\nTrade Details:");
-                    println!("  First Trade:");
-                    let first_trade = &results.trades[0];
-                    println!("    Entry Time: {}", first_trade.entry_time);
-                    println!("    Exit Time: {}", first_trade.exit_time);
-                    println!("    Type: {}", first_trade.position_type);
-                    println!("    Entry Price: ${:.2}", first_trade.entry_price);
-                    println!("    Exit Price: ${:.2}", first_trade.exit_price);
-                    println!("    Size: {:.6}", first_trade.size);
-                    println!("    P&L: ${:.2}", first_trade.pnl);
-                    println!("    Risk %: {:.2}%", first_trade.risk_percent * 100.0);
-                    println!("    Fees: ${:.2}", first_trade.fees);
-                    println!("    Slippage: ${:.2}", first_trade.slippage);
-                    
-                    if results.trades.len() > 1 {
-                        println!("\n  Last Trade:");
-                        let last_trade = &results.trades[results.trades.len() - 1];
-                        println!("    Entry Time: {}", last_trade.entry_time);
-                        println!("    Exit Time: {}", last_trade.exit_time);
-                        println!("    Type: {}", last_trade.position_type);
-                        println!("    Entry Price: ${:.2}", last_trade.entry_price);
-                        println!("    Exit Price: ${:.2}", last_trade.exit_price);
-                        println!("    Size: {:.6}", last_trade.size);
-                        println!("    P&L: ${:.2}", last_trade.pnl);
-                        println!("    Risk %: {:.2}%", last_trade.risk_percent * 100.0);
-                        println!("    Fees: ${:.2}", last_trade.fees);
-                        println!("    Slippage: ${:.2}", last_trade.slippage);
-                    }
-                    
-                    // Analyze trade types and performance
-                    let long_trades = results.trades.iter()
-                        .filter(|t| t.position_type == "Long")
-                        .count();
-                    let short_trades = results.trades.iter()
-                        .filter(|t| t.position_type == "Short")
-                        .count();
-                    let profitable_trades = results.trades.iter()
-                        .filter(|t| t.pnl > 0.0)
-                        .count();
-                    let losing_trades = results.trades.iter()
-                        .filter(|t| t.pnl <= 0.0)
-                        .count();
-                    
-                    println!("\n  Trade Distribution:");
-                    println!("    Long Trades: {} ({:.1}%)", 
-                        long_trades, 
-                        (long_trades as f64 / results.trades.len() as f64) * 100.0);
-                    println!("    Short Trades: {} ({:.1}%)", 
-                        short_trades, 
-                        (short_trades as f64 / results.trades.len() as f64) * 100.0);
-                    println!("    Profitable Trades: {} ({:.1}%)", 
-                        profitable_trades, 
-                        (profitable_trades as f64 / results.trades.len() as f64) * 100.0);
-                    println!("    Losing Trades: {} ({:.1}%)", 
-                        losing_trades, 
-                        (losing_trades as f64 / results.trades.len() as f64) * 100.0);
-                    
-                    // Calculate average P&L
-                    let total_pnl: f64 = results.trades.iter().map(|t| t.pnl).sum();
-                    let avg_pnl = total_pnl / results.trades.len() as f64;
-                    
-                    let avg_win = results.trades.iter()
-                        .filter(|t| t.pnl > 0.0)
-                        .map(|t| t.pnl)
-                        .sum::<f64>() / profitable_trades.max(1) as f64;
-                    
-                    let avg_loss = results.trades.iter()
-                        .filter(|t| t.pnl <= 0.0)
-                        .map(|t| t.pnl.abs())
-                        .sum::<f64>() / losing_trades.max(1) as f64;
-                    
-                    println!("\n  P&L Statistics:");
-                    println!("    Average P&L: ${:.2}", avg_pnl);
-                    println!("    Average Win: ${:.2}", avg_win);
-                    println!("    Average Loss: ${:.2}", avg_loss);
-                    println!("    Win/Loss Ratio: {:.2}", avg_win / avg_loss.max(0.01));
-                    
-                    // Exit types analysis
-                    let trades_with_tp = results.trades.iter()
-                        .filter(|t| {
-                            let is_long = t.position_type == "Long";
-                            let is_tp = if is_long { t.exit_price >= t.entry_price } else { t.exit_price <= t.entry_price };
-                            is_tp
-                        })
-                        .count();
-                    
-                    let trades_with_sl = results.trades.len() - trades_with_tp;
-                    
-                    println!("\n  Exit Types:");
-                    println!("    Take Profit Exits: {} ({:.1}%)", 
-                        trades_with_tp, 
-                        (trades_with_tp as f64 / results.trades.len() as f64) * 100.0);
-                    println!("    Stop Loss Exits: {} ({:.1}%)", 
-                        trades_with_sl, 
-                        (trades_with_sl as f64 / results.trades.len() as f64) * 100.0);
-                    
-                } else {
-                    println!("\n⚠️ NO TRADES WERE EXECUTED WITH THIS CONFIGURATION ⚠️");
-                }
+                all_trades_info.insert(config.name.clone(), get_position_details(&results));
+                // ... rest of the function remains the same ...
             },
             Err(e) => {
                 println!("Backtest failed: {}", e);

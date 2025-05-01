@@ -25,6 +25,11 @@ pub mod fibonacci_optimizer {
                     initial_balance: json_config["initial_balance"].as_f64().unwrap_or(10000.0),
                     drop_threshold: json_config["drop_threshold"].as_f64().unwrap_or(9000.0),
                     
+                    // ADD THESE MISSING FIELDS:
+                    max_risk_per_trade: json_config["max_risk_per_trade"].as_f64().unwrap_or(0.02),
+                    leverage: json_config["leverage"].as_f64().unwrap_or(20.0),
+                    min_signal_strength: json_config["min_signal_strength"].as_f64().unwrap_or(0.5),
+                    
                     lookback_periods: json_config["lookback_periods"]
                         .as_array()
                         .map(|arr| arr.iter().filter_map(|v| v.as_u64().map(|i| i as usize)).collect())

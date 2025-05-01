@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use chrono::{DateTime, Utc};
+use crate::strategy::{StrategyConfig, AssetConfig};  // Add this import
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Candle {
@@ -146,4 +147,39 @@ impl Account {
     pub fn available_margin(&self) -> f64 {
         self.equity - self.used_margin
     }
+}
+
+pub fn default_strategy_config() -> StrategyConfig {
+    StrategyConfig {
+        name: "default_strategy".to_string(),
+        initial_balance: 10_000.0,
+        leverage: 20.0,
+        max_risk_per_trade: 0.01,
+        pivot_lookback: 5,
+        signal_lookback: 1,
+        fib_threshold: 10.0,
+        fib_initial: 0.382,
+        fib_tp: 0.618,
+        fib_sl: 0.236,
+        fib_limit1: 0.5,
+        fib_limit2: 0.786,
+        min_signal_strength: 0.5,
+    }
+}
+
+pub fn default_asset_config(name: &str) -> AssetConfig {
+    AssetConfig {
+        name: name.to_string(),
+        leverage: 20.0,
+        spread: 0.0005,
+        avg_spread: 0.001,
+    }
+}
+
+// Optional: You can also add a quick creation function
+pub fn create_test_strategy(name: &str) -> (StrategyConfig, AssetConfig) {
+    let mut config = default_strategy_config();
+    config.name = name.to_string();
+    let asset_config = default_asset_config(name);
+    (config, asset_config)
 }

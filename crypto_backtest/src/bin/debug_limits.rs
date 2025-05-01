@@ -2,6 +2,7 @@
 use crypto_backtest::backtest::Backtester;
 use crypto_backtest::fetch_data::load_candles_from_csv;
 use crypto_backtest::strategy::{Strategy, StrategyConfig, AssetConfig};
+use crypto_backtest::models::{default_strategy_config, default_asset_config};
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -16,27 +17,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Testing with {} candles", candles.len());
     
     // Parameters from your position monitor
-    let config = StrategyConfig {
-        initial_balance: 10_000.0,
-        leverage: 50.0,
-        max_risk_per_trade: 0.02,
-        pivot_lookback: 3,
-        signal_lookback: 1,
-        fib_threshold: 5.0,
-        fib_initial: 0.5,
-        fib_tp: 1.618,
-        fib_sl: 0.5,
-        fib_limit1: 0.618,
-        fib_limit2: 1.272,
-    };
+    let mut config = default_strategy_config();
+    config.leverage = 50.0;
+    config.max_risk_per_trade = 0.02;
+    config.pivot_lookback = 3;
+    config.signal_lookback = 1;
+    config.fib_threshold = 5.0;
+    config.fib_initial = 0.5;
+    config.fib_tp = 1.618;
+    config.fib_sl = 0.5;
+    config.fib_limit1 = 0.618;
+    config.fib_limit2 = 1.272;
     
     // Create an AssetConfig with all required fields
-    let asset_config = AssetConfig {
-        name: "BTC".to_string(),
-        leverage: 50.0,
-        spread: 0.0005,
-        avg_spread: 0.001,
-    };
+    let asset_config = default_asset_config("BTC");
     
     // Create a custom backtester to track limit hits
     struct LimitTracker {

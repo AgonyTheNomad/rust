@@ -19,6 +19,10 @@ pub struct DynamicOptimizationConfig {
     pub initial_balance: f64,
     pub drop_threshold: f64,  // Stop optimization if balance falls below this
     
+    // Risk parameters
+    pub max_risk_per_trade: f64,
+    pub leverage: f64,
+    
     // Pivot detection parameters
     pub lookback_periods: Vec<usize>,
     
@@ -29,6 +33,9 @@ pub struct DynamicOptimizationConfig {
     pub limit1_levels: Vec<f64>,
     pub limit2_levels: Vec<f64>,
     pub threshold_factors: Vec<f64>,
+    
+    // Strategy parameters
+    pub min_signal_strength: f64,
     
     // Output configuration
     pub output_dir: String,
@@ -42,6 +49,9 @@ impl Default for DynamicOptimizationConfig {
             initial_balance: 10_000.0,
             drop_threshold: 9_000.0,
             
+            max_risk_per_trade: 0.02,
+            leverage: 20.0,
+            
             lookback_periods: vec![5, 8, 10, 13],
             
             initial_levels: vec![0.236, 0.382, 0.5, 0.618, 0.786],
@@ -51,6 +61,7 @@ impl Default for DynamicOptimizationConfig {
             limit2_levels: vec![0.786, 1.0, 1.272, 1.618],
             threshold_factors: vec![0.75, 1.0, 1.25, 1.5],
             
+            min_signal_strength: 0.5,
             output_dir: "results".to_string(),
             parallel: true,
             num_best_results: 20,
@@ -222,15 +233,18 @@ impl DynamicFibonacciOptimizer {
         
         let drop_threshold = self.config.drop_threshold;
         let initial_balance = self.config.initial_balance;
+        let max_risk_per_trade = self.config.max_risk_per_trade;
+        let min_signal_strength = self.config.min_signal_strength;
         
         let results: Vec<OptimizationResult> = parameter_combinations
             .par_iter()
             .filter_map(|&(lookback, initial, limit1, limit2, sl, tp, threshold_factor, actual_threshold)| {
                 // Create strategy configuration
                 let config = StrategyConfig {
+                    name: "dynamic_fibonacci".to_string(),
                     initial_balance,
                     leverage,
-                    max_risk_per_trade: 0.02,
+                    max_risk_per_trade,
                     pivot_lookback: lookback,
                     signal_lookback: 1,
                     fib_threshold: actual_threshold,
@@ -239,6 +253,7 @@ impl DynamicFibonacciOptimizer {
                     fib_sl: sl,
                     fib_limit1: limit1,
                     fib_limit2: limit2,
+                    min_signal_strength,
                 };
                 
                 let asset_config = AssetConfig {
@@ -307,6 +322,8 @@ impl DynamicFibonacciOptimizer {
         let total_combinations = parameter_combinations.len();
         let drop_threshold = self.config.drop_threshold;
         let initial_balance = self.config.initial_balance;
+        let max_risk_per_trade = self.config.max_risk_per_trade;
+        let min_signal_strength = self.config.min_signal_strength;
         
         for (i, &(lookback, initial, limit1, limit2, sl, tp, threshold_factor, actual_threshold)) in parameter_combinations.iter().enumerate() {
             // Report progress every 100 combinations
@@ -316,9 +333,10 @@ impl DynamicFibonacciOptimizer {
             }
             
             let config = StrategyConfig {
+                name: "dynamic_fibonacci".to_string(),
                 initial_balance,
                 leverage,
-                max_risk_per_trade: 0.02,
+                max_risk_per_trade,
                 pivot_lookback: lookback,
                 signal_lookback: 1,
                 fib_threshold: actual_threshold,
@@ -327,6 +345,7 @@ impl DynamicFibonacciOptimizer {
                 fib_sl: sl,
                 fib_limit1: limit1,
                 fib_limit2: limit2,
+                min_signal_strength,
             };
             
             let asset_config = AssetConfig {
@@ -439,6 +458,8 @@ impl DynamicFibonacciOptimizer {
             "optimization_config": {
                 "initial_balance": self.config.initial_balance,
                 "drop_threshold": self.config.drop_threshold,
+                "max_risk_per_trade": self.config.max_risk_per_trade,
+                "leverage": self.config.leverage,
                 "lookback_periods": self.config.lookback_periods,
                 "initial_levels": self.config.initial_levels,
                 "tp_levels": self.config.tp_levels,
@@ -446,6 +467,7 @@ impl DynamicFibonacciOptimizer {
                 "limit1_levels": self.config.limit1_levels,
                 "limit2_levels": self.config.limit2_levels,
                 "threshold_factors": self.config.threshold_factors,
+                "min_signal_strength": self.config.min_signal_strength,
             },
             "top_results": results,
         });
@@ -469,9 +491,10 @@ impl DynamicFibonacciOptimizer {
         let asset_output_dir = format!("{}/{}", self.config.output_dir, asset_name);
         
         let config = StrategyConfig {
+            name: "final_backtest".to_string(),
             initial_balance: self.config.initial_balance,
             leverage,
-            max_risk_per_trade: 0.02,
+            max_risk_per_trade: self.config.max_risk_per_trade,
             pivot_lookback: best_result.lookback_period,
             signal_lookback: 1,
             fib_threshold: best_result.actual_threshold,
@@ -480,6 +503,7 @@ impl DynamicFibonacciOptimizer {
             fib_sl: best_result.sl_level,
             fib_limit1: best_result.limit1_level,
             fib_limit2: best_result.limit2_level,
+            min_signal_strength: self.config.min_signal_strength,
         };
         
         let asset_config = AssetConfig {
@@ -532,6 +556,7 @@ impl DynamicFibonacciOptimizer {
         
         let metrics_json = json!({
             "strategy_config": {
+                "name": config.name,
                 "initial_balance": config.initial_balance,
                 "leverage": config.leverage,
                 "max_risk_per_trade": config.max_risk_per_trade,
@@ -543,6 +568,7 @@ impl DynamicFibonacciOptimizer {
                 "fib_sl": config.fib_sl,
                 "fib_limit1": config.fib_limit1,
                 "fib_limit2": config.fib_limit2,
+                "min_signal_strength": config.min_signal_strength,
             },
             "performance": {
                 "total_trades": results.metrics.total_trades,
@@ -659,6 +685,9 @@ pub fn python_like_optimization_config() -> DynamicOptimizationConfig {
         initial_balance: 10_000.0,
         drop_threshold: 9_000.0,
         
+        max_risk_per_trade: 0.02,
+        leverage: 20.0,
+        
         lookback_periods: vec![5, 8, 10, 13],
         
         initial_levels: vec![0.236, 0.382, 0.5, 0.618, 0.786],
@@ -668,12 +697,14 @@ pub fn python_like_optimization_config() -> DynamicOptimizationConfig {
         limit2_levels: vec![0.786, 1.0, 1.272, 1.618],
         threshold_factors: vec![0.75, 1.0, 1.25, 1.5],
         
+        min_signal_strength: 0.5,
         output_dir: "results".to_string(),
         parallel: true,
         num_best_results: 20,
     }
 }
 
+/// Load optimization configuration from a JSON file
 /// Load optimization configuration from a JSON file
 pub fn load_config_from_file(file_path: &str) -> Result<DynamicOptimizationConfig, Box<dyn Error>> {
     println!("Loading optimization configuration from {}", file_path);
@@ -691,6 +722,12 @@ pub fn load_config_from_file(file_path: &str) -> Result<DynamicOptimizationConfi
             
         drop_threshold: json_config["drop_threshold"].as_f64()
             .ok_or_else(|| format!("Missing or invalid 'drop_threshold' in {}", file_path))?,
+            
+        max_risk_per_trade: json_config["max_risk_per_trade"].as_f64()
+            .ok_or_else(|| format!("Missing or invalid 'max_risk_per_trade' in {}", file_path))?,
+            
+        leverage: json_config["leverage"].as_f64()
+            .ok_or_else(|| format!("Missing or invalid 'leverage' in {}", file_path))?,
             
         lookback_periods: json_config["lookback_periods"].as_array()
             .ok_or_else(|| format!("Missing 'lookback_periods' array in {}", file_path))?
@@ -734,6 +771,9 @@ pub fn load_config_from_file(file_path: &str) -> Result<DynamicOptimizationConfi
             .filter_map(|v| v.as_f64())
             .collect(),
             
+        min_signal_strength: json_config["min_signal_strength"].as_f64()
+            .ok_or_else(|| format!("Missing or invalid 'min_signal_strength' in {}", file_path))?,
+            
         output_dir: json_config["output_dir"].as_str()
             .unwrap_or("results")
             .to_string(),
@@ -769,6 +809,9 @@ pub fn load_config_from_file(file_path: &str) -> Result<DynamicOptimizationConfi
     }
     
     println!("Successfully loaded optimization configuration:");
+    println!("  Initial balance: {}", config.initial_balance);
+    println!("  Max risk per trade: {}", config.max_risk_per_trade);
+    println!("  Leverage: {}", config.leverage);
     println!("  Lookback periods: {:?}", config.lookback_periods);
     println!("  Initial levels: {:?}", config.initial_levels);
     println!("  Take profit levels: {:?}", config.tp_levels);
@@ -776,7 +819,10 @@ pub fn load_config_from_file(file_path: &str) -> Result<DynamicOptimizationConfi
     println!("  Limit1 levels: {:?}", config.limit1_levels);
     println!("  Limit2 levels: {:?}", config.limit2_levels);
     println!("  Threshold factors: {:?}", config.threshold_factors);
+    println!("  Min signal strength: {}", config.min_signal_strength);
     println!("  Output directory: {}", config.output_dir);
+    println!("  Parallel: {}", config.parallel);
+    println!("  Number of best results: {}", config.num_best_results);
     
     Ok(config)
 }

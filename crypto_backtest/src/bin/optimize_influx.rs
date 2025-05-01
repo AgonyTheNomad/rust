@@ -1,7 +1,7 @@
 // src/bin/optimize_influx.rs
 use crypto_backtest::backtest::Backtester;
 use crypto_backtest::strategy::{Strategy, StrategyConfig, AssetConfig};
-use crypto_backtest::influx::{InfluxConfig, get_candles};
+use crypto_backtest::models::{default_strategy_config, default_asset_config};
 use tokio;
 use std::env;
 use std::fs::File;
@@ -13,7 +13,7 @@ use std::time::Instant;
 async fn main() -> Result<(), Box<dyn Error>> {
     // Set up logging
     env_logger::init();
-    println!("Starting parameter optimization with InfluxDB data...");
+    println!("Starting parameter optimization...");
     
     // Get command line arguments
     let args: Vec<String> = env::args().collect();
@@ -30,13 +30,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Ensure the output directory exists
     std::fs::create_dir_all(&output_dir)?;
     
-    // Set up InfluxDB connection
-    let influx_config = InfluxConfig::default();
-    println!("Connecting to InfluxDB: {}. Bucket: {}", influx_config.url, influx_config.bucket);
-    
-    // Load candles from InfluxDB
-    println!("Loading candle data for {} from InfluxDB...", symbol);
-    let mut candles = get_candles(&influx_config, symbol, None).await?;
+    // Load candles from CSV for now
+    println!("Loading candle data for {} from CSV...", symbol);
+    let candle_path = format!("data/{}.csv", symbol);
+    let mut candles = crypto_backtest::fetch_data::load_candles_from_csv(&candle_path)?;
     
     // Apply data quality filters
     candles.retain(|c| c.volume > 0.0);
@@ -100,26 +97,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         }
                         
                         // Create strategy config with current parameters
-                        let config = StrategyConfig {
-                            initial_balance: 10_000.0,
-                            leverage: 20.0,
-                            max_risk_per_trade: 0.01,
-                            pivot_lookback: lookback,
-                            signal_lookback: 1,
-                            fib_threshold: threshold,
-                            fib_initial: initial,
-                            fib_tp: tp,
-                            fib_sl: sl,
-                            fib_limit1: 0.5,    // Fixed for optimization
-                            fib_limit2: 0.786,  // Fixed for optimization
-                        };
+                        let mut config = default_strategy_config();
+                        config.name = format!("Optimization-{}", current_combination);
+                        config.leverage = 20.0;
+                        config.max_risk_per_trade = 0.01;
+                        config.pivot_lookback = lookback;
+                        config.signal_lookback = 1;
+                        config.fib_threshold = threshold;
+                        config.fib_initial = initial;
+                        config.fib_tp = tp;
+                        config.fib_sl = sl;
+                        config.fib_limit1 = 0.5;
+                        config.fib_limit2 = 0.786;
                         
-                        let asset_config = AssetConfig {
-                            name: symbol.to_string(),
-                            leverage: 20.0,
-                            spread: 0.0005,
-                            avg_spread: 0.001,
-                        };
+                        let asset_config = default_asset_config(symbol);
                         
                         let strategy = Strategy::new(config.clone(), asset_config);
                         let mut backtester = Backtester::new(config.initial_balance, strategy);
