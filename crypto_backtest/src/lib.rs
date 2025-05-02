@@ -10,10 +10,9 @@ pub mod risk;
 pub mod strategy;
 pub mod optimizer;
 pub mod stats;
-pub mod config;
-pub mod metrics;   // Make sure the metrics module is included
-pub mod signals;   // Keep the signals module
-pub mod influx;    // Include the influx module for InfluxDB access
+pub mod metrics;   // Make sure this line is present
+pub mod signals;
+pub mod influx;
 
 // Re-export key types to make them easier to use from tests and binaries
 pub use crate::models::Candle;

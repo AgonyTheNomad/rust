@@ -8,12 +8,12 @@ use crate::models::Candle;
 /// Custom struct to match your CSV format
 #[derive(Debug, Deserialize)]
 struct CsvCandle {
-    Timestamp: String,
-    Open: f64,
-    High: f64,
-    Low: f64,
-    Close: f64,
-    Volume: f64,
+    timestamp: String,  // Changed from Timestamp
+    open: f64,          // Changed from Open
+    high: f64,          // Changed from High
+    low: f64,           // Changed from Low
+    close: f64,         // Changed from Close
+    volume: f64,        // Changed from Volume
 }
 
 /// Load candle data from a CSV file
@@ -36,21 +36,21 @@ pub fn load_candles_from_csv(file_path: &str) -> Result<Vec<Candle>, Box<dyn Err
         let csv_candle: CsvCandle = result?;
         
         // Format timestamp to ISO 8601 format if necessary
-        let time = if csv_candle.Timestamp.contains('T') {
-            csv_candle.Timestamp
+        let time = if csv_candle.timestamp.contains('T') {  // Changed from Timestamp
+            csv_candle.timestamp  // Changed from Timestamp
         } else {
             // Convert from "2024-08-06 08:00:00" to "2024-08-06T08:00:00Z"
-            csv_candle.Timestamp.replace(' ', "T") + "Z"
+            csv_candle.timestamp.replace(' ', "T") + "Z"  // Changed from Timestamp
         };
         
         // Convert to your Candle model
         let candle = Candle {
             time,
-            open: csv_candle.Open,
-            high: csv_candle.High,
-            low: csv_candle.Low,
-            close: csv_candle.Close,
-            volume: csv_candle.Volume,
+            open: csv_candle.open,    // Changed from Open
+            high: csv_candle.high,    // Changed from High
+            low: csv_candle.low,      // Changed from Low
+            close: csv_candle.close,  // Changed from Close
+            volume: csv_candle.volume, // Changed from Volume
             num_trades: 0, // This field isn't in your CSV, so default to 0
         };
         

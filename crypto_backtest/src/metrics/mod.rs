@@ -1,4 +1,3 @@
-
 use serde::{Deserialize, Serialize};
 use std::{fs::File, io::Write};
 use chrono::{DateTime, Utc};
@@ -415,8 +414,8 @@ mod tests {
         // Add some sample trades
         let trades = vec![
             Trade {
-                entry_time: Utc.ymd(2024, 1, 1).and_hms(0, 0, 0),
-                exit_time: Utc.ymd(2024, 1, 2).and_hms(0, 0, 0),
+                entry_time: "2024-01-01T00:00:00Z".to_string(),
+                exit_time: "2024-01-02T00:00:00Z".to_string(),
                 position_type: "Long".to_string(),
                 entry_price: 100.0,
                 exit_price: 110.0,
@@ -425,10 +424,12 @@ mod tests {
                 risk_percent: 1.0,
                 profit_factor: 2.0,
                 margin_used: 5.0,
+                fees: 0.0,
+                slippage: 0.0,
             },
             Trade {
-                entry_time: Utc.ymd(2024, 1, 3).and_hms(0, 0, 0),
-                exit_time: Utc.ymd(2024, 1, 4).and_hms(0, 0, 0),
+                entry_time: "2024-01-03T00:00:00Z".to_string(),
+                exit_time: "2024-01-04T00:00:00Z".to_string(),
                 position_type: "Short".to_string(),
                 entry_price: 110.0,
                 exit_price: 100.0,
@@ -437,14 +438,19 @@ mod tests {
                 risk_percent: 1.0,
                 profit_factor: 0.0,
                 margin_used: 5.0,
+                fees: 0.0,
+                slippage: 0.0,
             },
         ];
 
         for trade in trades {
-            calculator.add_trade(trade);
+            calculator.add_trade(trade.clone());
+            let exit_time = chrono::DateTime::parse_from_rfc3339(&trade.exit_time)
+                .unwrap()
+                .with_timezone(&Utc);
             calculator.update_equity(
                 calculator.initial_balance + calculator.trades.last().unwrap().pnl,
-                calculator.trades.last().unwrap().exit_time,
+                exit_time,
             );
         }
 
@@ -472,8 +478,8 @@ mod tests {
         
         // Add a sample trade
         calculator.add_trade(Trade {
-            entry_time: Utc.ymd(2024, 1, 1).and_hms(0, 0, 0),
-            exit_time: Utc.ymd(2024, 1, 2).and_hms(0, 0, 0),
+            entry_time: "2024-01-01T00:00:00Z".to_string(),
+            exit_time: "2024-01-02T00:00:00Z".to_string(),
             position_type: "Long".to_string(),
             entry_price: 100.0,
             exit_price: 110.0,
@@ -482,6 +488,8 @@ mod tests {
             risk_percent: 1.0,
             profit_factor: 2.0,
             margin_used: 5.0,
+            fees: 0.0,
+            slippage: 0.0,
         });
 
         calculator.update_equity(10010.0, Utc.ymd(2024, 1, 2).and_hms(0, 0, 0));
@@ -522,8 +530,8 @@ mod tests {
         // Add trades with known risk/reward characteristics
         let trades = vec![
             Trade {
-                entry_time: Utc.ymd(2024, 1, 1).and_hms(0, 0, 0),
-                exit_time: Utc.ymd(2024, 1, 2).and_hms(0, 0, 0),
+                entry_time: "2024-01-01T00:00:00Z".to_string(),
+                exit_time: "2024-01-02T00:00:00Z".to_string(),
                 position_type: "Long".to_string(),
                 entry_price: 100.0,
                 exit_price: 120.0,
@@ -532,10 +540,12 @@ mod tests {
                 risk_percent: 1.0,
                 profit_factor: 2.0,
                 margin_used: 5.0,
+                fees: 0.0,
+                slippage: 0.0,
             },
             Trade {
-                entry_time: Utc.ymd(2024, 1, 3).and_hms(0, 0, 0),
-                exit_time: Utc.ymd(2024, 1, 4).and_hms(0, 0, 0),
+                entry_time: "2024-01-03T00:00:00Z".to_string(),
+                exit_time: "2024-01-04T00:00:00Z".to_string(),
                 position_type: "Long".to_string(),
                 entry_price: 120.0,
                 exit_price: 110.0,
@@ -544,14 +554,19 @@ mod tests {
                 risk_percent: 1.0,
                 profit_factor: 0.0,
                 margin_used: 5.0,
+                fees: 0.0,
+                slippage: 0.0,
             },
         ];
 
         for trade in trades {
-            calculator.add_trade(trade);
+            calculator.add_trade(trade.clone());
+            let exit_time = chrono::DateTime::parse_from_rfc3339(&trade.exit_time)
+                .unwrap()
+                .with_timezone(&Utc);
             calculator.update_equity(
                 calculator.initial_balance + calculator.trades.last().unwrap().pnl,
-                calculator.trades.last().unwrap().exit_time,
+                exit_time,
             );
         }
 
