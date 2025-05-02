@@ -2,7 +2,7 @@
     "assets": [
         {
             "name": "kPEPE",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0015911479704360085,
             "avg_spread": 0.018206783022591745,
             "median_spread": 0.017419859477126334,
@@ -28,7 +28,7 @@
         },
         {
             "name": "APT",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0011154017211072128,
             "avg_spread": 0.02847145329441328,
             "median_spread": 0.027656178690815093,
@@ -54,7 +54,7 @@
         },
         {
             "name": "ETH",
-            "leverage": 50,
+            "leverage": 25,
             "spread": 0.0004693458492226459,
             "avg_spread": 0.0037985826276241185,
             "median_spread": 0.0035349427865524743,
@@ -67,7 +67,7 @@
         },
         {
             "name": "BTC",
-            "leverage": 50,
+            "leverage": 40,
             "spread": 0.0003782993723669504,
             "avg_spread": 0.002266021682225036,
             "median_spread": 0.002062278936404374,
@@ -80,7 +80,7 @@
         },
         {
             "name": "DOGE",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0007593014426727411,
             "avg_spread": 0.012681238989507114,
             "median_spread": 0.012061241762840883,
@@ -106,7 +106,7 @@
         },
         {
             "name": "AVAX",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0010183299389002038,
             "avg_spread": 0.009543299266651038,
             "median_spread": 0.009199438866638137,
@@ -119,7 +119,7 @@
         },
         {
             "name": "LDO",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.00182525577597387,
             "avg_spread": 0.020983279653071427,
             "median_spread": 0.02031496463022691,
@@ -132,7 +132,7 @@
         },
         {
             "name": "BNB",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0006815024507876595,
             "avg_spread": 0.008315107184575947,
             "median_spread": 0.007958748183940791,
@@ -145,7 +145,7 @@
         },
         {
             "name": "MKR",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0012115233737580247,
             "avg_spread": 0.023760674385275724,
             "median_spread": 0.022326931554940425,
@@ -158,7 +158,7 @@
         },
         {
             "name": "TIA",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0014771683151834677,
             "avg_spread": 0.015219733286562499,
             "median_spread": 0.014769547792741266,
@@ -171,7 +171,7 @@
         },
         {
             "name": "WLD",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0013616071077078278,
             "avg_spread": 0.016167037063218422,
             "median_spread": 0.01569140684641743,
@@ -184,7 +184,7 @@
         },
         {
             "name": "ENS",
-            "leverage": 10,
+            "leverage": 5,
             "spread": 0.0024013151818534457,
             "avg_spread": 0.03210976783202929,
             "median_spread": 0.030204259173275762,
@@ -196,21 +196,8 @@
             "custom_spread": 1.0061638121999938
         },
         {
-            "name": "FTM",
-            "leverage": 20,
-            "spread": 0.0014476889940326964,
-            "avg_spread": 0.02288950978112385,
-            "median_spread": 0.022975050784351518,
-            "max_spread": 3.752514477293508,
-            "min_spread": 0.0014377008288345278,
-            "weighted_avg_spread": 0.02517712137682674,
-            "weighted_by_spread_diff": 0.0007981831070906586,
-            "median_of_max_spreads": 0.0014476889940326964,
-            "custom_spread": 1.1401064496593962
-        },
-        {
             "name": "DOT",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.001516513582177057,
             "avg_spread": 0.0330162052582209,
             "median_spread": 0.03071873499773135,
@@ -223,7 +210,7 @@
         },
         {
             "name": "SUI",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0010447834924682618,
             "avg_spread": 0.016605678102577383,
             "median_spread": 0.016128638105456852,
@@ -236,7 +223,7 @@
         },
         {
             "name": "LINK",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0009250350457968113,
             "avg_spread": 0.017474674491241717,
             "median_spread": 0.017206337571003944,
@@ -273,7 +260,7 @@
 
         {
             "name": "INJ",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.001344873213162404,
             "avg_spread": 0.017864560885161942,
             "median_spread": 0.01748451595103269,
@@ -285,7 +272,7 @@
         },
         {
             "name": "OP",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0010558812405361087,
             "avg_spread": 0.020866737242450136,
             "median_spread": 0.020500211105256027,
@@ -297,7 +284,7 @@
         },
         {
             "name": "kSHIB",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 0.0010566365238651718,
             "avg_spread": 0.01411170951152822,
             "median_spread": 0.013390349763512487,
@@ -309,7 +296,7 @@
         },
         {
             "name": "BCH",
-            "leverage": 20,
+            "leverage": 10,
             "spread": 1.0183432338925516e-05,
             "avg_spread": 0.01575979891515004,
             "median_spread": 0.015129588279336154,
@@ -322,7 +309,7 @@
         },
         {
             "name": "RUNE",
-            "leverage": 20,
+            "leverage": 5,
             "spread": 0.0013741679802350526,
             "avg_spread": 0.03843540646616907,
             "median_spread": 0.03654226531898756,
@@ -334,7 +321,7 @@
         },
         {
             "name": "STX",
-            "leverage": 20,
+            "leverage": 5,
             "spread": 0.0013429349842414352,
             "avg_spread": 0.027458699763552828,
             "median_spread": 0.026058162485886056,
