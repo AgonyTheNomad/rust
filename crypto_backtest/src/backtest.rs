@@ -1,9 +1,8 @@
 // src/backtest.rs
 use crate::strategy::Strategy;
-use crate::models::{BacktestState, Trade, Position, PositionType, Candle};
-use crate::metrics::{MetricsCalculator, PerformanceMetrics};
+use crate::models::{BacktestState, Trade, PositionType, Candle};
+use crate::metrics::MetricsCalculator;
 use crate::stats::StatsTracker;
-use std::collections::HashMap;
 use std::time::{Duration, Instant};
 use serde::Serialize;
 

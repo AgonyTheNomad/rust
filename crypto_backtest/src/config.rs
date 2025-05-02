@@ -48,7 +48,7 @@ impl GlobalConfig {
     pub fn load_from_file(path: &str) -> Result<Self, Box<dyn Error>> {
         if Path::new(path).exists() {
             let content = fs::read_to_string(path)?;
-            let mut config: GlobalConfig = serde_json::from_str(&content)?;
+            let config: GlobalConfig = serde_json::from_str(&content)?;
             Ok(config)
         } else {
             println!("Config file not found at {}, using defaults", path);

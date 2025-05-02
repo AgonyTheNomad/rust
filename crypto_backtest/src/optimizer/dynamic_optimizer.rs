@@ -1,5 +1,5 @@
-use crate::models::{Candle, Trade};
-use crate::backtest::{Backtester, BacktestMetrics};
+use crate::models::Candle;
+use crate::backtest::Backtester;
 use crate::strategy::{Strategy, StrategyConfig, AssetConfig};
 use crate::indicators::PivotPoints;
 use rayon::prelude::*;

@@ -1,6 +1,4 @@
 // src/optimizer/mod.rs
-use std::fs;
-use serde_json;
 
 // First declare all modules
 pub mod dynamic_optimizer;  // This needs to be declared before it's used

@@ -79,7 +79,7 @@ impl MetricsCalculator {
         let mut max_position_size: f64 = 0.0;  // Explicitly type as f64
         let mut total_fees = 0.0;
         let mut total_slippage = 0.0;
-        let mut total_duration = 0i64;
+        let total_duration = 0i64;
 
         for trade in &self.trades {
             if trade.pnl > 0.0 {

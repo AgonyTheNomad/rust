@@ -16,6 +16,8 @@ rayon = "1.7"
 thiserror = "1.0"
 ndarray = "0.15"
 influxdb = { version = "0.7.2", features = ["derive"] }
+influxdb2 = "0.3.5"
+influxdb2-structmap = "0.2.0"
 anyhow = "1.0"
 uuid = { version = "1.8", features = ["v4"] }
 
@@ -26,10 +28,6 @@ path = "src/bin/run_backtest.rs"
 [[bin]]
 name = "prepare_data"
 path = "src/bin/prepare_data.rs"
-
-[[bin]]
-name = "optimize_fibonacci"
-path = "src/bin/optimize_fibonacci.rs"
 
 [[bin]]
 name = "debug_optimizer"

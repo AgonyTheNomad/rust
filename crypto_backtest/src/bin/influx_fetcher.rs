@@ -5,12 +5,13 @@
 
 use std::env;
 use std::error::Error;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Write;
 use std::path::Path;
 use chrono::{DateTime, Utc};
 use influxdb::{Client, ReadQuery};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct Candle {
@@ -52,101 +53,92 @@ async fn get_candles(config: &InfluxConfig, symbol: &str, days_back: i64) -> Res
     println!("Executing query: {}", query);
     
     // Execute the query
-    let response = client.query(&ReadQuery::new(query)).await?;
+    let read_query = ReadQuery::new(query);
+    let response_str = client.query(&read_query).await?;
     
     println!("Query completed, processing results...");
+    
+    // Parse the response into JSON
+    let response_json: Value = serde_json::from_str(&response_str)?;
     
     // Parse the response into Candles
     let mut candles = Vec::new();
     
     // The response should contain series with our query results
-    for series in response.series {
-        let time_index = series.columns.iter().position(|c| c == "time")
-            .ok_or("No time column found")?;
-        let open_index = series.columns.iter().position(|c| c == "open")
-            .ok_or("No open column found")?;
-        let high_index = series.columns.iter().position(|c| c == "high")
-            .ok_or("No high column found")?;
-        let low_index = series.columns.iter().position(|c| c == "low")
-            .ok_or("No low column found")?;
-        let close_index = series.columns.iter().position(|c| c == "close")
-            .ok_or("No close column found")?;
-        let volume_index = series.columns.iter().position(|c| c == "volume")
-            .ok_or("No volume column found")?;
-        let num_trades_index = series.columns.iter().position(|c| c == "num_trades")
-            .unwrap_or(0); // Optional
-        
-        // Process each value in the series
-        for values in series.values {
-            // Parse the timestamp - could be a string or a number
-            let time_str = match &values[time_index] {
-                influxdb::Value::String(s) => s.clone(),
-                influxdb::Value::Integer(i) => i.to_string(),
-                _ => return Err("Unexpected time format".into()),
-            };
+    if let Some(series_array) = response_json.get("series").and_then(|s| s.as_array()) {
+        for series in series_array {
+            // Extract column names
+            let columns = series.get("columns")
+                .and_then(|c| c.as_array())
+                .ok_or("No columns found")?;
             
-            // Convert timestamp to a standard format
-            let time = if let Ok(dt) = time_str.parse::<DateTime<Utc>>() {
-                dt.to_rfc3339()
-            } else {
-                // If parsing fails, just use the original string
-                time_str
-            };
+            let column_names: Vec<String> = columns.iter()
+                .filter_map(|c| c.as_str().map(String::from))
+                .collect();
             
-            // Extract numerical values
-            let open = match &values[open_index] {
-                influxdb::Value::Float(f) => *f,
-                influxdb::Value::Integer(i) => *i as f64,
-                _ => return Err("Unexpected open format".into()),
-            };
+            let time_index = column_names.iter().position(|c| c == "time")
+                .ok_or("No time column found")?;
+            let open_index = column_names.iter().position(|c| c == "open")
+                .ok_or("No open column found")?;
+            let high_index = column_names.iter().position(|c| c == "high")
+                .ok_or("No high column found")?;
+            let low_index = column_names.iter().position(|c| c == "low")
+                .ok_or("No low column found")?;
+            let close_index = column_names.iter().position(|c| c == "close")
+                .ok_or("No close column found")?;
+            let volume_index = column_names.iter().position(|c| c == "volume")
+                .ok_or("No volume column found")?;
+            let num_trades_index = column_names.iter().position(|c| c == "num_trades")
+                .unwrap_or(6); // Optional
             
-            let high = match &values[high_index] {
-                influxdb::Value::Float(f) => *f,
-                influxdb::Value::Integer(i) => *i as f64,
-                _ => return Err("Unexpected high format".into()),
-            };
-            
-            let low = match &values[low_index] {
-                influxdb::Value::Float(f) => *f,
-                influxdb::Value::Integer(i) => *i as f64,
-                _ => return Err("Unexpected low format".into()),
-            };
-            
-            let close = match &values[close_index] {
-                influxdb::Value::Float(f) => *f,
-                influxdb::Value::Integer(i) => *i as f64,
-                _ => return Err("Unexpected close format".into()),
-            };
-            
-            let volume = match &values[volume_index] {
-                influxdb::Value::Float(f) => *f,
-                influxdb::Value::Integer(i) => *i as f64,
-                _ => return Err("Unexpected volume format".into()),
-            };
-            
-            // num_trades is optional
-            let num_trades = if num_trades_index > 0 {
-                match &values[num_trades_index] {
-                    influxdb::Value::Float(f) => *f as i64,
-                    influxdb::Value::Integer(i) => *i,
-                    _ => 0,
+            // Process each value in the series
+            if let Some(values_array) = series.get("values").and_then(|v| v.as_array()) {
+                for values in values_array {
+                    if let Some(value_array) = values.as_array() {
+                        // Parse the timestamp - could be a string or a number
+                        let time_str = match &value_array[time_index] {
+                            Value::String(s) => s.clone(),
+                            Value::Number(n) => n.to_string(),
+                            _ => return Err("Unexpected time format".into()),
+                        };
+                        
+                        // Convert timestamp to a standard format
+                        let time = if let Ok(dt) = time_str.parse::<DateTime<Utc>>() {
+                            dt.to_rfc3339()
+                        } else {
+                            // If parsing fails, just use the original string
+                            time_str
+                        };
+                        
+                        // Extract numerical values
+                        let open = value_array[open_index].as_f64().unwrap_or(0.0);
+                        let high = value_array[high_index].as_f64().unwrap_or(0.0);
+                        let low = value_array[low_index].as_f64().unwrap_or(0.0);
+                        let close = value_array[close_index].as_f64().unwrap_or(0.0);
+                        let volume = value_array[volume_index].as_f64().unwrap_or(0.0);
+                        
+                        // num_trades is optional
+                        let num_trades = if num_trades_index < value_array.len() {
+                            value_array[num_trades_index].as_i64().unwrap_or(0)
+                        } else {
+                            0
+                        };
+                        
+                        // Create and add the candle
+                        let candle = Candle {
+                            time,
+                            open,
+                            high,
+                            low,
+                            close,
+                            volume,
+                            num_trades,
+                        };
+                        
+                        candles.push(candle);
+                    }
                 }
-            } else {
-                0
-            };
-            
-            // Create and add the candle
-            let candle = Candle {
-                time,
-                open,
-                high,
-                low,
-                close,
-                volume,
-                num_trades,
-            };
-            
-            candles.push(candle);
+            }
         }
     }
     
@@ -165,18 +157,28 @@ async fn get_available_symbols(config: &InfluxConfig) -> Result<Vec<String>, Box
     let query = "SHOW TAG VALUES FROM candles WITH KEY = \"symbol\"";
     
     // Execute the query
-    let response = client.query(&ReadQuery::new(query)).await?;
+    let read_query = ReadQuery::new(query);
+    let response_str = client.query(&read_query).await?;
+    
+    // Parse the response into JSON
+    let response_json: Value = serde_json::from_str(&response_str)?;
     
     // Extract symbols
     let mut symbols = Vec::new();
     
-    for series in response.series {
-        // The series values should contain pairs of (key, value)
-        for values in series.values {
-            if values.len() >= 2 {
-                // Extract the symbol value (second column)
-                if let influxdb::Value::String(symbol) = &values[1] {
-                    symbols.push(symbol.clone());
+    if let Some(series_array) = response_json.get("series").and_then(|s| s.as_array()) {
+        for series in series_array {
+            // The series values should contain pairs of (key, value)
+            if let Some(values_array) = series.get("values").and_then(|v| v.as_array()) {
+                for values in values_array {
+                    if let Some(value_array) = values.as_array() {
+                        if value_array.len() >= 2 {
+                            // Extract the symbol value (second column)
+                            if let Some(symbol) = value_array[1].as_str() {
+                                symbols.push(symbol.to_string());
+                            }
+                        }
+                    }
                 }
             }
         }

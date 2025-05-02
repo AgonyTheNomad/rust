@@ -6,7 +6,7 @@ use log::*;
 use chrono::Utc;
 
 use crate::models::{Candle, PositionType, Signal, Position, PositionStatus};
-use crate::risk::position_calculator::{PositionResult, calculate_positions};
+use crate::risk::position_calculator::calculate_positions;
 use crate::indicators::fibonacci::FibonacciLevels;
 use crate::indicators::pivot_points::PivotPoints;
 

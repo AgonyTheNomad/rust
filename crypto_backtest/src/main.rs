@@ -13,7 +13,8 @@ use std::env;
 use crate::backtest::Backtester;
 use crate::fetch_data::load_candles_from_csv;
 use crate::strategy::{Strategy, StrategyConfig};
-use crate::optimizer::{optimize, OptimizationParams};
+use crate::optimizer::grid_optimizer::{optimize, OptimizationParams};
+use crate::models::default_asset_config;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
@@ -47,7 +48,10 @@ fn run_single_backtest(candles: &[crate::models::Candle]) -> Result<(), Box<dyn 
         ..Default::default()
     };
 
-    let strategy = Strategy::new(config.clone());
+    // Create the asset config here inside the function
+    let asset_config = default_asset_config("BTC");
+    
+    let strategy = Strategy::new(config.clone(), asset_config);
     let mut backtester = Backtester::new(config.initial_balance, strategy);
 
     let start_time = std::time::Instant::now();
