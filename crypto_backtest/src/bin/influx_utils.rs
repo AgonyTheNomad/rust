@@ -1,10 +1,8 @@
 // src/bin/influx_utils.rs
 use crypto_backtest::influx::{InfluxConfig, get_candles, get_available_symbols};
-use tokio;
-use std::fs::File;
-use std::io::Write;
 use std::error::Error;
 use std::env;
+use std::path::Path;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -12,26 +10,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
     
     if args.len() < 2 {
-        println!("Available commands:");
-        println!("  symbols   - List all available symbols in the InfluxDB");
-        println!("  info      - Show detailed information about candles for a specific symbol");
-        println!("  export    - Export candles from InfluxDB to CSV file");
-        println!("");
-        println!("Examples:");
-        println!("  influx_utils symbols");
-        println!("  influx_utils info BTC");
-        println!("  influx_utils export BTC candles.csv");
+        println!("Usage:");
+        println!("  influx_utils list                        - List available symbols");
+        println!("  influx_utils info <symbol>               - Show information about symbol's data");
+        println!("  influx_utils export <symbol> [file.csv]  - Export symbol data to CSV");
         return Ok(());
     }
     
     let command = &args[1];
-    
-    // Set up InfluxDB connection
     let influx_config = InfluxConfig::default();
-    println!("Connecting to InfluxDB: {}", influx_config.url);
     
     match command.as_str() {
-        "symbols" => {
+        "list" => {
             // List all available symbols
             println!("Fetching available symbols from InfluxDB...");
             let symbols = get_available_symbols(&influx_config).await?;
@@ -70,8 +60,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
             let mut max_high = f64::MIN;
             let mut min_low = f64::MAX;
             let mut max_low = f64::MIN;
-            let mut open_price = candles.first().unwrap().open;
-            let mut close_price = candles.last().unwrap().close;
+            let open_price = candles.first().unwrap().open;
+            let close_price = candles.last().unwrap().close;
             
             for candle in &candles {
                 sum_volume += candle.volume;
@@ -105,23 +95,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
             
             println!("\nLast Candle:");
             print_candle(candles.last().unwrap());
-            
-            // Calculate candles per timeframe
-            println!("\nCandle Distribution:");
-            // We could implement timeframe analysis here
-            println!("  Total candles: {}", candle_count);
         },
         
         "export" => {
             // Export candles to CSV
-            if args.len() < 4 {
-                println!("Please provide a symbol and output filename.");
-                println!("Example: influx_utils export BTC candles.csv");
+            if args.len() < 3 {
+                println!("Please provide a symbol.");
+                println!("Example: influx_utils export BTC [output.csv]");
                 return Ok(());
             }
             
             let symbol = &args[2];
-            let output_file = &args[3];
+            let output_file = if args.len() >= 4 {
+                args[3].clone()
+            } else {
+                format!("{}.csv", symbol)
+            };
             
             println!("Fetching candle data for {} from InfluxDB...", symbol);
             let candles = get_candles(&influx_config, symbol, None).await?;
@@ -134,33 +123,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
             println!("Exporting {} candles to {}...", candles.len(), output_file);
             
             // Write to CSV
-            let mut writer = csv::Writer::from_path(output_file)?;
-            
-            // Write header
-            writer.write_record(&[
-                "Timestamp", "Open", "High", "Low", "Close", "Volume", "NumTrades"
-            ])?;
-            
-            // Write data
-            for candle in candles {
-                writer.write_record(&[
-                    candle.time.clone(),
-                    format!("{}", candle.open),
-                    format!("{}", candle.high),
-                    format!("{}", candle.low),
-                    format!("{}", candle.close),
-                    format!("{}", candle.volume),
-                    format!("{}", candle.num_trades),
-                ])?;
-            }
-            
-            writer.flush()?;
+            crypto_backtest::fetch_data::save_candles_to_csv(&candles, &output_file)?;
             println!("Export complete!");
         },
         
         _ => {
             println!("Unknown command: {}", command);
-            println!("Available commands: symbols, info, export");
+            println!("Available commands: list, info, export");
         }
     }
     

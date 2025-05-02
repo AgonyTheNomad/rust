@@ -1,10 +1,13 @@
 // src/influx.rs
 use crate::models::Candle;
-use influxdb::{Client, ReadQuery};
-use chrono::{DateTime, Utc};
+use reqwest::{Client, StatusCode};
+use serde::{Deserialize, Serialize};
+use std::time::Duration;
+use std::collections::HashMap;
 use std::error::Error;
-use serde_json::Value;
+use chrono::{DateTime, Utc};
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InfluxConfig {
     pub url: String,
     pub token: String,
@@ -32,95 +35,98 @@ impl InfluxConfig {
     }
 }
 
+#[derive(Debug, Serialize)]
+struct FluxQuery {
+    query: String,
+}
+
 pub async fn get_candles(config: &InfluxConfig, symbol: &str, start_time: Option<&str>) -> Result<Vec<Candle>, Box<dyn Error>> {
     println!("Connecting to InfluxDB at {}", config.url);
     
-    // Since we're using the older influxdb crate, we'll use InfluxQL instead of Flux
-    let time_range = match start_time {
-        Some(time) => format!("time > '{}'", time),
-        None => format!("time > now() - 365d"),
+    // Configure HTTP client with appropriate timeouts
+    let client = Client::builder()
+        .timeout(Duration::from_secs(30))
+        .build()?;
+        
+    // Define start time range
+    let start_range = match start_time {
+        Some(time) => format!("start: {}", time),
+        None => "start: -365d".to_string(),
     };
     
-    let query_string = format!(
-        "SELECT time, open, high, low, close, volume, num_trades FROM {} WHERE symbol='{}' AND {}",
-        config.bucket,
-        symbol,
-        time_range
+    // Construct the Flux query
+    let flux_query = format!(
+        r#"
+        from(bucket: "{}")
+            |> range({})
+            |> filter(fn: (r) => r._measurement == "candles" and r.symbol == "{}")
+            |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+        "#,
+        config.bucket, start_range, symbol
     );
+
+    println!("Executing InfluxDB Flux query: {}", flux_query);
+
+    // Prepare request to InfluxDB API v2
+    let api_url = format!("{}/api/v2/query", config.url);
     
-    println!("Executing query: {}", query_string);
-    
-    let client = Client::new(config.url.clone(), config.bucket.clone());
-    let read_query = ReadQuery::new(query_string);
-    
-    // Execute the query - the influxdb crate returns a String, not a complex type
-    let query_result_string = client.query(&read_query).await?;
-    
-    // Parse the result as JSON
-    let query_result_json: Value = serde_json::from_str(&query_result_string)?;
-    
+    let response = client
+        .post(&api_url)
+        .header("Authorization", format!("Token {}", config.token))
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/csv")
+        .query(&[("org", &config.org)])
+        .body(serde_json::to_string(&FluxQuery { query: flux_query })?)
+        .send()
+        .await?;
+
+    if response.status() != StatusCode::OK {
+        let status = response.status();
+        let error_text = response.text().await?;
+        return Err(format!("InfluxDB query failed with status {}: {}", status, error_text).into());
+    }
+
+    // Process CSV response
+    let csv_text = response.text().await?;
     let mut candles = Vec::new();
     
-    // Parse the JSON results assuming it follows the standard InfluxDB JSON format
-    if let Some(series_array) = query_result_json.get("series").and_then(|s| s.as_array()) {
-        for series in series_array {
-            let columns = series.get("columns")
-                .and_then(|c| c.as_array())
-                .ok_or("No columns found")?;
+    // Parse CSV
+    let mut rdr = csv::Reader::from_reader(csv_text.as_bytes());
+
+    for result in rdr.deserialize() {
+        let record: HashMap<String, String> = result?;
+        
+        // Skip header rows or other metadata
+        if !record.contains_key("_time") || !record.contains_key("open") {
+            continue;
+        }
+        
+        // Extract fields with error handling
+        if let Some(time_str) = record.get("_time") {
+            // Extract price and volume data with fallbacks for missing fields
+            let open: f64 = record.get("open").unwrap_or(&"0".to_string()).parse().unwrap_or(0.0);
+            let high: f64 = record.get("high").unwrap_or(&"0".to_string()).parse().unwrap_or(0.0); 
+            let low: f64 = record.get("low").unwrap_or(&"0".to_string()).parse().unwrap_or(0.0);
+            let close: f64 = record.get("close").unwrap_or(&"0".to_string()).parse().unwrap_or(0.0);
+            let volume: f64 = record.get("volume").unwrap_or(&"0".to_string()).parse().unwrap_or(0.0);
+            let num_trades: i64 = record.get("num_trades").unwrap_or(&"0".to_string()).parse().unwrap_or(0);
             
-            let column_names: Vec<String> = columns.iter()
-                .filter_map(|c| c.as_str().map(String::from))
-                .collect();
+            // Create a Candle object
+            let candle = Candle {
+                time: time_str.clone(),
+                open,
+                high,
+                low,
+                close,
+                volume,
+                num_trades,
+            };
             
-            let time_idx = column_names.iter().position(|c| c == "time").ok_or("No time column")?;
-            let open_idx = column_names.iter().position(|c| c == "open").ok_or("No open column")?;
-            let high_idx = column_names.iter().position(|c| c == "high").ok_or("No high column")?;
-            let low_idx = column_names.iter().position(|c| c == "low").ok_or("No low column")?;
-            let close_idx = column_names.iter().position(|c| c == "close").ok_or("No close column")?;
-            let volume_idx = column_names.iter().position(|c| c == "volume").ok_or("No volume column")?;
-            let num_trades_idx = column_names.iter().position(|c| c == "num_trades").unwrap_or(6);
-            
-            if let Some(values_array) = series.get("values").and_then(|v| v.as_array()) {
-                for values in values_array {
-                    if let Some(values_vec) = values.as_array() {
-                        let time_str = match &values_vec[time_idx] {
-                            Value::String(s) => s.clone(),
-                            Value::Number(n) => n.to_string(),
-                            _ => continue,
-                        };
-                        
-                        // Parse timestamp
-                        let time_parsed = if let Ok(dt) = time_str.parse::<DateTime<Utc>>() {
-                            dt.to_rfc3339()
-                        } else {
-                            time_str
-                        };
-                        
-                        let open = values_vec[open_idx].as_f64().unwrap_or(0.0);
-                        let high = values_vec[high_idx].as_f64().unwrap_or(0.0);
-                        let low = values_vec[low_idx].as_f64().unwrap_or(0.0);
-                        let close = values_vec[close_idx].as_f64().unwrap_or(0.0);
-                        let volume = values_vec[volume_idx].as_f64().unwrap_or(0.0);
-                        let num_trades = values_vec.get(num_trades_idx)
-                            .and_then(|v| v.as_i64())
-                            .unwrap_or(0);
-                        
-                        candles.push(Candle {
-                            time: time_parsed,
-                            open,
-                            high,
-                            low,
-                            close,
-                            volume,
-                            num_trades,
-                        });
-                    }
-                }
-            }
+            candles.push(candle);
         }
     }
-    
-    // Sort candles by time
+
+    // Sort by time to ensure consistent ordering
     candles.sort_by(|a, b| a.time.cmp(&b.time));
     
     println!("Loaded {} candles from InfluxDB", candles.len());
@@ -128,41 +134,62 @@ pub async fn get_candles(config: &InfluxConfig, symbol: &str, start_time: Option
     Ok(candles)
 }
 
-// Function to get all available symbols from the InfluxDB
 pub async fn get_available_symbols(config: &InfluxConfig) -> Result<Vec<String>, Box<dyn Error>> {
-    let client = Client::new(config.url.clone(), config.bucket.clone());
+    // Configure HTTP client with appropriate timeouts
+    let client = Client::builder()
+        .timeout(Duration::from_secs(30))
+        .build()?;
     
-    // Query to get distinct symbols using InfluxQL
-    let query_string = format!("SHOW TAG VALUES FROM {} WITH KEY = \"symbol\"", config.bucket);
+    // Construct a Flux query to get distinct symbols
+    let flux_query = format!(
+        r#"
+        import "influxdata/influxdb/schema"
+        schema.measurementTagValues(
+            bucket: "{}",
+            measurement: "candles",
+            tag: "symbol"
+        )
+        "#,
+        config.bucket
+    );
+
+    println!("Executing symbols query");
+
+    // Prepare request to InfluxDB API v2
+    let api_url = format!("{}/api/v2/query", config.url);
     
-    let read_query = ReadQuery::new(query_string);
-    
-    // Execute the query and get the string result
-    let query_result_string = client.query(&read_query).await?;
-    
-    // Parse the result as JSON
-    let query_result_json: Value = serde_json::from_str(&query_result_string)?;
-    
+    let response = client
+        .post(&api_url)
+        .header("Authorization", format!("Token {}", config.token))
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/csv")
+        .query(&[("org", &config.org)])
+        .body(serde_json::to_string(&FluxQuery { query: flux_query })?)
+        .send()
+        .await?;
+
+    if response.status() != StatusCode::OK {
+        let status = response.status();
+        let error_text = response.text().await?;
+        return Err(format!("InfluxDB symbols query failed with status {}: {}", status, error_text).into());
+    }
+
+    // Process CSV response
+    let csv_text = response.text().await?;
     let mut symbols = Vec::new();
     
-    // Parse the JSON results
-    if let Some(series_array) = query_result_json.get("series").and_then(|s| s.as_array()) {
-        for series in series_array {
-            if let Some(values_array) = series.get("values").and_then(|v| v.as_array()) {
-                for values in values_array {
-                    if let Some(values_vec) = values.as_array() {
-                        if values_vec.len() >= 2 {
-                            if let Value::String(symbol) = &values_vec[1] {
-                                symbols.push(symbol.clone());
-                            }
-                        }
-                    }
-                }
-            }
+    // Parse CSV
+    let mut rdr = csv::Reader::from_reader(csv_text.as_bytes());
+
+    for result in rdr.deserialize() {
+        let record: HashMap<String, String> = result?;
+        
+        // Extract value field (contains the symbol)
+        if let Some(symbol) = record.get("_value") {
+            symbols.push(symbol.clone());
         }
     }
-    
+
     println!("Found {} symbols in InfluxDB", symbols.len());
-    
     Ok(symbols)
 }
