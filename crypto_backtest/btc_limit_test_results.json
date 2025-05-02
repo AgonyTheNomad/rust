@@ -1,0 +1,23 @@
+{
+  "parameters": {
+    "fib_initial": 0.5,
+    "fib_limit1": 0.618,
+    "fib_limit2": 0.786,
+    "fib_sl": 0.382,
+    "fib_threshold": 100.0,
+    "fib_tp": 1.618,
+    "initial_balance": 100.0,
+    "leverage": 40.0,
+    "max_risk_per_trade": 0.02,
+    "pivot_lookback": 5
+  },
+  "results": {
+    "max_drawdown": 0.0,
+    "profit_factor": 1.4303207981047392,
+    "sharpe_ratio": 0.0,
+    "sortino_ratio": 0.0,
+    "total_profit": 9.204951392944386,
+    "total_trades": 643,
+    "win_rate": 0.5381026438569206
+  }
+}

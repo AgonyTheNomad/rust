@@ -1,0 +1,2213 @@
+PARAMETER SET #3
+
+Lookback: 13
+Threshold: 500.00
+Initial Level: 0.618
+Take Profit: 2.618
+Stop Loss: 0.500
+Limit1: 0.786
+Limit2: 1.000
+
+POSITION #1 OPENED
+Candle #715: 2025-05-02T12:47:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #2 OPENED
+Candle #715: 2025-05-02T12:47:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #3 OPENED
+Candle #716: 2025-05-02T12:48:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #4 OPENED
+Candle #716: 2025-05-02T12:48:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #5 OPENED
+Candle #717: 2025-05-02T12:49:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #6 OPENED
+Candle #717: 2025-05-02T12:49:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #7 OPENED
+Candle #718: 2025-05-02T12:50:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #8 OPENED
+Candle #718: 2025-05-02T12:50:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #9 OPENED
+Candle #719: 2025-05-02T12:51:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #10 OPENED
+Candle #719: 2025-05-02T12:51:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #11 OPENED
+Candle #720: 2025-05-02T12:52:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #12 OPENED
+Candle #720: 2025-05-02T12:52:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #13 OPENED
+Candle #721: 2025-05-02T12:53:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #14 OPENED
+Candle #721: 2025-05-02T12:53:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #15 OPENED
+Candle #722: 2025-05-02T12:54:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #16 OPENED
+Candle #722: 2025-05-02T12:54:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #17 OPENED
+Candle #723: 2025-05-02T12:55:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #18 OPENED
+Candle #723: 2025-05-02T12:55:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #19 OPENED
+Candle #724: 2025-05-02T12:56:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #20 OPENED
+Candle #724: 2025-05-02T12:56:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #21 OPENED
+Candle #725: 2025-05-02T12:57:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #22 OPENED
+Candle #725: 2025-05-02T12:57:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #23 OPENED
+Candle #726: 2025-05-02T12:58:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #24 OPENED
+Candle #726: 2025-05-02T12:58:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #25 OPENED
+Candle #727: 2025-05-02T12:59:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #26 OPENED
+Candle #727: 2025-05-02T12:59:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #27 OPENED
+Candle #728: 2025-05-02T13:00:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #28 OPENED
+Candle #728: 2025-05-02T13:00:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #29 OPENED
+Candle #729: 2025-05-02T13:01:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #30 OPENED
+Candle #729: 2025-05-02T13:01:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #31 OPENED
+Candle #730: 2025-05-02T13:02:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #32 OPENED
+Candle #730: 2025-05-02T13:02:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #33 OPENED
+Candle #731: 2025-05-02T13:03:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #34 OPENED
+Candle #731: 2025-05-02T13:03:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #35 OPENED
+Candle #732: 2025-05-02T13:04:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #36 OPENED
+Candle #732: 2025-05-02T13:04:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #37 OPENED
+Candle #733: 2025-05-02T13:05:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #38 OPENED
+Candle #733: 2025-05-02T13:05:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #39 OPENED
+Candle #734: 2025-05-02T13:06:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #40 OPENED
+Candle #734: 2025-05-02T13:06:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #41 OPENED
+Candle #735: 2025-05-02T13:07:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #42 OPENED
+Candle #735: 2025-05-02T13:07:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #43 OPENED
+Candle #736: 2025-05-02T13:08:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #44 OPENED
+Candle #736: 2025-05-02T13:08:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #45 OPENED
+Candle #737: 2025-05-02T13:09:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #46 OPENED
+Candle #737: 2025-05-02T13:09:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #47 OPENED
+Candle #738: 2025-05-02T13:10:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #48 OPENED
+Candle #738: 2025-05-02T13:10:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #49 OPENED
+Candle #739: 2025-05-02T13:11:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #50 OPENED
+Candle #739: 2025-05-02T13:11:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #51 OPENED
+Candle #740: 2025-05-02T13:12:00Z
+Type: LONG
+Entry Price: $96985.21
+Stop Loss: $96400.50 (0.6028898384448644% from entry)
+Take Profit: $98554.21 (1.6177723750756545% from entry)
+Limit1 Price: $95292.39 (1.7454404998271222% from entry)
+Limit2 Price: $94831.50 (2.220662213520519% from entry)
+Initial Size: -0.00944769 ($-916.2859175544856)
+Limit1 Size: -0.02834306 ($-2700.8780761658313)
+Limit2 Size: -0.04723843 ($-4479.691512077718)
+Risk Percent: 1.00%
+TP1 after limit1: $96102.71
+TP2 after limit2: $95481.19
+Account Balance: $10000.00
+
+POSITION #52 OPENED
+Candle #740: 2025-05-02T13:12:00Z
+Type: SHORT
+Entry Price: $96861.79
+Stop Loss: $97446.50 (0.6036580824557713% from entry)
+Take Profit: $95292.79 (1.6198338527435352% from entry)
+Limit1 Price: $98554.61 (1.747664661066639% from entry)
+Limit2 Price: $99015.50 (2.2234919351993065% from entry)
+Initial Size: -0.00944769 ($-915.1198084790144)
+Limit1 Size: -0.02834306 ($-2793.3391019346686)
+Limit2 Size: -0.04723843 ($-4677.337118089783)
+Risk Percent: 1.00%
+TP1 after limit1: $97734.01
+TP2 after limit2: $98356.31
+Account Balance: $10000.00
+
+POSITION #53 OPENED
+Candle #741: 2025-05-02T13:13:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #54 OPENED
+Candle #741: 2025-05-02T13:13:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #55 OPENED
+Candle #742: 2025-05-02T13:14:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #56 OPENED
+Candle #742: 2025-05-02T13:14:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #57 OPENED
+Candle #743: 2025-05-02T13:15:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #58 OPENED
+Candle #743: 2025-05-02T13:15:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #59 OPENED
+Candle #744: 2025-05-02T13:16:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #60 OPENED
+Candle #744: 2025-05-02T13:16:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #61 OPENED
+Candle #745: 2025-05-02T13:17:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #62 OPENED
+Candle #745: 2025-05-02T13:17:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #63 OPENED
+Candle #746: 2025-05-02T13:18:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #64 OPENED
+Candle #746: 2025-05-02T13:18:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #65 OPENED
+Candle #747: 2025-05-02T13:19:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #66 OPENED
+Candle #747: 2025-05-02T13:19:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #67 OPENED
+Candle #748: 2025-05-02T13:20:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #68 OPENED
+Candle #748: 2025-05-02T13:20:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #69 OPENED
+Candle #749: 2025-05-02T13:21:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #70 OPENED
+Candle #749: 2025-05-02T13:21:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #71 OPENED
+Candle #750: 2025-05-02T13:22:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #72 OPENED
+Candle #750: 2025-05-02T13:22:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #73 OPENED
+Candle #751: 2025-05-02T13:23:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #74 OPENED
+Candle #751: 2025-05-02T13:23:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #75 OPENED
+Candle #752: 2025-05-02T13:24:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #76 OPENED
+Candle #752: 2025-05-02T13:24:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #77 OPENED
+Candle #753: 2025-05-02T13:25:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #78 OPENED
+Candle #753: 2025-05-02T13:25:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #79 OPENED
+Candle #754: 2025-05-02T13:26:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #80 OPENED
+Candle #754: 2025-05-02T13:26:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #81 OPENED
+Candle #755: 2025-05-02T13:27:00Z
+Type: LONG
+Entry Price: $97048.87
+Stop Loss: $96349.00 (0.7211500911066815% from entry)
+Take Profit: $98926.87 (1.9351075789982408% from entry)
+Limit1 Price: $95022.66 (2.0878185287024786% from entry)
+Limit2 Price: $94471.00 (2.6562576701049223% from entry)
+Initial Size: -0.00789320 ($-766.0256521024238)
+Limit1 Size: -0.02367959 ($-2250.0972798096464)
+Limit2 Size: -0.03946598 ($-3728.3901848174096)
+Risk Percent: 1.00%
+TP1 after limit1: $95991.36
+TP2 after limit2: $95247.52
+Account Balance: $10000.00
+
+POSITION #82 OPENED
+Candle #755: 2025-05-02T13:27:00Z
+Type: SHORT
+Entry Price: $96901.13
+Stop Loss: $97601.00 (0.7222495605108126% from entry)
+Take Profit: $95023.13 (1.9380578546801752% from entry)
+Limit1 Price: $98927.34 (2.091001628340128% from entry)
+Limit2 Price: $99479.00 (2.660307415190988% from entry)
+Initial Size: -0.00789320 ($-764.8595430269526)
+Limit1 Size: -0.02367959 ($-2342.5583055784828)
+Limit2 Size: -0.03946598 ($-3926.0357908294723)
+Risk Percent: 1.00%
+TP1 after limit1: $97943.92
+TP2 after limit2: $98688.87
+Account Balance: $10000.00
+
+POSITION #83 OPENED
+Candle #808: 2025-05-02T14:20:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #84 OPENED
+Candle #809: 2025-05-02T14:21:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #85 OPENED
+Candle #810: 2025-05-02T14:22:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #86 OPENED
+Candle #811: 2025-05-02T14:23:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #87 OPENED
+Candle #812: 2025-05-02T14:24:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #88 OPENED
+Candle #813: 2025-05-02T14:25:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #89 OPENED
+Candle #814: 2025-05-02T14:26:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #90 OPENED
+Candle #815: 2025-05-02T14:27:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #91 OPENED
+Candle #816: 2025-05-02T14:28:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #92 OPENED
+Candle #817: 2025-05-02T14:29:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #93 OPENED
+Candle #818: 2025-05-02T14:30:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #94 OPENED
+Candle #819: 2025-05-02T14:31:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #95 OPENED
+Candle #820: 2025-05-02T14:32:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #96 OPENED
+Candle #821: 2025-05-02T14:33:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #97 OPENED
+Candle #822: 2025-05-02T14:34:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #98 OPENED
+Candle #823: 2025-05-02T14:35:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #99 OPENED
+Candle #824: 2025-05-02T14:36:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #100 OPENED
+Candle #825: 2025-05-02T14:37:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #101 OPENED
+Candle #826: 2025-05-02T14:38:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #102 OPENED
+Candle #827: 2025-05-02T14:39:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #103 OPENED
+Candle #828: 2025-05-02T14:40:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #104 OPENED
+Candle #829: 2025-05-02T14:41:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #105 OPENED
+Candle #830: 2025-05-02T14:42:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #106 OPENED
+Candle #831: 2025-05-02T14:43:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #107 OPENED
+Candle #832: 2025-05-02T14:44:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #108 OPENED
+Candle #833: 2025-05-02T14:45:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #109 OPENED
+Candle #834: 2025-05-02T14:46:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #110 OPENED
+Candle #835: 2025-05-02T14:47:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #111 OPENED
+Candle #836: 2025-05-02T14:48:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #112 OPENED
+Candle #837: 2025-05-02T14:49:00Z
+Type: LONG
+Entry Price: $97052.51
+Stop Loss: $96474.50 (0.5955600981596421% from entry)
+Take Profit: $98603.51 (1.5981040201064056% from entry)
+Limit1 Price: $95379.11 (1.7242199969571104% from entry)
+Limit2 Price: $94923.50 (2.1936641182660366% from entry)
+Initial Size: -0.00955733 ($-927.5629285957217)
+Limit1 Size: -0.02867199 ($-2734.70910928954)
+Limit2 Size: -0.04778666 ($-4536.076567283899)
+Risk Percent: 1.00%
+TP1 after limit1: $96180.19
+TP2 after limit2: $95565.79
+Account Balance: $10000.00
+
+POSITION #113 OPENED
+Candle #838: 2025-05-02T14:50:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #114 OPENED
+Candle #839: 2025-05-02T14:51:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #115 OPENED
+Candle #840: 2025-05-02T14:52:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #116 OPENED
+Candle #841: 2025-05-02T14:53:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #117 OPENED
+Candle #842: 2025-05-02T14:54:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #118 OPENED
+Candle #843: 2025-05-02T14:55:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #119 OPENED
+Candle #844: 2025-05-02T14:56:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #120 OPENED
+Candle #845: 2025-05-02T14:57:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #121 OPENED
+Candle #846: 2025-05-02T14:58:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #122 OPENED
+Candle #847: 2025-05-02T14:59:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #123 OPENED
+Candle #848: 2025-05-02T15:00:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #124 OPENED
+Candle #849: 2025-05-02T15:01:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #125 OPENED
+Candle #850: 2025-05-02T15:02:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #126 OPENED
+Candle #851: 2025-05-02T15:03:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #127 OPENED
+Candle #852: 2025-05-02T15:04:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #128 OPENED
+Candle #853: 2025-05-02T15:05:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #129 OPENED
+Candle #854: 2025-05-02T15:06:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #130 OPENED
+Candle #855: 2025-05-02T15:07:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #131 OPENED
+Candle #856: 2025-05-02T15:08:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #132 OPENED
+Candle #857: 2025-05-02T15:09:00Z
+Type: LONG
+Entry Price: $97330.61
+Stop Loss: $96249.50 (1.110756466470575% from entry)
+Take Profit: $100231.61 (2.9805629690623725% from entry)
+Limit1 Price: $94200.67 (3.2157770763289073% from entry)
+Limit2 Price: $93348.50 (4.091319435532947% from entry)
+Initial Size: -0.00510976 ($-497.33626179915296)
+Limit1 Size: -0.01532929 ($-1444.0291088998342)
+Limit2 Size: -0.02554881 ($-2384.943233301056)
+Risk Percent: 1.00%
+TP1 after limit1: $95690.91
+TP2 after limit2: $94542.34
+Account Balance: $10000.00
+
+POSITION #133 OPENED
+Candle #858: 2025-05-02T15:10:00Z
+Type: LONG
+Entry Price: $97454.21
+Stop Loss: $96149.50 (1.3387888050722108% from entry)
+Take Profit: $100955.21 (3.5924565431275424% from entry)
+Limit1 Price: $93676.92 (3.875958843685001% from entry)
+Limit2 Price: $92648.50 (4.931245348199753% from entry)
+Initial Size: -0.00423405 ($-412.62629827108844)
+Limit1 Size: -0.01270216 ($-1189.8992183156404)
+Limit2 Size: -0.02117027 ($-1961.393415660733)
+Risk Percent: 1.00%
+TP1 after limit1: $95471.05
+TP2 after limit2: $94085.25
+Account Balance: $10000.00
+
+POSITION #134 OPENED
+Candle #859: 2025-05-02T15:11:00Z
+Type: LONG
+Entry Price: $97454.21
+Stop Loss: $96149.50 (1.3387888050722108% from entry)
+Take Profit: $100955.21 (3.5924565431275424% from entry)
+Limit1 Price: $93676.92 (3.875958843685001% from entry)
+Limit2 Price: $92648.50 (4.931245348199753% from entry)
+Initial Size: -0.00423405 ($-412.62629827108844)
+Limit1 Size: -0.01270216 ($-1189.8992183156404)
+Limit2 Size: -0.02117027 ($-1961.393415660733)
+Risk Percent: 1.00%
+TP1 after limit1: $95471.05
+TP2 after limit2: $94085.25
+Account Balance: $10000.00
+
+POSITION #135 OPENED
+Candle #860: 2025-05-02T15:12:00Z
+Type: LONG
+Entry Price: $97454.21
+Stop Loss: $96149.50 (1.3387888050722108% from entry)
+Take Profit: $100955.21 (3.5924565431275424% from entry)
+Limit1 Price: $93676.92 (3.875958843685001% from entry)
+Limit2 Price: $92648.50 (4.931245348199753% from entry)
+Initial Size: -0.00423405 ($-412.62629827108844)
+Limit1 Size: -0.01270216 ($-1189.8992183156404)
+Limit2 Size: -0.02117027 ($-1961.393415660733)
+Risk Percent: 1.00%
+TP1 after limit1: $95471.05
+TP2 after limit2: $94085.25
+Account Balance: $10000.00
+
+POSITION #136 OPENED
+Candle #861: 2025-05-02T15:13:00Z
+Type: LONG
+Entry Price: $97454.21
+Stop Loss: $96149.50 (1.3387888050722108% from entry)
+Take Profit: $100955.21 (3.5924565431275424% from entry)
+Limit1 Price: $93676.92 (3.875958843685001% from entry)
+Limit2 Price: $92648.50 (4.931245348199753% from entry)
+Initial Size: -0.00423405 ($-412.62629827108844)
+Limit1 Size: -0.01270216 ($-1189.8992183156404)
+Limit2 Size: -0.02117027 ($-1961.393415660733)
+Risk Percent: 1.00%
+TP1 after limit1: $95471.05
+TP2 after limit2: $94085.25
+Account Balance: $10000.00
+
+POSITION #137 OPENED
+Candle #992: 2025-05-02T17:24:00Z
+Type: SHORT
+Entry Price: $97341.44
+Stop Loss: $98171.00 (0.8522125478229059% from entry)
+Take Profit: $95115.44 (2.2867957454997256% from entry)
+Limit1 Price: $99743.11 (2.467260518551573% from entry)
+Limit2 Price: $100397.00 (3.1390082933226315% from entry)
+Initial Size: -0.00665922 ($-648.217947758399)
+Limit1 Size: -0.01997766 ($-1992.6335197728215)
+Limit2 Size: -0.03329609 ($-3342.827814486704)
+Risk Percent: 1.00%
+TP1 after limit1: $98575.90
+TP2 after limit2: $99459.01
+Account Balance: $10000.00
+
+
+PARAMETER SET #3 SUMMARY:
+Total positions opened: 137
+Limit1 hits: 0 (0.0%)
+Limit2 hits: 0 (0.0%)
+Take profit hits: 0 (0.0%)
+Stop loss hits: 0 (0.0%)
+Winning trades: 0 (0.0%)
+Losing trades: 0 (0.0%)
+Final balance: $10000.00
+Total return: $0.00 (0.00%)

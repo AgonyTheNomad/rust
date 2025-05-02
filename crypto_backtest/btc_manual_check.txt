@@ -1,0 +1,829 @@
+MANUAL TRADE CHECKING:
+NEW POSITION at Candle #312:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #313:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #314:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #315:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #316:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #317:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #318:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #319:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #320:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #321:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #322:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+NEW POSITION at Candle #323:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+CLOSE LONG #1 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #2 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #3 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #4 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #5 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #6 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #7 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #8 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #9 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #10 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #11 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+CLOSE LONG #12 (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+NEW POSITION at Candle #488:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #488:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #489:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #489:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #490:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #490:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #491:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #491:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #492:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #492:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #493:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #493:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #494:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #494:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #495:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #495:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #496:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #496:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #497:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #497:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #498:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #498:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+NEW POSITION at Candle #499:
+  Type: LONG
+  Entry: $94773.50
+  Stop Loss: $94292.81
+  Take Profit: $95927.81
+  Current Balance: $10112.43
+NEW POSITION at Candle #499:
+  Type: SHORT
+  Entry: $94773.50
+  Stop Loss: $95254.19
+  Take Profit: $93619.19
+  Current Balance: $10112.43
+CLOSE SHORT #2 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #4 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #6 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #8 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #10 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #12 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #14 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #16 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #18 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #20 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #22 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+CLOSE SHORT #24 (Stop Loss): Candle #515 at $95254.19, PnL: $9.47
+NEW POSITION at Candle #520:
+  Type: LONG
+  Entry: $94956.50
+  Stop Loss: $94380.55
+  Take Profit: $96339.55
+  Current Balance: $10226.12
+NEW POSITION at Candle #520:
+  Type: SHORT
+  Entry: $94956.50
+  Stop Loss: $95532.45
+  Take Profit: $93573.45
+  Current Balance: $10226.12
+NEW POSITION at Candle #521:
+  Type: LONG
+  Entry: $94956.50
+  Stop Loss: $94380.55
+  Take Profit: $96339.55
+  Current Balance: $10226.12
+NEW POSITION at Candle #521:
+  Type: SHORT
+  Entry: $94956.50
+  Stop Loss: $95532.45
+  Take Profit: $93573.45
+  Current Balance: $10226.12
+NEW POSITION at Candle #522:
+  Type: LONG
+  Entry: $94956.50
+  Stop Loss: $94380.55
+  Take Profit: $96339.55
+  Current Balance: $10226.12
+NEW POSITION at Candle #522:
+  Type: SHORT
+  Entry: $94956.50
+  Stop Loss: $95532.45
+  Take Profit: $93573.45
+  Current Balance: $10226.12
+NEW POSITION at Candle #523:
+  Type: LONG
+  Entry: $94956.50
+  Stop Loss: $94380.55
+  Take Profit: $96339.55
+  Current Balance: $10226.12
+NEW POSITION at Candle #523:
+  Type: SHORT
+  Entry: $94956.50
+  Stop Loss: $95532.45
+  Take Profit: $93573.45
+  Current Balance: $10226.12
+NEW POSITION at Candle #524:
+  Type: LONG
+  Entry: $94956.50
+  Stop Loss: $94380.55
+  Take Profit: $96339.55
+  Current Balance: $10226.12
+NEW POSITION at Candle #524:
+  Type: SHORT
+  Entry: $94956.50
+  Stop Loss: $95532.45
+  Take Profit: $93573.45
+  Current Balance: $10226.12
+NEW POSITION at Candle #525:
+  Type: LONG
+  Entry: $94956.50
+  Stop Loss: $94380.55
+  Take Profit: $96339.55
+  Current Balance: $10226.12
+NEW POSITION at Candle #525:
+  Type: SHORT
+  Entry: $94956.50
+  Stop Loss: $95532.45
+  Take Profit: $93573.45
+  Current Balance: $10226.12
+NEW POSITION at Candle #526:
+  Type: LONG
+  Entry: $94956.50
+  Stop Loss: $94380.55
+  Take Profit: $96339.55
+  Current Balance: $10226.12
+NEW POSITION at Candle #526:
+  Type: SHORT
+  Entry: $94956.50
+  Stop Loss: $95532.45
+  Take Profit: $93573.45
+  Current Balance: $10226.12
+NEW POSITION at Candle #527:
+  Type: LONG
+  Entry: $94956.50
+  Stop Loss: $94380.55
+  Take Profit: $96339.55
+  Current Balance: $10226.12
+NEW POSITION at Candle #527:
+  Type: SHORT
+  Entry: $94956.50
+  Stop Loss: $95532.45
+  Take Profit: $93573.45
+  Current Balance: $10226.12
+NEW POSITION at Candle #528:
+  Type: LONG
+  Entry: $94956.50
+  Stop Loss: $94380.55
+  Take Profit: $96339.55
+  Current Balance: $10226.12
+NEW POSITION at Candle #528:
+  Type: SHORT
+  Entry: $94956.50
+  Stop Loss: $95532.45
+  Take Profit: $93573.45
+  Current Balance: $10226.12
+NEW POSITION at Candle #635:
+  Type: LONG
+  Entry: $95110.50
+  Stop Loss: $94562.78
+  Take Profit: $96425.78
+  Current Balance: $10226.12
+NEW POSITION at Candle #636:
+  Type: LONG
+  Entry: $95110.50
+  Stop Loss: $94562.78
+  Take Profit: $96425.78
+  Current Balance: $10226.12
+NEW POSITION at Candle #637:
+  Type: LONG
+  Entry: $95110.50
+  Stop Loss: $94562.78
+  Take Profit: $96425.78
+  Current Balance: $10226.12
+NEW POSITION at Candle #638:
+  Type: LONG
+  Entry: $95110.50
+  Stop Loss: $94562.78
+  Take Profit: $96425.78
+  Current Balance: $10226.12
+NEW POSITION at Candle #661:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #661:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #662:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #662:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #663:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #663:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #664:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #664:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #665:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #665:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #666:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #666:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #667:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #667:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #668:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #668:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #669:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #669:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #670:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #670:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #671:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #671:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #672:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #672:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #673:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #673:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #674:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #674:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #675:
+  Type: LONG
+  Entry: $95031.00
+  Stop Loss: $94291.88
+  Take Profit: $96805.88
+  Current Balance: $10226.12
+NEW POSITION at Candle #675:
+  Type: SHORT
+  Entry: $95031.00
+  Stop Loss: $95770.12
+  Take Profit: $93256.12
+  Current Balance: $10226.12
+NEW POSITION at Candle #676:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #677:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #678:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #679:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #680:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #681:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #682:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #683:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #684:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #685:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #686:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #687:
+  Type: SHORT
+  Entry: $94910.00
+  Stop Loss: $95435.67
+  Take Profit: $93647.67
+  Current Balance: $10226.12
+NEW POSITION at Candle #688:
+  Type: LONG
+  Entry: $94917.00
+  Stop Loss: $94378.98
+  Take Profit: $96208.98
+  Current Balance: $10226.12
+NEW POSITION at Candle #688:
+  Type: SHORT
+  Entry: $94917.00
+  Stop Loss: $95455.02
+  Take Profit: $93625.02
+  Current Balance: $10226.12
+NEW POSITION at Candle #689:
+  Type: LONG
+  Entry: $94917.00
+  Stop Loss: $94378.98
+  Take Profit: $96208.98
+  Current Balance: $10226.12
+NEW POSITION at Candle #689:
+  Type: SHORT
+  Entry: $94917.00
+  Stop Loss: $95455.02
+  Take Profit: $93625.02
+  Current Balance: $10226.12
+NEW POSITION at Candle #690:
+  Type: LONG
+  Entry: $94917.00
+  Stop Loss: $94378.98
+  Take Profit: $96208.98
+  Current Balance: $10226.12
+NEW POSITION at Candle #690:
+  Type: SHORT
+  Entry: $94917.00
+  Stop Loss: $95455.02
+  Take Profit: $93625.02
+  Current Balance: $10226.12
+CLOSE SHORT #65 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #66 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #67 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #68 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #69 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #70 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #71 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #72 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #73 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #74 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #75 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE SHORT #76 (Stop Loss): Candle #750 at $95435.67, PnL: $9.58
+CLOSE LONG #31 (Stop Loss): Candle #909 at $94562.78, PnL: $9.58
+CLOSE LONG #32 (Stop Loss): Candle #909 at $94562.78, PnL: $9.58
+CLOSE LONG #33 (Stop Loss): Candle #909 at $94562.78, PnL: $9.58
+CLOSE LONG #34 (Stop Loss): Candle #909 at $94562.78, PnL: $9.58
+CLOSE LONG #13 (Stop Loss): Candle #919 at $94380.55, PnL: $9.58
+CLOSE LONG #15 (Stop Loss): Candle #919 at $94380.55, PnL: $9.58
+CLOSE LONG #17 (Stop Loss): Candle #919 at $94380.55, PnL: $9.58
+CLOSE LONG #19 (Stop Loss): Candle #919 at $94380.55, PnL: $9.58
+CLOSE LONG #21 (Stop Loss): Candle #919 at $94380.55, PnL: $9.58
+CLOSE LONG #23 (Stop Loss): Candle #919 at $94380.55, PnL: $9.58
+CLOSE LONG #25 (Stop Loss): Candle #919 at $94380.55, PnL: $9.58
+CLOSE LONG #27 (Stop Loss): Candle #919 at $94380.55, PnL: $9.58
+CLOSE LONG #29 (Stop Loss): Candle #919 at $94380.55, PnL: $9.58
+CLOSE LONG #61 (Stop Loss): Candle #919 at $94378.98, PnL: $9.58
+CLOSE LONG #63 (Stop Loss): Candle #919 at $94378.98, PnL: $9.58
+CLOSE LONG #65 (Stop Loss): Candle #919 at $94378.98, PnL: $9.58
+NEW POSITION at Candle #925:
+  Type: SHORT
+  Entry: $94640.00
+  Stop Loss: $95211.54
+  Take Profit: $93267.54
+  Current Balance: $10494.39
+NEW POSITION at Candle #926:
+  Type: SHORT
+  Entry: $94640.00
+  Stop Loss: $95211.54
+  Take Profit: $93267.54
+  Current Balance: $10494.39
+NEW POSITION at Candle #927:
+  Type: SHORT
+  Entry: $94640.00
+  Stop Loss: $95211.54
+  Take Profit: $93267.54
+  Current Balance: $10494.39
+NEW POSITION at Candle #928:
+  Type: SHORT
+  Entry: $94640.00
+  Stop Loss: $95211.54
+  Take Profit: $93267.54
+  Current Balance: $10494.39
+CLOSE LONG #1 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #2 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #3 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #4 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #5 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #6 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #7 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #8 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #9 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #10 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #11 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #12 (Stop Loss): Candle #962 at $94292.81, PnL: $9.47
+CLOSE LONG #22 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #24 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #26 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #28 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #30 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #32 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #34 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #36 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #38 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #40 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #42 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #44 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #46 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #48 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+CLOSE LONG #50 (Stop Loss): Candle #962 at $94291.88, PnL: $9.58
+
+MANUAL CHECKING SUMMARY:
+Starting Balance: $10000.00
+Final Balance: $10751.79
+Profit/Loss: $751.79
+Open Positions Remaining: 31
+Completed Trades: 79
+
+DETAILS OF LAST 5 TRADES:
+Trade #5
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-29T17:17:00Z
+Exit Time: 2025-04-29T22:08:00Z
+Duration: 291 candles
+Entry Price: $95031.00
+Exit Price: $94291.88
+Stop Loss: $94291.88
+Take Profit: $96805.88
+Limit1 Price: $93477.35
+Limit2 Price: $93055.00
+Limit1 Hit: false
+Limit2 Hit: false
+P&L: $9.58
+-------------------------------------
+Trade #4
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-29T17:18:00Z
+Exit Time: 2025-04-29T22:08:00Z
+Duration: 290 candles
+Entry Price: $95031.00
+Exit Price: $94291.88
+Stop Loss: $94291.88
+Take Profit: $96805.88
+Limit1 Price: $93477.35
+Limit2 Price: $93055.00
+Limit1 Hit: false
+Limit2 Hit: false
+P&L: $9.58
+-------------------------------------
+Trade #3
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-29T17:19:00Z
+Exit Time: 2025-04-29T22:08:00Z
+Duration: 289 candles
+Entry Price: $95031.00
+Exit Price: $94291.88
+Stop Loss: $94291.88
+Take Profit: $96805.88
+Limit1 Price: $93477.35
+Limit2 Price: $93055.00
+Limit1 Hit: false
+Limit2 Hit: false
+P&L: $9.58
+-------------------------------------
+Trade #2
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-29T17:20:00Z
+Exit Time: 2025-04-29T22:08:00Z
+Duration: 288 candles
+Entry Price: $95031.00
+Exit Price: $94291.88
+Stop Loss: $94291.88
+Take Profit: $96805.88
+Limit1 Price: $93477.35
+Limit2 Price: $93055.00
+Limit1 Hit: false
+Limit2 Hit: false
+P&L: $9.58
+-------------------------------------
+Trade #1
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-29T17:21:00Z
+Exit Time: 2025-04-29T22:08:00Z
+Duration: 287 candles
+Entry Price: $95031.00
+Exit Price: $94291.88
+Stop Loss: $94291.88
+Take Profit: $96805.88
+Limit1 Price: $93477.35
+Limit2 Price: $93055.00
+Limit1 Hit: false
+Limit2 Hit: false
+P&L: $9.58
+-------------------------------------
