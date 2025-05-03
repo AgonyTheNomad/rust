@@ -1,0 +1,8 @@
+cargo run --bin fetch_assets_data
+ to get all candles from influx
+
+ cargo run --bin fix_csv_format
+ clean all the data
+
+ cargo run --bin optimize_dynamic all BTC
+ to optimze all of them 

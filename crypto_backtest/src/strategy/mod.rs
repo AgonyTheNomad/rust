@@ -502,24 +502,22 @@ impl Strategy {
         if range < self.config.fib_threshold {
             return None;
         }
-
+    
         // Calculate the main price levels
         let entry_price = prev_low + self.config.fib_initial * range;
         let take_profit = prev_low + self.config.fib_tp * range; // Use Fibonacci extension
         let stop_loss = prev_low - self.config.fib_sl * range; // Set stop loss below the low
         
-        // Calculate limit prices relative to entry and stop loss
-        let entry_to_sl_range = entry_price - stop_loss;
-        let limit1 = entry_price - (self.config.fib_limit1 * entry_to_sl_range);
-        let limit2 = entry_price - (self.config.fib_limit2 * entry_to_sl_range);
+        // Calculate limit prices directly from pivot points
+        let limit1 = prev_low + self.config.fib_limit1 * range;
+        let limit2 = prev_low + self.config.fib_limit2 * range;
         
         if self.verbose {
-            println!("LONG POSITION LEVELS:");
+            println!("LONG POSITION LEVELS (USING PIVOT POINTS):");
             println!("  Price Range: {:.2} (from {:.2} to {:.2})", range, prev_low, prev_high);
             println!("  Entry: {:.2}", entry_price);
             println!("  Take Profit: {:.2}", take_profit);
             println!("  Stop Loss: {:.2}", stop_loss);
-            println!("  Entry to SL Range: {:.2}", entry_to_sl_range);
             println!("  Limit1: {:.2}", limit1);
             println!("  Limit2: {:.2}", limit2);
             
@@ -528,7 +526,7 @@ impl Strategy {
                 println!("WARNING: Invalid price order for long position!");
             }
         }
-
+    
         Some(crate::indicators::fibonacci::FibLevels {
             entry_price,
             take_profit,
@@ -537,39 +535,37 @@ impl Strategy {
             limit2,
         })
     }
-
+    
     fn calculate_short_levels(&self, prev_high: f64, prev_low: f64) -> Option<crate::indicators::fibonacci::FibLevels> {
         let range = prev_high - prev_low;
         if range < self.config.fib_threshold {
             return None;
         }
-
+    
         // Calculate the main price levels
         let entry_price = prev_high - self.config.fib_initial * range;
         let take_profit = prev_high - self.config.fib_tp * range; // Use Fibonacci extension downward
         let stop_loss = prev_high + self.config.fib_sl * range; // Set stop loss above the high
         
-        // Calculate limit prices relative to entry and stop loss
-        let entry_to_sl_range = stop_loss - entry_price;
-        let limit1 = entry_price + (self.config.fib_limit1 * entry_to_sl_range);
-        let limit2 = entry_price + (self.config.fib_limit2 * entry_to_sl_range);
+        // Calculate limit prices directly from pivot points
+        let limit1 = prev_high - self.config.fib_limit1 * range; 
+        let limit2 = prev_high - self.config.fib_limit2 * range;
         
         if self.verbose {
-            println!("SHORT POSITION LEVELS:");
+            println!("SHORT POSITION LEVELS (USING PIVOT POINTS):");
             println!("  Price Range: {:.2} (from {:.2} to {:.2})", range, prev_low, prev_high);
             println!("  Entry: {:.2}", entry_price);
             println!("  Take Profit: {:.2}", take_profit);
             println!("  Stop Loss: {:.2}", stop_loss);
-            println!("  Entry to SL Range: {:.2}", entry_to_sl_range);
             println!("  Limit1: {:.2}", limit1);
             println!("  Limit2: {:.2}", limit2);
             
             // Validate the order of price levels
-            if !(stop_loss > limit2 && limit2 > limit1 && limit1 > entry_price && entry_price > take_profit) {
+            if !(stop_loss > limit1 && limit1 > limit2 && limit2 > entry_price && entry_price > take_profit) {
                 println!("WARNING: Invalid price order for short position!");
             }
         }
-
+    
         Some(crate::indicators::fibonacci::FibLevels {
             entry_price,
             take_profit,
@@ -597,26 +593,55 @@ impl Strategy {
         }
         
         // Get the Fibonacci levels from the signal - already calculated in the signal
+        // Get the Fibonacci levels from the signal - already calculated in the signal
+        // Get the Fibonacci levels from the signal - calculating based on pivot points
         let (limit1_price, limit2_price) = match signal.position_type {
             PositionType::Long => {
-                // For longs, limit orders are between entry and stop loss
-                // Calculate range between entry and stop loss
-                let range = signal.price - signal.stop_loss;
-                let limit1 = signal.price - (range * self.config.fib_limit1);
-                let limit2 = signal.price - (range * self.config.fib_limit2);
+                // For longs, calculate limit orders directly from pivot points
+                // Retrieve pivot high and pivot low from signal reason
+                let reason_parts: Vec<&str> = signal.reason.split(':').collect();
+                let mut prev_high = 0.0;
+                let mut prev_low = 0.0;
+                
+                // Extract pivot values from reason string
+                for part in reason_parts {
+                    if part.contains("Pivot high") {
+                        let high_part = part.trim();
+                        if let Some(val_str) = high_part.split_whitespace().nth(2) {
+                            prev_high = val_str.parse::<f64>().unwrap_or(0.0);
+                        }
+                    } else if part.contains("Pivot low") {
+                        let low_part = part.trim();
+                        if let Some(val_str) = low_part.split_whitespace().nth(2) {
+                            prev_low = val_str.parse::<f64>().unwrap_or(0.0);
+                        }
+                    }
+                }
+                
+                if self.verbose {
+                    println!("Extracted pivot values - High: {:.2}, Low: {:.2}", prev_high, prev_low);
+                }
+                
+                // Calculate range and limit prices directly from pivot points
+                let range = prev_high - prev_low;
+                
+                // For longs, limits are between SL and Entry
+                let limit1 = prev_low + (self.config.fib_limit1 * range);
+                let limit2 = prev_low - (self.config.fib_limit2 * range);
                 
                 // Add debug for long position limits
                 if self.verbose {
-                    println!("LONG POSITION LIMIT CALCULATION:");
-                    println!("  Range = Entry - SL = {:.2} - {:.2} = {:.2}", 
-                            signal.price, signal.stop_loss, range);
+                    println!("LONG POSITION LIMIT CALCULATION (USING PIVOT POINTS):");
+                    println!("  Pivot High: {:.2}", prev_high);
+                    println!("  Pivot Low: {:.2}", prev_low);
+                    println!("  Pivot Range: {:.2}", range);
                     println!("  Entry Price: {:.2}", signal.price);
                     println!("  Take Profit: {:.2}", signal.take_profit);
                     println!("  Stop Loss: {:.2}", signal.stop_loss);
-                    println!("  Limit1 = Entry - Range * {:.2} = {:.2} - {:.2} * {:.2} = {:.2}", 
-                            self.config.fib_limit1, signal.price, range, self.config.fib_limit1, limit1);
-                    println!("  Limit2 = Entry - Range * {:.2} = {:.2} - {:.2} * {:.2} = {:.2}", 
-                            self.config.fib_limit2, signal.price, range, self.config.fib_limit2, limit2);
+                    println!("  Limit1 = Low + Range * {:.2} = {:.2} + {:.2} * {:.2} = {:.2}", 
+                            self.config.fib_limit1, prev_low, range, self.config.fib_limit1, limit1);
+                    println!("  Limit2 = Low - Range * {:.2} = {:.2} - {:.2} * {:.2} = {:.2}", 
+                            self.config.fib_limit2, prev_low, range, self.config.fib_limit2, limit2);
                     
                     // Validate price order
                     if !(signal.stop_loss < limit2 && limit2 < limit1 && limit1 < signal.price && signal.price < signal.take_profit) {
@@ -627,23 +652,53 @@ impl Strategy {
                 (limit1, limit2)
             },
             PositionType::Short => {
-                // For shorts, limit orders are between entry and stop loss
-                let range = signal.stop_loss - signal.price;
-                let limit1 = signal.price + (range * self.config.fib_limit1);
-                let limit2 = signal.price + (range * self.config.fib_limit2);
+                // For shorts, calculate limit orders directly from pivot points
+                // Retrieve pivot high and pivot low from signal reason
+                let reason_parts: Vec<&str> = signal.reason.split(':').collect();
+                let mut prev_high = 0.0;
+                let mut prev_low = 0.0;
+                
+                // Extract pivot values from reason string
+                for part in reason_parts {
+                    if part.contains("Pivot high") {
+                        let high_part = part.trim();
+                        if let Some(val_str) = high_part.split_whitespace().nth(2) {
+                            prev_high = val_str.parse::<f64>().unwrap_or(0.0);
+                        }
+                    } else if part.contains("Pivot low") {
+                        let low_part = part.trim();
+                        if let Some(val_str) = low_part.split_whitespace().nth(2) {
+                            prev_low = val_str.parse::<f64>().unwrap_or(0.0);
+                        }
+                    }
+                }
+                
+                if self.verbose {
+                    println!("Extracted pivot values - High: {:.2}, Low: {:.2}", prev_high, prev_low);
+                }
+                
+                // Calculate range and limit prices directly from pivot points
+                let range = prev_high - prev_low;
+                
+                // For shorts, limits are between Entry and SL
+                // Limit1 is at or near pivot high
+                let limit1 = prev_high - (self.config.fib_limit1 * range);
+                // Limit2 is between Limit1 and Stop Loss (adding to pivot high)
+                let limit2 = prev_high + (self.config.fib_limit2 * range);
                 
                 // Add debug for short position limits
                 if self.verbose {
-                    println!("SHORT POSITION LIMIT CALCULATION:");
-                    println!("  Range = SL - Entry = {:.2} - {:.2} = {:.2}", 
-                            signal.stop_loss, signal.price, range);
+                    println!("SHORT POSITION LIMIT CALCULATION (USING PIVOT POINTS):");
+                    println!("  Pivot High: {:.2}", prev_high);
+                    println!("  Pivot Low: {:.2}", prev_low);
+                    println!("  Pivot Range: {:.2}", range);
                     println!("  Entry Price: {:.2}", signal.price);
                     println!("  Take Profit: {:.2}", signal.take_profit);
                     println!("  Stop Loss: {:.2}", signal.stop_loss);
-                    println!("  Limit1 = Entry + Range * {:.2} = {:.2} + {:.2} * {:.2} = {:.2}", 
-                            self.config.fib_limit1, signal.price, range, self.config.fib_limit1, limit1);
-                    println!("  Limit2 = Entry + Range * {:.2} = {:.2} + {:.2} * {:.2} = {:.2}", 
-                            self.config.fib_limit2, signal.price, range, self.config.fib_limit2, limit2);
+                    println!("  Limit1 = High - Range * {:.2} = {:.2} - {:.2} * {:.2} = {:.2}", 
+                            self.config.fib_limit1, prev_high, range, self.config.fib_limit1, limit1);
+                    println!("  Limit2 = High + Range * {:.2} = {:.2} + {:.2} * {:.2} = {:.2}", 
+                            self.config.fib_limit2, prev_high, range, self.config.fib_limit2, limit2);
                     
                     // Validate price order
                     if !(signal.stop_loss > limit2 && limit2 > limit1 && limit1 > signal.price && signal.price > signal.take_profit) {
