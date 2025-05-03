@@ -1,66 +1,65 @@
-// src/bin/check_btc_trades.rs
 use std::error::Error;
-use crypto_backtest::fetch_data::load_candles_from_csv;
-use crypto_backtest::strategy::{Strategy, AssetConfig};
-use crypto_backtest::models::{PositionType, default_strategy_config};
 use std::fs::File;
 use std::io::Write;
 use std::collections::VecDeque;
+use crypto_backtest::fetch_data::load_candles_from_csv;
+use crypto_backtest::strategy::{Strategy, AssetConfig};
+use crypto_backtest::models::{PositionType, default_strategy_config};
+use crypto_backtest::backtest::Backtester;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // Load candle data
+    // 1) Load candle data
     let csv_path = "data/BTC.csv";
     println!("Loading data from {}...", csv_path);
     let mut candles = load_candles_from_csv(csv_path)?;
     candles.retain(|c| c.volume > 0.0);
-    
-    // Create a log file
+
+    // 2) Prepare log file
     let log_file = "btc_trade_check_fixed.txt";
     let mut file = File::create(log_file)?;
 
-    // Use a longer period of data to ensure trades have time to complete
+    // 3) Slice last 5000 candles
     let test_candles = candles.iter()
-        .skip(candles.len().saturating_sub(5000)) // Use 5000 candles
+        .skip(candles.len().saturating_sub(5000))
         .cloned()
         .collect::<Vec<_>>();
-    
-    println!("Testing with {} candles from {} to {}", 
+    println!(
+        "Testing with {} candles from {} to {}",
         test_candles.len(),
         test_candles.first().map_or("unknown", |c| &c.time),
         test_candles.last().map_or("unknown", |c| &c.time)
     );
 
-    // Configure a simple strategy with increased threshold
+    // 4) Configure strategy
     let mut config = default_strategy_config();
-    config.name = "BTC Trade Check".to_string();
+    config.name = "BTC Trade Check".into();
     config.leverage = 20.0;
     config.max_risk_per_trade = 0.01;
     config.pivot_lookback = 5;
     config.signal_lookback = 1;
-    config.fib_threshold = 500.0;  // Increased from 100.0 to 500.0
+    config.fib_threshold = 500.0;
     config.fib_initial = 0.5;
     config.fib_tp = 1.618;
     config.fib_sl = 0.382;
     config.fib_limit1 = 0.618;
     config.fib_limit2 = 0.786;
 
-    // Create asset config
     let asset_config = AssetConfig {
-        name: "BTC".to_string(),
+        name: "BTC".into(),
         leverage: 20.0,
         spread: 0.0005,
         avg_spread: 0.001,
     };
 
-    // Run the backtest directly using backtester
-    use crypto_backtest::backtest::Backtester;
+    // 5) Run full backtest
     let strategy = Strategy::new(config.clone(), asset_config.clone());
     let mut backtester = Backtester::new(10000.0, strategy);
-    
+    backtester.set_verbose(true);
     println!("Running backtest with threshold = {}...", config.fib_threshold);
+
     match backtester.run(&test_candles) {
         Ok(results) => {
-            // Write results to log file
+            // Summary
             writeln!(file, "BACKTEST RESULTS SUMMARY:")?;
             writeln!(file, "Total trades: {}", results.metrics.total_trades)?;
             writeln!(file, "Win rate: {:.2}%", results.metrics.win_rate * 100.0)?;
@@ -69,11 +68,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             writeln!(file, "Return: {:.2}%", results.metrics.total_profit / 10000.0 * 100.0)?;
             writeln!(file, "Max drawdown: {:.2}%", results.metrics.max_drawdown * 100.0)?;
             writeln!(file, "Sharpe ratio: {:.2}", results.metrics.sharpe_ratio)?;
-            
-            // Print trade details - focusing on the last 5 trades
+
+            // DETAILS OF LAST 5 TRADES
             writeln!(file, "\nDETAILS OF LAST 5 TRADES:")?;
             let last_trades = results.trades.iter().rev().take(5).collect::<Vec<_>>();
-            
             for (i, trade) in last_trades.iter().enumerate() {
                 writeln!(file, "Trade #{}", i + 1)?;
                 writeln!(file, "  Entry Time: {}", trade.entry_time)?;
@@ -85,24 +83,34 @@ fn main() -> Result<(), Box<dyn Error>> {
                 writeln!(file, "  P&L: ${:.2}", trade.pnl)?;
                 writeln!(file, "  Risk %: {:.2}%", trade.risk_percent * 100.0)?;
                 writeln!(file, "  Profit Factor: {:.2}", trade.profit_factor)?;
-                writeln!(file, "")?;
+                writeln!(file, "  Limit1 Hit: {}", trade.limit1_hit)?;
+                writeln!(file, "  Limit2 Hit: {}", trade.limit2_hit)?;
+                // **Fixed**: use `exit_tp` fallback, not `take_profit`
+                if trade.limit1_hit {
+                    if let Some(ts) = &trade.limit1_time {
+                        writeln!(
+                            file,
+                            "  Limit1 hit at {} -> new Take Profit: ${:.2}",
+                            ts,
+                            trade.new_tp.unwrap_or(trade.exit_tp)
+                        )?;
+                    }
+                }
             }
-            
-            // Print to console
+
             println!("Backtest completed successfully.");
             println!("Total trades: {}", results.metrics.total_trades);
             println!("Win rate: {:.2}%", results.metrics.win_rate * 100.0);
             println!("Total profit: ${:.2}", results.metrics.total_profit);
             println!("Results saved to {}", log_file);
-        },
+        }
         Err(e) => {
             println!("Error running backtest: {}", e);
             writeln!(file, "Error running backtest: {}", e)?;
         }
     }
-    
-    // Create a simple manual tracking system
-    // Define a custom position struct
+
+    // 6) Manual-trade check
     #[derive(Debug, Clone)]
     struct TrackingPosition {
         entry_price: f64,
@@ -117,27 +125,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         entry_time: String,
         candle_index: usize,
     }
-    
-    // Now let's check the implementation of position management manually
-    // Create a new strategy for manual testing
+
     let mut strategy = Strategy::new(config.clone(), asset_config);
     let initial_balance = 10000.0;
     let mut current_balance = initial_balance;
     let mut completed_trades = Vec::new();
-    
-    // Keep a record of the last 5 trades with all details
     let mut last_trades: VecDeque<String> = VecDeque::with_capacity(5);
-    
-    // Create a second log file for manual tracking
     let manual_log = "btc_manual_check_fixed.txt";
     let mut manual_file = File::create(manual_log)?;
-    
     writeln!(manual_file, "MANUAL TRADE CHECKING (FIXED VERSION):")?;
-    
-    // Process a smaller subset for detailed checking
+
     let check_candles = test_candles.iter().take(1000).collect::<Vec<_>>();
-    
-    // Track current active position
     let mut current_position: Option<TrackingPosition> = None;
     let mut position_count = 0;
     let mut limit1_hits = 0;
@@ -146,12 +144,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut sl_hits = 0;
     let mut winning_trades = 0;
     let mut losing_trades = 0;
-    
-    // Flag to indicate when to clear position
     let mut should_clear_position = false;
-    
+
     for (i, candle) in check_candles.iter().enumerate() {
-        // Reset the clear flag at the start of each iteration
         should_clear_position = false;
         
         // First, check if we need to close the existing position

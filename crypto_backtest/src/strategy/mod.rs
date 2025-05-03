@@ -56,8 +56,18 @@ pub struct AssetConfig {
     pub avg_spread: f64,
 }
 
+#[derive(Debug, Clone)]
+pub struct PendingOrder {
+    pub signal: Signal,
+    pub created_at: String,      // Timestamp when order was created
+    pub expiry_candles: usize,   // Number of candles after which order expires (0 = never)
+    pub candles_active: usize,   // How many candles this order has been active
+    pub last_updated: String,    // Timestamp when order was last updated
+    pub update_count: usize,     // Number of times this order has been updated
+}
+
 pub struct Strategy {
-    config: StrategyConfig,
+    pub config: StrategyConfig,  // Made public to fix access in backtest
     asset_config: AssetConfig,
     pivot_detector: PivotPoints,
     fib: FibonacciLevels,
@@ -72,6 +82,7 @@ pub struct Strategy {
     long_signal: bool,
     short_signal: bool,
     verbose: bool, // Control debug output
+    pending_orders: VecDeque<PendingOrder>, // Pending orders waiting for price to hit entry
 }
 
 impl Strategy {
@@ -99,7 +110,13 @@ impl Strategy {
             long_signal: false,
             short_signal: false,
             verbose: false,
+            pending_orders: VecDeque::new(),
         }
+    }
+    
+    // Getter method for config (alternative to making it public)
+    pub fn get_max_risk_per_trade(&self) -> f64 {
+        self.config.max_risk_per_trade
     }
     
     // Enable or disable verbose logging
@@ -134,7 +151,13 @@ impl Strategy {
         self.long_signal = false;
         self.short_signal = false;
         
-        // If a position is already open, return empty signals vector
+        // First, check and process any pending orders
+        let triggered_signals = self.check_pending_orders(candle);
+        if !triggered_signals.is_empty() {
+            return Ok(triggered_signals);
+        }
+        
+        // If a position is already open, don't generate new signals
         if has_open_position {
             return Ok(Vec::new());
         }
@@ -180,9 +203,7 @@ impl Strategy {
         // Also generate from accumulated pivots
         self.generate_signals_from_detected_pivots();
         
-        // Create and return signals if generated
-        let mut signals = Vec::new();
-        
+        // Create signals and add them to pending orders
         if self.long_signal && self.prev_pivot_high.is_some() && self.prev_pivot_low.is_some() {
             // Add detailed pivot point debugging
             if self.verbose {
@@ -224,9 +245,11 @@ impl Strategy {
                             strength,
                         );
                         
-                        signals.push(signal);
+                        // Add to pending orders instead of returning directly
+                        self.add_pending_order(signal, candle.time.clone(), 50); // 50 candles expiry
+                        
                         if self.verbose {
-                            debug!("Generated LONG signal at {}: Entry={}, TP={}, SL={}, Strength={}",
+                            debug!("Added PENDING LONG order at {}: Entry={}, TP={}, SL={}, Strength={}",
                                 candle.time, levels.entry_price, levels.take_profit, levels.stop_loss, strength);
                         }
                     }
@@ -276,9 +299,11 @@ impl Strategy {
                             strength,
                         );
                         
-                        signals.push(signal);
+                        // Add to pending orders instead of returning directly
+                        self.add_pending_order(signal, candle.time.clone(), 50); // 50 candles expiry
+                        
                         if self.verbose {
-                            debug!("Generated SHORT signal at {}: Entry={}, TP={}, SL={}, Strength={}",
+                            debug!("Added PENDING SHORT order at {}: Entry={}, TP={}, SL={}, Strength={}",
                                 candle.time, levels.entry_price, levels.take_profit, levels.stop_loss, strength);
                         }
                     }
@@ -287,7 +312,188 @@ impl Strategy {
             }
         }
         
-        Ok(signals)
+        // Return an empty vector - no signals are triggered yet
+        Ok(Vec::new())
+    }
+    
+    // Modified method to add pending orders with ability to update existing orders
+    fn add_pending_order(&mut self, signal: Signal, time: String, expiry_candles: usize) {
+        // Check if we have a similar signal already in pending orders
+        let similar_order_index = self.find_similar_pending_order(&signal);
+        
+        if let Some(idx) = similar_order_index {
+            // Update the existing order
+            let order = &mut self.pending_orders[idx];
+            
+            // Check if the new signal is better (e.g., better risk-reward)
+            let old_risk = (order.signal.price - order.signal.stop_loss).abs();
+            let old_reward = (order.signal.take_profit - order.signal.price).abs();
+            let old_risk_reward = if old_risk > 0.0 { old_reward / old_risk } else { 0.0 };
+            
+            let new_risk = (signal.price - signal.stop_loss).abs();
+            let new_reward = (signal.take_profit - signal.price).abs();
+            let new_risk_reward = if new_risk > 0.0 { new_reward / new_risk } else { 0.0 };
+            
+            // Only update if the new signal has better risk/reward or higher strength
+            if new_risk_reward > old_risk_reward || signal.strength > order.signal.strength {
+                if self.verbose {
+                    println!("UPDATING PENDING ORDER:");
+                    println!("  Type: {}", if matches!(signal.position_type, PositionType::Long) { "LONG" } else { "SHORT" });
+                    println!("  Previous Entry: ${:.2}, SL: ${:.2}, TP: ${:.2}, R/R: {:.2}",
+                        order.signal.price, order.signal.stop_loss, order.signal.take_profit, old_risk_reward);
+                    println!("  New Entry: ${:.2}, SL: ${:.2}, TP: ${:.2}, R/R: {:.2}",
+                        signal.price, signal.stop_loss, signal.take_profit, new_risk_reward);
+                    println!("  Update count: {}", order.update_count + 1);
+                }
+                
+                // Update the order
+                order.signal = signal;
+                order.last_updated = time;
+                order.update_count += 1;
+                
+                // Optionally extend the expiry
+                order.expiry_candles = expiry_candles.max(order.expiry_candles);
+            }
+        } else {
+            // Maximum number of pending orders to maintain
+            let max_pending_orders = 5;
+            
+            // If we already have too many pending orders, remove the oldest one
+            if self.pending_orders.len() >= max_pending_orders {
+                self.pending_orders.pop_front();
+            }
+            
+            // Create a new pending order
+            let pending = PendingOrder {
+                signal,
+                created_at: time.clone(),
+                expiry_candles,
+                candles_active: 0,
+                last_updated: time,
+                update_count: 0,
+            };
+            
+            if self.verbose {
+                println!("NEW PENDING ORDER:");
+                println!("  Type: {}", if matches!(pending.signal.position_type, PositionType::Long) { "LONG" } else { "SHORT" });
+                println!("  Entry Price: ${:.2}", pending.signal.price);
+                println!("  Take Profit: ${:.2}", pending.signal.take_profit);
+                println!("  Stop Loss: ${:.2}", pending.signal.stop_loss);
+                println!("  Expiry: After {} candles", pending.expiry_candles);
+            }
+            
+            self.pending_orders.push_back(pending);
+        }
+    }
+    
+    // Helper method to find similar pending orders
+    fn find_similar_pending_order(&self, signal: &Signal) -> Option<usize> {
+        // Define what makes orders "similar" - this can be customized
+        // Here we consider them similar if they have the same position type 
+        // and within 2% price difference
+        
+        for (i, order) in self.pending_orders.iter().enumerate() {
+            // Must be same position type
+            if std::mem::discriminant(&order.signal.position_type) != std::mem::discriminant(&signal.position_type) {
+                continue;
+            }
+            
+            // Calculate price difference as percentage
+            let price_diff_percent = (order.signal.price - signal.price).abs() / order.signal.price;
+            
+            // If price is within 2% and same position type, consider it similar
+            if price_diff_percent < 0.02 {
+                return Some(i);
+            }
+        }
+        
+        None
+    }
+    
+    // Method to check if any pending orders should be triggered
+    fn check_pending_orders(&mut self, candle: &Candle) -> Vec<Signal> {
+        let mut triggered = Vec::new();
+        let mut to_remove = Vec::new();
+        
+        for (i, order) in self.pending_orders.iter_mut().enumerate() {
+            // Increment active candles counter
+            order.candles_active += 1;
+            
+            // Check if order should expire
+            if order.expiry_candles > 0 && order.candles_active >= order.expiry_candles {
+                to_remove.push(i);
+                if self.verbose {
+                    println!("Pending order expired after {} candles", order.candles_active);
+                }
+                continue;
+            }
+            
+            // Check if price has hit the entry level
+            let triggered_price = match order.signal.position_type {
+                PositionType::Long => {
+                    // For long positions, we enter if price drops to or below our entry price
+                    // Make sure the candle actually crosses our entry price
+                    if candle.low <= order.signal.price && candle.high >= order.signal.price {
+                        Some(order.signal.price)
+                    } else {
+                        None
+                    }
+                },
+                PositionType::Short => {
+                    // For short positions, we enter if price rises to or above our entry price
+                    // Make sure the candle actually crosses our entry price
+                    if candle.high >= order.signal.price && candle.low <= order.signal.price {
+                        Some(order.signal.price)
+                    } else {
+                        None
+                    }
+                },
+            };
+            
+            if let Some(price) = triggered_price {
+                // Order triggered - modify the signal to indicate it's been triggered
+                let mut triggered_signal = order.signal.clone();
+                // Fixed: Now using Some() to wrap the String value
+                triggered_signal.status = Some("Triggered".to_string());
+                
+                triggered.push(triggered_signal);
+                to_remove.push(i);
+                
+                if self.verbose {
+                    println!("PENDING ORDER TRIGGERED:");
+                    println!("  Type: {}", if matches!(order.signal.position_type, PositionType::Long) { "LONG" } else { "SHORT" });
+                    println!("  Entry Price: ${:.2}", order.signal.price);
+                    println!("  Candle High: ${:.2}, Low: ${:.2}", candle.high, candle.low);
+                    println!("  After waiting {} candles", order.candles_active);
+                    println!("  Update count: {}", order.update_count);
+                    println!("  Candle time: {}", candle.time);
+                }
+            }
+        }
+        
+        // Remove triggered/expired orders (in reverse to maintain correct indices)
+        for idx in to_remove.iter().rev() {
+            self.pending_orders.remove(*idx);
+        }
+        
+        triggered
+    }
+    
+    // Add a method to get information about pending orders
+    pub fn get_pending_orders_info(&self) -> Vec<String> {
+        self.pending_orders.iter()
+            .map(|order| {
+                format!(
+                    "{} order @ ${:.2} (Stop: ${:.2}, TP: ${:.2}), active for {} candles, updated {} times",
+                    if matches!(order.signal.position_type, PositionType::Long) { "LONG" } else { "SHORT" },
+                    order.signal.price,
+                    order.signal.stop_loss,
+                    order.signal.take_profit,
+                    order.candles_active,
+                    order.update_count
+                )
+            })
+            .collect()
     }
     
     // Improved implementation of level calculation with proper limit order placement
@@ -385,6 +591,9 @@ impl Strategy {
             println!("  Stop Loss: {:.2}", signal.stop_loss);
             println!("  Reason: {}", signal.reason);
             println!("  Strength: {:.2}", signal.strength);
+            if let Some(status) = &signal.status {
+                println!("  Status: {}", status);
+            }
         }
         
         // Get the Fibonacci levels from the signal - already calculated in the signal
@@ -461,10 +670,18 @@ impl Strategy {
             6.0, // h12 default value
         )?;
         
+        // Determine position status based on signal status
+        // Determine position status based on signal status
+        let position_status = if signal.status.as_deref() == Some("Triggered") {
+            PositionStatus::Triggered // Use the new intermediate state
+        } else {
+            PositionStatus::Pending
+        };
+        
         let position = Position {
             id: uuid::Uuid::new_v4().to_string(),
             symbol: signal.symbol.clone(),
-            entry_time: Utc::now().to_string(), // This will be updated when position is actually activated
+            entry_time: Utc::now().to_string(),
             entry_price: signal.price,
             size: result.initial_position_size,
             stop_loss: signal.stop_loss,
@@ -472,7 +689,7 @@ impl Strategy {
             position_type: signal.position_type.clone(),
             risk_percent: result.final_risk,
             margin_used: (result.initial_position_size * signal.price) / self.asset_config.leverage,
-            status: PositionStatus::Pending, // Mark as pending until price touches entry level
+            status: position_status,
             limit1_price: Some(limit1_price),
             limit2_price: Some(limit2_price),
             limit1_hit: false,
@@ -486,7 +703,13 @@ impl Strategy {
             sl_order_id: None,
             limit1_order_id: None,
             limit2_order_id: None,
+            // ← missing fields:
+            limit1_time: None,
+            limit2_time: None,
+            new_tp: None,
         };
+        
+        
         
         // Final validation of the created position
         if self.verbose {
@@ -500,6 +723,7 @@ impl Strategy {
             println!("  Size: {:.8}", position.size);
             println!("  Limit1 Size: {:.8}", position.limit1_size);
             println!("  Limit2 Size: {:.8}", position.limit2_size);
+            println!("  Status: {:?}", position.status);
         }
         
         Ok(position)

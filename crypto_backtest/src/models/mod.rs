@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use chrono::{DateTime, Utc};
-use crate::strategy::{StrategyConfig, AssetConfig};  // Add this import
+use crate::strategy::{StrategyConfig, AssetConfig};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Candle {
@@ -22,9 +22,10 @@ pub enum PositionType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PositionStatus {
-    Pending,
-    Active,
-    Closed,
+    Pending,     // Created but waiting for price to hit entry
+    Triggered,   // Price has hit entry level, position is opened
+    Active,      // Position is active and being managed
+    Closed,      // Position has been closed
 }
 
 #[derive(Debug, Clone)]
@@ -39,6 +40,7 @@ pub struct Signal {
     pub reason: String,
     pub strength: f64,
     pub processed: bool,
+    pub status: Option<String>, // Add status field
 }
 
 impl Signal {
@@ -62,6 +64,7 @@ impl Signal {
             reason,
             strength,
             processed: false,
+            status: None,
         }
     }
 }
@@ -85,11 +88,17 @@ pub struct Position {
     pub limit2_price: Option<f64>,
     pub limit1_hit: bool,
     pub limit2_hit: bool,
+    /// when limit1 was hit
+    pub limit1_time: Option<String>,
+    /// when limit2 was hit
+    pub limit2_time: Option<String>,
     pub limit1_size: f64,
     pub limit2_size: f64,
     pub new_tp1: Option<f64>,
     pub new_tp2: Option<f64>,
-    
+    /// the “new take-profit” after limit1 or limit2
+    pub new_tp: Option<f64>,
+
     // Order IDs
     pub entry_order_id: Option<String>,
     pub tp_order_id: Option<String>,
@@ -112,6 +121,16 @@ pub struct Trade {
     pub margin_used: f64,
     pub fees: f64,
     pub slippage: f64,
+
+    // newly added:
+    pub limit1_hit: bool,
+    pub limit2_hit: bool,
+    pub limit1_time: Option<String>,
+    pub limit2_time: Option<String>,
+    /// what TP was live at exit
+    pub exit_tp: f64,
+    /// if TP was moved, this is the updated TP
+    pub new_tp: Option<f64>,
 }
 
 #[derive(Debug)]

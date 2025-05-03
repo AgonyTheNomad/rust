@@ -1,18 +1,18 @@
-// src/backtest.rs
 use crate::strategy::Strategy;
-use crate::models::{BacktestState, Trade, PositionType, Candle, Signal, Position, PositionStatus};
+use crate::models::{BacktestState, Trade, PositionType, Candle, Position, PositionStatus};
 use crate::stats::StatsTracker;
 use std::time::{Duration, Instant};
 use serde::Serialize;
 use chrono::Utc;
 
-// Define a local implementation of metrics for backtest.rs
+// ───── Metrics Calculator ───────────────────────────────────────────────
+
 struct MetricsCalculator {
     initial_balance: f64,
     risk_free_rate: f64,
     trades: Vec<Trade>,
     equity_curve: Vec<f64>,
-    timestamps: Vec<chrono::DateTime<chrono::Utc>>,
+    timestamps: Vec<chrono::DateTime<Utc>>,
 }
 
 impl MetricsCalculator {
@@ -30,21 +30,22 @@ impl MetricsCalculator {
         self.trades.push(trade);
     }
 
-    fn update_equity(&mut self, value: f64, timestamp: chrono::DateTime<chrono::Utc>) {
+    fn update_equity(&mut self, value: f64, timestamp: chrono::DateTime<Utc>) {
         self.equity_curve.push(value);
         self.timestamps.push(timestamp);
     }
-    
+
     fn calculate(&self) -> BacktestMetrics {
-        let mut winning_trades = 0;
-        let mut losing_trades = 0;
-        let mut total_profit = 0.0;
+        let mut winning_trades: usize = 0;
+        let mut losing_trades: usize = 0;
+        let mut total_wins: f64 = 0.0;
+        let mut total_losses: f64 = 0.0;
+        let mut total_profit: f64 = 0.0;
         let mut largest_win: f64 = 0.0;
         let mut largest_loss: f64 = 0.0;
-        let mut total_wins = 0.0;
-        let mut total_losses = 0.0;
 
         for trade in &self.trades {
+            total_profit += trade.pnl;
             if trade.pnl > 0.0 {
                 winning_trades += 1;
                 total_wins += trade.pnl;
@@ -54,52 +55,47 @@ impl MetricsCalculator {
                 total_losses += trade.pnl.abs();
                 largest_loss = largest_loss.max(trade.pnl.abs());
             }
-
-            total_profit += trade.pnl;
         }
 
         let total_trades = self.trades.len();
-        let win_rate = if total_trades > 0 {
+        let win_rate: f64 = if total_trades > 0 {
             winning_trades as f64 / total_trades as f64
         } else {
             0.0
         };
 
-        let profit_factor = if total_losses > 0.0 {
+        let profit_factor: f64 = if total_losses > 0.0 {
             total_wins / total_losses
         } else {
             f64::INFINITY
         };
 
-        let average_win = if winning_trades > 0 {
+        let average_win: f64 = if winning_trades > 0 {
             total_wins / winning_trades as f64
         } else {
             0.0
         };
 
-        let average_loss = if losing_trades > 0 {
+        let average_loss: f64 = if losing_trades > 0 {
             total_losses / losing_trades as f64
         } else {
             0.0
         };
 
-        // Simple risk/reward ratio
-        let risk_reward_ratio = if average_loss > 0.0 {
+        let risk_reward_ratio: f64 = if average_loss > 0.0 {
             average_win / average_loss
         } else {
             f64::INFINITY
         };
 
-        // Simple calculation for max drawdown
-        let mut max_drawdown: f64 = 0.0;
-        let mut peak = self.equity_curve[0];
-        
-        for &equity in &self.equity_curve {
-            if equity > peak {
-                peak = equity;
+        // Max drawdown
+        let mut peak: f64 = self.equity_curve[0];
+        let mut max_dd: f64 = 0.0;
+        for &eq in &self.equity_curve {
+            if eq > peak {
+                peak = eq;
             } else {
-                let drawdown = (peak - equity) / peak;
-                max_drawdown = max_drawdown.max(drawdown);
+                max_dd = max_dd.max((peak - eq) / peak);
             }
         }
 
@@ -110,9 +106,9 @@ impl MetricsCalculator {
             win_rate,
             profit_factor,
             total_profit,
-            max_drawdown,
-            sharpe_ratio: 0.0, // Simplified
-            sortino_ratio: 0.0, // Simplified
+            max_drawdown: max_dd,
+            sharpe_ratio: 0.0,
+            sortino_ratio: 0.0,
             risk_reward_ratio,
             largest_win,
             largest_loss,
@@ -153,30 +149,43 @@ pub struct Backtester {
     initial_balance: f64,
     stats: StatsTracker,
     metrics_calculator: MetricsCalculator,
-    verbose: bool, // Flag to control debug output
+    verbose: bool,
 }
 
 impl Backtester {
     pub fn new(initial_balance: f64, strategy: Strategy) -> Self {
-        let metrics_calculator = MetricsCalculator::new(initial_balance, 0.02);
-        
         Self {
             strategy,
             initial_balance,
             stats: StatsTracker::new(),
-            metrics_calculator,
-            verbose: false, // Default to false, can be enabled with set_verbose
+            metrics_calculator: MetricsCalculator::new(initial_balance, 0.02),
+            verbose: false,
         }
     }
-    
-    // Method to enable or disable verbose logging
-    pub fn set_verbose(&mut self, verbose: bool) {
-        self.verbose = verbose;
+
+    pub fn set_verbose(&mut self, v: bool) {
+        self.verbose = v;
+        self.strategy.set_verbose(v);
     }
 
-    pub fn run(&mut self, candles: &[Candle]) -> Result<BacktestResults, Box<dyn std::error::Error>> {
+    pub fn print_pending_orders(&self) {
+        let orders = self.strategy.get_pending_orders_info();
+        println!("Pending orders: {}", orders.len());
+        for (i, o) in orders.iter().enumerate() {
+            println!("  {}. {}", i + 1, o);
+        }
+    }
+
+    pub fn run(
+        &mut self,
+        candles: &[Candle],
+    ) -> Result<BacktestResults, Box<dyn std::error::Error>> {
         let start_time = Instant::now();
-        
+        // Warmup history if needed
+        if let Some(warmup) = candles.get(0..100) {
+            self.strategy.initialize_with_history(warmup)?;
+        }
+
         let mut state = BacktestState {
             account_balance: self.initial_balance,
             initial_balance: self.initial_balance,
@@ -188,137 +197,101 @@ impl Backtester {
             current_drawdown: 0.0,
         };
 
-        // Process all candles
         for (i, candle) in candles.iter().enumerate() {
-            // Enhanced debugging - print state at beginning of each candle
             if self.verbose && i % 100 == 0 {
-                println!("Candle {}: O=${:.2} H=${:.2} L=${:.2} C=${:.2} - Has Position: {}",
-                    candle.time, candle.open, candle.high, candle.low, candle.close, 
-                    state.position.is_some());
+                println!(
+                    "Candle {}: H={}, L={} | HasPos={}",
+                    candle.time,
+                    candle.high,
+                    candle.low,
+                    state.position.is_some()
+                );
             }
-            
-            // Track equity curve
+
             state.equity_curve.push(state.account_balance);
-            let candle_time = candle.time.parse().unwrap_or_else(|_| Utc::now());
-            self.metrics_calculator.update_equity(state.account_balance, candle_time);
-            
-            // Check if we need to close any existing active positions
-            if let Some(position) = &mut state.position {
-                let exit_info = self.check_exits(position, candle);
-                
-                if let Some((exit_type, exit_price, exit_reason)) = exit_info {
-                    // Calculate PnL
-                    let pnl = match position.position_type {
-                        PositionType::Long => (exit_price - position.entry_price) * position.size,
-                        PositionType::Short => (position.entry_price - exit_price) * position.size,
-                    };
-                    
-                    // Update account balance
-                    state.account_balance += pnl;
-                    
-                    // Create trade record
-                    let trade = Trade {
-                        entry_time: position.entry_time.clone(),
-                        exit_time: candle.time.clone(),
-                        position_type: if matches!(position.position_type, PositionType::Long) {
-                            "Long".to_string()
-                        } else {
-                            "Short".to_string()
-                        },
-                        entry_price: position.entry_price,
-                        exit_price,
-                        size: position.size,
-                        pnl,
-                        risk_percent: position.risk_percent,
-                        profit_factor: if pnl > 0.0 {
-                            pnl / (position.entry_price * position.size * position.risk_percent)
-                        } else {
-                            0.0
-                        },
-                        margin_used: position.margin_used,
-                        fees: 0.0,
-                        slippage: 0.0,
-                    };
-                    
-                    // Log trade closure
-                    if self.verbose {
-                        println!("CLOSED {} POSITION: {} @ ${:.2}, Exit: {} @ ${:.2}, PnL: ${:.2}, Reason: {}",
-                            trade.position_type, position.entry_time, position.entry_price,
-                            candle.time, exit_price, pnl, exit_reason);
+            let ts = candle
+                .time
+                .parse()
+                .unwrap_or_else(|_| Utc::now());
+            self.metrics_calculator
+                .update_equity(state.account_balance, ts);
+
+            // ─── Exit existing position ────────────────────────────────────────
+            if let Some(pos) = &mut state.position {
+                if pos.status == PositionStatus::Triggered {
+                    pos.status = PositionStatus::Active;
+                }
+                if pos.status == PositionStatus::Active {
+                    if let Some((_exit_type, exit_price, _exit_reason)) =
+                        self.check_exits(pos, candle)
+                    {
+                        let pnl = match pos.position_type {
+                            PositionType::Long => {
+                                (exit_price - pos.entry_price) * pos.size
+                            }
+                            PositionType::Short => {
+                                (pos.entry_price - exit_price) * pos.size
+                            }
+                        };
+                        state.account_balance += pnl;
+
+                        let trade = Trade {
+                            entry_time:      pos.entry_time.clone(),
+                            exit_time:       candle.time.clone(),
+                            position_type:   if pos.position_type==PositionType::Long { "Long".into() } else { "Short".into() },
+                            entry_price:     pos.entry_price,
+                            exit_price,
+                            exit_tp:         pos.take_profit,      // ← newly required
+                            size:            pos.size,
+                            pnl,
+                            risk_percent:    pos.risk_percent,
+                            profit_factor:   if pnl > 0.0 { pnl / (pos.entry_price * pos.size * pos.risk_percent) } else { 0.0 },
+                            margin_used:     pos.margin_used,
+                            fees:            0.0,
+                            slippage:        0.0,
+                            limit1_hit:      pos.limit1_hit,
+                            limit2_hit:      pos.limit2_hit,
+                            limit1_time:     pos.limit1_time.clone(),
+                            limit2_time:     pos.limit2_time.clone(),
+                            new_tp:          pos.new_tp,
+                        };
+                        
+                        
+
+                        state.trades.push(trade.clone());
+                        self.stats
+                            .record_trade(&trade, state.account_balance);
+                        self.metrics_calculator.add_trade(trade);
+                        state.position = None;
                     }
-                    
-                    // Add to trade list and record in stats
-                    state.trades.push(trade.clone());
-                    self.stats.record_trade(&trade, state.account_balance);
-                    self.metrics_calculator.add_trade(trade);
-                    
-                    // Clear position
-                    state.position = None;
                 }
             }
 
-            // Generate new signals only if no active position
-            let has_active_position = state.position.is_some();
-            
-            // Analyze candle for new signals
-            match self.strategy.analyze_candle(candle, has_active_position) {
-                Ok(signals) => {
-                    // Only process signals if we don't have an active position
-                    if !has_active_position && !signals.is_empty() {
-                        for signal in signals {
-                            // Create a position directly from the signal
-                            match self.strategy.create_scaled_position(&signal, state.account_balance, 0.02) {
-                                Ok(mut position) => {
-                                    // Set the entry time to the current candle
-                                    position.entry_time = candle.time.clone();
-                                    position.status = PositionStatus::Active;
-                                    
-                                    // Log position creation
-                                    if self.verbose {
-                                        println!("OPENED {} POSITION FROM SIGNAL: Entry @ ${:.2}, SL: ${:.2}, TP: ${:.2}, Time: {}",
-                                            if matches!(position.position_type, PositionType::Long) {
-                                                "LONG"
-                                            } else {
-                                                "SHORT"
-                                            },
-                                            position.entry_price,
-                                            position.stop_loss,
-                                            position.take_profit,
-                                            candle.time);
-                                    }
-                                    
-                                    // Set as active position
-                                    state.position = Some(position);
-                                    
-                                    // Only open one position at a time
-                                    break;
-                                },
-                                Err(e) => {
-                                    if self.verbose {
-                                        println!("Failed to create position from signal: {}", e);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                Err(e) => {
-                    if self.verbose {
-                        println!("Error analyzing candle: {}", e);
-                    }
-                    continue;
+            // ─── Enter new position ────────────────────────────────────────────
+            if state.position.is_none() {
+                for signal in
+                    self.strategy.analyze_candle(candle, false)?
+                {
+                    let mut pos = self.strategy.create_scaled_position(
+                        &signal,
+                        state.account_balance,
+                        self.strategy.get_max_risk_per_trade(),
+                    )?;
+                    pos.entry_time = candle.time.clone();
+                    state.position = Some(pos);
+                    break;
                 }
-            };
+            }
 
-            // Update drawdown calculations
+            // ─── Update drawdowns ──────────────────────────────────────────────
             state.peak_balance = state.peak_balance.max(state.account_balance);
-            state.current_drawdown = (state.peak_balance - state.account_balance) / state.peak_balance;
-            state.max_drawdown = state.max_drawdown.max(state.current_drawdown);
+            state.current_drawdown =
+                (state.peak_balance - state.account_balance) / state.peak_balance;
+            state.max_drawdown =
+                state.max_drawdown.max(state.current_drawdown);
         }
 
-        // Calculate final metrics
         let metrics = self.calculate_metrics(&state);
-        
         Ok(BacktestResults {
             metrics,
             trades: state.trades,
@@ -327,102 +300,109 @@ impl Backtester {
         })
     }
 
-    // Check if position should be closed (hit stop loss, take profit, or limit orders)
-    fn check_exits(&self, position: &mut Position, candle: &Candle) -> Option<(String, f64, String)> {
-        // Check for stop loss for long positions
-        if matches!(position.position_type, PositionType::Long) && candle.low <= position.stop_loss {
-            return Some(("Stop Loss".to_string(), position.stop_loss, "Price hit stop loss level".to_string()));
-        }
-        
-        // Check for stop loss for short positions
-        if matches!(position.position_type, PositionType::Short) && candle.high >= position.stop_loss {
-            return Some(("Stop Loss".to_string(), position.stop_loss, "Price hit stop loss level".to_string()));
-        }
-        
-        // Check for take profit for long positions
-        if matches!(position.position_type, PositionType::Long) && candle.high >= position.take_profit {
-            return Some(("Take Profit".to_string(), position.take_profit, "Price hit take profit level".to_string()));
-        }
-        
-        // Check for take profit for short positions
-        if matches!(position.position_type, PositionType::Short) && candle.low <= position.take_profit {
-            return Some(("Take Profit".to_string(), position.take_profit, "Price hit take profit level".to_string()));
-        }
-        
-        // Handle limit orders - Check if limit1 is hit for long positions
-        if !position.limit1_hit && 
-           matches!(position.position_type, PositionType::Long) && 
-           candle.low <= position.limit1_price.unwrap_or(f64::MAX) {
-            // Mark limit1 as hit
+    fn check_exits(
+        &self,
+        position: &mut Position,
+        candle: &Candle,
+    ) -> Option<(String, f64, String)> {
+        // LIMIT1 LONG
+        if !position.limit1_hit
+            && position.position_type == PositionType::Long
+            && candle.low <= position.limit1_price.unwrap_or(f64::MAX)
+        {
             position.limit1_hit = true;
-            
-            // Update take profit if new_tp1 is set
-            if let Some(new_tp) = position.new_tp1 {
-                position.take_profit = new_tp;
-                
+            if let Some(tp1) = position.new_tp1 {
+                position.take_profit = tp1;
+                position.new_tp = Some(tp1);
                 if self.verbose {
-                    println!("LIMIT1 HIT for LONG position: Updated TP to ${:.2}", new_tp);
+                    println!("L1 LONG: TP→${:.2}", tp1);
                 }
             }
         }
-        
-        // Check if limit2 is hit for long positions
-        if !position.limit2_hit && 
-           matches!(position.position_type, PositionType::Long) && 
-           candle.low <= position.limit2_price.unwrap_or(f64::MAX) {
-            // Mark limit2 as hit
+        // LIMIT2 LONG
+        if !position.limit2_hit
+            && position.position_type == PositionType::Long
+            && candle.low <= position.limit2_price.unwrap_or(f64::MAX)
+        {
             position.limit2_hit = true;
-            
-            // Update take profit if new_tp2 is set
-            if let Some(new_tp) = position.new_tp2 {
-                position.take_profit = new_tp;
-                
+            if let Some(tp2) = position.new_tp2 {
+                position.take_profit = tp2;
+                position.new_tp = Some(tp2);
                 if self.verbose {
-                    println!("LIMIT2 HIT for LONG position: Updated TP to ${:.2}", new_tp);
+                    println!("L2 LONG: TP→${:.2}", tp2);
                 }
             }
         }
-        
-        // Check if limit1 is hit for short positions
-        if !position.limit1_hit && 
-           matches!(position.position_type, PositionType::Short) && 
-           candle.high >= position.limit1_price.unwrap_or(0.0) {
-            // Mark limit1 as hit
+        // LIMIT1 SHORT
+        if !position.limit1_hit
+            && position.position_type == PositionType::Short
+            && candle.high >= position.limit1_price.unwrap_or(f64::MIN)
+        {
             position.limit1_hit = true;
-            
-            // Update take profit if new_tp1 is set
-            if let Some(new_tp) = position.new_tp1 {
-                position.take_profit = new_tp;
-                
+            if let Some(tp1) = position.new_tp1 {
+                position.take_profit = tp1;
+                position.new_tp = Some(tp1);
                 if self.verbose {
-                    println!("LIMIT1 HIT for SHORT position: Updated TP to ${:.2}", new_tp);
+                    println!("L1 SHORT: TP→${:.2}", tp1);
                 }
             }
         }
-        
-        // Check if limit2 is hit for short positions
-        if !position.limit2_hit && 
-           matches!(position.position_type, PositionType::Short) && 
-           candle.high >= position.limit2_price.unwrap_or(0.0) {
-            // Mark limit2 as hit
+        // LIMIT2 SHORT
+        if !position.limit2_hit
+            && position.position_type == PositionType::Short
+            && candle.high >= position.limit2_price.unwrap_or(f64::MIN)
+        {
             position.limit2_hit = true;
-            
-            // Update take profit if new_tp2 is set
-            if let Some(new_tp) = position.new_tp2 {
-                position.take_profit = new_tp;
-                
+            if let Some(tp2) = position.new_tp2 {
+                position.take_profit = tp2;
+                position.new_tp = Some(tp2);
                 if self.verbose {
-                    println!("LIMIT2 HIT for SHORT position: Updated TP to ${:.2}", new_tp);
+                    println!("L2 SHORT: TP→${:.2}", tp2);
                 }
             }
         }
-        
-        // No exit conditions met
+
+        // ─── Final exit logic ───────────────────────────────────────────────
+        if position.position_type == PositionType::Long
+            && candle.high >= position.take_profit
+        {
+            return Some((
+                "Take Profit".to_string(),
+                position.take_profit,
+                "Hit TP".to_string(),
+            ));
+        }
+        if position.position_type == PositionType::Long
+            && candle.low <= position.stop_loss
+        {
+            return Some((
+                "Stop Loss".to_string(),
+                position.stop_loss,
+                "Hit SL".to_string(),
+            ));
+        }
+        if position.position_type == PositionType::Short
+            && candle.low <= position.take_profit
+        {
+            return Some((
+                "Take Profit".to_string(),
+                position.take_profit,
+                "Hit TP".to_string(),
+            ));
+        }
+        if position.position_type == PositionType::Short
+            && candle.high >= position.stop_loss
+        {
+            return Some((
+                "Stop Loss".to_string(),
+                position.stop_loss,
+                "Hit SL".to_string(),
+            ));
+        }
         None
     }
 
     fn calculate_metrics(&self, _state: &BacktestState) -> BacktestMetrics {
-        // Added underscore to indicate the state parameter is intentionally unused
         self.metrics_calculator.calculate()
     }
 
