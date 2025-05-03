@@ -9,7 +9,7 @@ Sharpe ratio: 0.00
 
 DETAILS OF LAST 5 TRADES:
 Trade #1
-  Entry Time: 2025-05-02 18:37:28.639309100 UTC
+  Entry Time: 2025-05-02 23:31:01.657113600 UTC
   Exit Time: 2025-05-02T17:16:00Z
   Type: Short
   Entry Price: $97382.50
@@ -20,7 +20,7 @@ Trade #1
   Profit Factor: 1.00
 
 Trade #2
-  Entry Time: 2025-05-02 18:37:28.639139600 UTC
+  Entry Time: 2025-05-02 23:31:01.656949300 UTC
   Exit Time: 2025-05-02T15:47:00Z
   Type: Short
   Entry Price: $97486.50
@@ -31,7 +31,7 @@ Trade #2
   Profit Factor: 1.00
 
 Trade #3
-  Entry Time: 2025-05-02 18:37:28.639135100 UTC
+  Entry Time: 2025-05-02 23:31:01.656944800 UTC
   Exit Time: 2025-05-02T15:46:00Z
   Type: Short
   Entry Price: $97486.50
@@ -42,7 +42,7 @@ Trade #3
   Profit Factor: 1.00
 
 Trade #4
-  Entry Time: 2025-05-02 18:37:28.639130500 UTC
+  Entry Time: 2025-05-02 23:31:01.656940100 UTC
   Exit Time: 2025-05-02T15:45:00Z
   Type: Short
   Entry Price: $97486.50
@@ -53,7 +53,7 @@ Trade #4
   Profit Factor: 1.00
 
 Trade #5
-  Entry Time: 2025-05-02 18:37:28.639126100 UTC
+  Entry Time: 2025-05-02 23:31:01.656935600 UTC
   Exit Time: 2025-05-02T15:44:00Z
   Type: Short
   Entry Price: $97486.50

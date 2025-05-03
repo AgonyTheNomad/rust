@@ -1,8 +1,8 @@
-// src/bin/check_btc_trades_detailed.rs
+// src/bin/check_btc_trades_fixed.rs
 use std::error::Error;
 use crypto_backtest::fetch_data::load_candles_from_csv;
 use crypto_backtest::strategy::{Strategy, AssetConfig};
-use crypto_backtest::models::{PositionType, default_strategy_config, Position};
+use crypto_backtest::models::{PositionType, default_strategy_config};
 use std::fs::File;
 use std::io::Write;
 use std::collections::VecDeque;
@@ -15,7 +15,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     candles.retain(|c| c.volume > 0.0);
     
     // Create a log file
-    let log_file = "btc_trade_check.txt";
+    let log_file = "btc_trade_check_fixed.txt";
     let mut file = File::create(log_file)?;
 
     // Use a longer period of data to ensure trades have time to complete
@@ -123,31 +123,45 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut strategy = Strategy::new(config.clone(), asset_config);
     let initial_balance = 10000.0;
     let mut current_balance = initial_balance;
-    let mut positions: Vec<TrackingPosition> = Vec::new();
     let mut completed_trades = Vec::new();
     
     // Keep a record of the last 5 trades with all details
     let mut last_trades: VecDeque<String> = VecDeque::with_capacity(5);
     
     // Create a second log file for manual tracking
-    let manual_log = "btc_manual_check.txt";
+    let manual_log = "btc_manual_check_fixed.txt";
     let mut manual_file = File::create(manual_log)?;
     
-    writeln!(manual_file, "MANUAL TRADE CHECKING:")?;
+    writeln!(manual_file, "MANUAL TRADE CHECKING (FIXED VERSION):")?;
     
     // Process a smaller subset for detailed checking
     let check_candles = test_candles.iter().take(1000).collect::<Vec<_>>();
     
+    // Track current active position
+    let mut current_position: Option<TrackingPosition> = None;
+    let mut position_count = 0;
+    let mut limit1_hits = 0;
+    let mut limit2_hits = 0;
+    let mut tp_hits = 0;
+    let mut sl_hits = 0;
+    let mut winning_trades = 0;
+    let mut losing_trades = 0;
+    
     for (i, candle) in check_candles.iter().enumerate() {
-        // Check if any positions are hit
-        let mut positions_to_remove = Vec::new();
-        
-        for (pos_idx, position) in positions.iter_mut().enumerate() {
-            // Check stop loss for long positions
+        // First, check if we need to close the existing position
+        if let Some(position) = &mut current_position {
+            // Check for stop loss for long positions
             if matches!(position.position_type, PositionType::Long) && candle.low <= position.stop_loss {
                 // Stop loss hit for long
                 let pnl = (position.stop_loss - position.entry_price) * position.size;
                 current_balance += pnl;
+                sl_hits += 1;
+                
+                if pnl > 0.0 {
+                    winning_trades += 1;
+                } else {
+                    losing_trades += 1;
+                }
                 
                 // Record trade details
                 let trade_detail = format!(
@@ -186,19 +200,26 @@ fn main() -> Result<(), Box<dyn Error>> {
                     last_trades.pop_front();
                 }
                 
-                writeln!(manual_file, "CLOSE LONG #{} (Stop Loss): Candle #{} at ${:.2}, PnL: ${:.2}", 
-                    pos_idx + 1, i, position.stop_loss, pnl)?;
+                writeln!(manual_file, "CLOSE LONG (Stop Loss): Candle #{} at ${:.2}, PnL: ${:.2}", 
+                    i, position.stop_loss, pnl)?;
                 completed_trades.push(format!("Long trade: Entry=${:.2}, Exit=${:.2}, PnL=${:.2}", 
                     position.entry_price, position.stop_loss, pnl));
-                positions_to_remove.push(pos_idx);
-                continue;
+                
+                // Clear position
+                current_position = None;
             }
-            
-            // Check stop loss for short positions
-            if matches!(position.position_type, PositionType::Short) && candle.high >= position.stop_loss {
+            // Check for stop loss for short positions
+            else if matches!(position.position_type, PositionType::Short) && candle.high >= position.stop_loss {
                 // Stop loss hit for short
                 let pnl = (position.entry_price - position.stop_loss) * position.size;
                 current_balance += pnl;
+                sl_hits += 1;
+                
+                if pnl > 0.0 {
+                    winning_trades += 1;
+                } else {
+                    losing_trades += 1;
+                }
                 
                 // Record trade details
                 let trade_detail = format!(
@@ -237,19 +258,21 @@ fn main() -> Result<(), Box<dyn Error>> {
                     last_trades.pop_front();
                 }
                 
-                writeln!(manual_file, "CLOSE SHORT #{} (Stop Loss): Candle #{} at ${:.2}, PnL: ${:.2}", 
-                    pos_idx + 1, i, position.stop_loss, pnl)?;
+                writeln!(manual_file, "CLOSE SHORT (Stop Loss): Candle #{} at ${:.2}, PnL: ${:.2}", 
+                    i, position.stop_loss, pnl)?;
                 completed_trades.push(format!("Short trade: Entry=${:.2}, Exit=${:.2}, PnL=${:.2}", 
                     position.entry_price, position.stop_loss, pnl));
-                positions_to_remove.push(pos_idx);
-                continue;
+                
+                // Clear position
+                current_position = None;
             }
-            
-            // Check take profit for long positions
-            if matches!(position.position_type, PositionType::Long) && candle.high >= position.take_profit {
+            // Check for take profit for long positions
+            else if matches!(position.position_type, PositionType::Long) && candle.high >= position.take_profit {
                 // Take profit hit for long
                 let pnl = (position.take_profit - position.entry_price) * position.size;
                 current_balance += pnl;
+                tp_hits += 1;
+                winning_trades += 1;
                 
                 // Record trade details
                 let trade_detail = format!(
@@ -288,19 +311,21 @@ fn main() -> Result<(), Box<dyn Error>> {
                     last_trades.pop_front();
                 }
                 
-                writeln!(manual_file, "CLOSE LONG #{} (Take Profit): Candle #{} at ${:.2}, PnL: ${:.2}", 
-                    pos_idx + 1, i, position.take_profit, pnl)?;
+                writeln!(manual_file, "CLOSE LONG (Take Profit): Candle #{} at ${:.2}, PnL: ${:.2}", 
+                    i, position.take_profit, pnl)?;
                 completed_trades.push(format!("Long trade: Entry=${:.2}, Exit=${:.2}, PnL=${:.2}", 
                     position.entry_price, position.take_profit, pnl));
-                positions_to_remove.push(pos_idx);
-                continue;
+                
+                // Clear position
+                current_position = None;
             }
-            
-            // Check take profit for short positions
-            if matches!(position.position_type, PositionType::Short) && candle.low <= position.take_profit {
+            // Check for take profit for short positions
+            else if matches!(position.position_type, PositionType::Short) && candle.low <= position.take_profit {
                 // Take profit hit for short
                 let pnl = (position.entry_price - position.take_profit) * position.size;
                 current_balance += pnl;
+                tp_hits += 1;
+                winning_trades += 1;
                 
                 // Record trade details
                 let trade_detail = format!(
@@ -339,12 +364,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                     last_trades.pop_front();
                 }
                 
-                writeln!(manual_file, "CLOSE SHORT #{} (Take Profit): Candle #{} at ${:.2}, PnL: ${:.2}", 
-                    pos_idx + 1, i, position.take_profit, pnl)?;
+                writeln!(manual_file, "CLOSE SHORT (Take Profit): Candle #{} at ${:.2}, PnL: ${:.2}", 
+                    i, position.take_profit, pnl)?;
                 completed_trades.push(format!("Short trade: Entry=${:.2}, Exit=${:.2}, PnL=${:.2}", 
                     position.entry_price, position.take_profit, pnl));
-                positions_to_remove.push(pos_idx);
-                continue;
+                
+                // Clear position
+                current_position = None;
             }
             
             // Check limit orders (just for logging)
@@ -352,45 +378,42 @@ fn main() -> Result<(), Box<dyn Error>> {
                matches!(position.position_type, PositionType::Long) && 
                candle.low <= position.limit1_price.unwrap_or(0.0) {
                 position.limit1_hit = true;
+                limit1_hits += 1;
                 writeln!(manual_file, "LIMIT1 HIT for position #{} at ${:.2}", 
-                    pos_idx + 1, position.limit1_price.unwrap_or(0.0))?;
+                    position_count, position.limit1_price.unwrap_or(0.0))?;
             }
             
             if !position.limit2_hit && 
                matches!(position.position_type, PositionType::Long) && 
                candle.low <= position.limit2_price.unwrap_or(0.0) {
                 position.limit2_hit = true;
+                limit2_hits += 1;
                 writeln!(manual_file, "LIMIT2 HIT for position #{} at ${:.2}", 
-                    pos_idx + 1, position.limit2_price.unwrap_or(0.0))?;
+                    position_count, position.limit2_price.unwrap_or(0.0))?;
             }
             
             if !position.limit1_hit && 
                matches!(position.position_type, PositionType::Short) && 
                candle.high >= position.limit1_price.unwrap_or(0.0) {
                 position.limit1_hit = true;
+                limit1_hits += 1;
                 writeln!(manual_file, "LIMIT1 HIT for position #{} at ${:.2}", 
-                    pos_idx + 1, position.limit1_price.unwrap_or(0.0))?;
+                    position_count, position.limit1_price.unwrap_or(0.0))?;
             }
             
             if !position.limit2_hit && 
                matches!(position.position_type, PositionType::Short) && 
                candle.high >= position.limit2_price.unwrap_or(0.0) {
                 position.limit2_hit = true;
+                limit2_hits += 1;
                 writeln!(manual_file, "LIMIT2 HIT for position #{} at ${:.2}", 
-                    pos_idx + 1, position.limit2_price.unwrap_or(0.0))?;
+                    position_count, position.limit2_price.unwrap_or(0.0))?;
             }
         }
         
-        // Remove closed positions
-        if !positions_to_remove.is_empty() {
-            positions_to_remove.sort_by(|a, b| b.cmp(a)); // Sort in descending order
-            for idx in positions_to_remove {
-                positions.remove(idx);
-            }
-        }
-        
-        // Generate new signals and add positions
-        if let Ok(signals) = strategy.analyze_candle(candle) {
+        // Only generate new signals if no position is active
+        let has_open_position = current_position.is_some();
+        if let Ok(signals) = strategy.analyze_candle(candle, has_open_position) {
             for signal in signals {
                 if let Ok(position) = strategy.create_scaled_position(
                     &signal, 
@@ -423,8 +446,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                         position.size
                     );
                     
-                    writeln!(manual_file, "NEW POSITION at Candle #{}:", i)?;
-                    writeln!(manual_file, "  Type: {}", if matches!(position.position_type, PositionType::Long) { "LONG" } else { "SHORT" })?;
+                    position_count += 1;
+                    writeln!(manual_file, "NEW POSITION #{} at Candle #{}:", position_count, i)?;
+                    writeln!(manual_file, "  Type: {}", 
+                        if matches!(position.position_type, PositionType::Long) { "LONG" } else { "SHORT" })?;
                     writeln!(manual_file, "  Entry: ${:.2}", position.entry_price)?;
                     writeln!(manual_file, "  Stop Loss: ${:.2}", position.stop_loss)?;
                     writeln!(manual_file, "  Take Profit: ${:.2}", position.take_profit)?;
@@ -445,7 +470,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                         candle_index: i,
                     };
                     
-                    positions.push(tracking_position);
+                    // Set as current position - only take one position at a time
+                    current_position = Some(tracking_position);
+                    
+                    // Break after creating a position - we only want one position at a time
+                    break;
                 }
             }
         }
@@ -456,8 +485,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     writeln!(manual_file, "Starting Balance: ${:.2}", initial_balance)?;
     writeln!(manual_file, "Final Balance: ${:.2}", current_balance)?;
     writeln!(manual_file, "Profit/Loss: ${:.2}", current_balance - initial_balance)?;
-    writeln!(manual_file, "Open Positions Remaining: {}", positions.len())?;
+    writeln!(manual_file, "Open Positions Remaining: {}", if current_position.is_some() { 1 } else { 0 })?;
     writeln!(manual_file, "Completed Trades: {}", completed_trades.len())?;
+    writeln!(manual_file, "Win Rate: {:.2}%", 
+        if winning_trades + losing_trades > 0 {
+            (winning_trades as f64 / (winning_trades + losing_trades) as f64) * 100.0
+        } else { 
+            0.0 
+        })?;
     
     // Write the last 5 trades with detailed information
     writeln!(manual_file, "\nDETAILS OF LAST 5 TRADES:")?;
@@ -472,18 +507,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Final Balance: ${:.2}", current_balance);
     println!("Manual check log saved to {}", manual_log);
     
-    // Print details of open positions
-    println!("\nOpen positions at end of test: {}", positions.len());
-    for (i, position) in positions.iter().take(5).enumerate() {
-        println!("Position #{}: {} at ${:.2}, SL=${:.2}, TP=${:.2}", 
-            i + 1,
+    // Print details of open position if any
+    if let Some(position) = &current_position {
+        println!("\nOpen position at end of test:");
+        println!("Type: {} at ${:.2}, SL=${:.2}, TP=${:.2}", 
             if matches!(position.position_type, PositionType::Long) { "LONG" } else { "SHORT" },
             position.entry_price,
             position.stop_loss,
             position.take_profit);
-    }
-    if positions.len() > 5 {
-        println!("... and {} more open positions", positions.len() - 5);
+    } else {
+        println!("\nNo open positions at end of test");
     }
     
     // Print details of last 5 trades

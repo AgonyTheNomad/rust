@@ -36,6 +36,9 @@ impl MetricsCalculator {
         self.timestamps.push(timestamp);
     }
 
+    // Rest of your MetricsCalculator implementation...
+    // Copy all the methods from your existing implementation
+    
     fn calculate(&self) -> BacktestMetrics {
         let mut winning_trades = 0;
         let mut losing_trades = 0;
@@ -191,38 +194,212 @@ impl Backtester {
                 candle.time.parse().unwrap_or_else(|_| Utc::now())
             );
 
-            // Analyze candle with strategy and get signals
-            let signals = self.strategy.analyze_candle(candle)?;
-            
-            // Process signals to create trades
-            for signal in signals {
-                if let Ok(position) = self.strategy.create_scaled_position(&signal, state.account_balance, 0.02) {
-                    // Create trade from position
+            // First, check if we need to close any existing positions
+            if let Some(position) = &mut state.position {
+                // Check for stop loss for long positions
+                if matches!(position.position_type, PositionType::Long) && candle.low <= position.stop_loss {
+                    // Calculate PnL using stop loss price
+                    let pnl = (position.stop_loss - position.entry_price) * position.size;
+                    state.account_balance += pnl;
+                    
+                    // Create trade record
                     let trade = Trade {
                         entry_time: position.entry_time.clone(),
                         exit_time: candle.time.clone(),
-                        position_type: match position.position_type {
-                            PositionType::Long => "Long".to_string(),
-                            PositionType::Short => "Short".to_string(),
-                        },
+                        position_type: "Long".to_string(),
                         entry_price: position.entry_price,
-                        exit_price: candle.close,
+                        exit_price: position.stop_loss,
                         size: position.size,
-                        pnl: (candle.close - position.entry_price) * position.size,
+                        pnl,
                         risk_percent: position.risk_percent,
-                        profit_factor: 1.0,
+                        profit_factor: if pnl > 0.0 { pnl / (position.entry_price * position.size * position.risk_percent) } else { 0.0 },
                         margin_used: position.margin_used,
                         fees: 0.0,
                         slippage: 0.0,
                     };
                     
+                    // Add to trade list and record in stats
                     state.trades.push(trade.clone());
                     self.stats.record_trade(&trade, state.account_balance);
                     self.metrics_calculator.add_trade(trade);
+                    
+                    // Clear position
+                    state.position = None;
+                }
+                // Check for stop loss for short positions
+                else if matches!(position.position_type, PositionType::Short) && candle.high >= position.stop_loss {
+                    // Calculate PnL using stop loss price
+                    let pnl = (position.entry_price - position.stop_loss) * position.size;
+                    state.account_balance += pnl;
+                    
+                    // Create trade record
+                    let trade = Trade {
+                        entry_time: position.entry_time.clone(),
+                        exit_time: candle.time.clone(),
+                        position_type: "Short".to_string(),
+                        entry_price: position.entry_price,
+                        exit_price: position.stop_loss,
+                        size: position.size,
+                        pnl,
+                        risk_percent: position.risk_percent,
+                        profit_factor: if pnl > 0.0 { pnl / (position.entry_price * position.size * position.risk_percent) } else { 0.0 },
+                        margin_used: position.margin_used,
+                        fees: 0.0,
+                        slippage: 0.0,
+                    };
+                    
+                    // Add to trade list and record in stats
+                    state.trades.push(trade.clone());
+                    self.stats.record_trade(&trade, state.account_balance);
+                    self.metrics_calculator.add_trade(trade);
+                    
+                    // Clear position
+                    state.position = None;
+                }
+                // Check for take profit for long positions
+                else if matches!(position.position_type, PositionType::Long) && candle.high >= position.take_profit {
+                    // Calculate PnL using take profit price
+                    let pnl = (position.take_profit - position.entry_price) * position.size;
+                    state.account_balance += pnl;
+                    
+                    // Create trade record
+                    let trade = Trade {
+                        entry_time: position.entry_time.clone(),
+                        exit_time: candle.time.clone(),
+                        position_type: "Long".to_string(),
+                        entry_price: position.entry_price,
+                        exit_price: position.take_profit,
+                        size: position.size,
+                        pnl,
+                        risk_percent: position.risk_percent,
+                        profit_factor: if pnl > 0.0 { pnl / (position.entry_price * position.size * position.risk_percent) } else { 0.0 },
+                        margin_used: position.margin_used,
+                        fees: 0.0,
+                        slippage: 0.0,
+                    };
+                    
+                    // Add to trade list and record in stats
+                    state.trades.push(trade.clone());
+                    self.stats.record_trade(&trade, state.account_balance);
+                    self.metrics_calculator.add_trade(trade);
+                    
+                    // Clear position
+                    state.position = None;
+                }
+                // Check for take profit for short positions
+                else if matches!(position.position_type, PositionType::Short) && candle.low <= position.take_profit {
+                    // Calculate PnL using take profit price
+                    let pnl = (position.entry_price - position.take_profit) * position.size;
+                    state.account_balance += pnl;
+                    
+                    // Create trade record
+                    let trade = Trade {
+                        entry_time: position.entry_time.clone(),
+                        exit_time: candle.time.clone(),
+                        position_type: "Short".to_string(),
+                        entry_price: position.entry_price,
+                        exit_price: position.take_profit,
+                        size: position.size,
+                        pnl,
+                        risk_percent: position.risk_percent,
+                        profit_factor: if pnl > 0.0 { pnl / (position.entry_price * position.size * position.risk_percent) } else { 0.0 },
+                        margin_used: position.margin_used,
+                        fees: 0.0,
+                        slippage: 0.0,
+                    };
+                    
+                    // Add to trade list and record in stats
+                    state.trades.push(trade.clone());
+                    self.stats.record_trade(&trade, state.account_balance);
+                    self.metrics_calculator.add_trade(trade);
+                    
+                    // Clear position
+                    state.position = None;
+                }
+                
+                // Handle limit orders - Check if limit1 is hit for long positions
+                else if !position.limit1_hit && 
+                       matches!(position.position_type, PositionType::Long) && 
+                       candle.low <= position.limit1_price.unwrap_or(0.0) {
+                    // Mark limit1 as hit
+                    position.limit1_hit = true;
+                    // Update take profit if new_tp1 is set
+                    if let Some(new_tp) = position.new_tp1 {
+                        position.take_profit = new_tp;
+                    }
+                    // Additional logic for scaling could be added here
+                }
+                
+                // Check if limit2 is hit for long positions
+                else if !position.limit2_hit && 
+                       matches!(position.position_type, PositionType::Long) && 
+                       candle.low <= position.limit2_price.unwrap_or(0.0) {
+                    // Mark limit2 as hit
+                    position.limit2_hit = true;
+                    // Update take profit if new_tp2 is set
+                    if let Some(new_tp) = position.new_tp2 {
+                        position.take_profit = new_tp;
+                    }
+                    // Additional logic for scaling could be added here
+                }
+                
+                // Check if limit1 is hit for short positions
+                else if !position.limit1_hit && 
+                       matches!(position.position_type, PositionType::Short) && 
+                       candle.high >= position.limit1_price.unwrap_or(0.0) {
+                    // Mark limit1 as hit
+                    position.limit1_hit = true;
+                    // Update take profit if new_tp1 is set
+                    if let Some(new_tp) = position.new_tp1 {
+                        position.take_profit = new_tp;
+                    }
+                    // Additional logic for scaling could be added here
+                }
+                
+                // Check if limit2 is hit for short positions
+                else if !position.limit2_hit && 
+                       matches!(position.position_type, PositionType::Short) && 
+                       candle.high >= position.limit2_price.unwrap_or(0.0) {
+                    // Mark limit2 as hit
+                    position.limit2_hit = true;
+                    // Update take profit if new_tp2 is set
+                    if let Some(new_tp) = position.new_tp2 {
+                        position.take_profit = new_tp;
+                    }
+                    // Additional logic for scaling could be added here
                 }
             }
 
-            // Update drawdown
+            // Only analyze for new signals if no position is open
+            let has_open_position = state.position.is_some();
+            
+            // Pass the has_open_position flag to analyze_candle
+            let mut signals = match self.strategy.analyze_candle(candle, has_open_position) {
+                Ok(signals) => signals,
+                Err(e) => {
+                    eprintln!("Error analyzing candle: {}", e);
+                    continue;
+                }
+            };
+            
+            // Process signals to create a position (but only if no position is open)
+            if !has_open_position && !signals.is_empty() {
+                // Sort signals by strength if multiple signals are generated
+                signals.sort_by(|a, b| b.strength.partial_cmp(&a.strength).unwrap_or(std::cmp::Ordering::Equal));
+                
+                // Take the strongest signal
+                if let Some(best_signal) = signals.first() {
+                    if let Ok(position) = self.strategy.create_scaled_position(
+                        best_signal, 
+                        state.account_balance, 
+                        0.02  // Consider passing the config parameter here
+                    ) {
+                        state.position = Some(position);
+                    }
+                }
+            }
+
+            // Update drawdown calculations
             state.peak_balance = state.peak_balance.max(state.account_balance);
             state.current_drawdown = (state.peak_balance - state.account_balance) / state.peak_balance;
             state.max_drawdown = state.max_drawdown.max(state.current_drawdown);

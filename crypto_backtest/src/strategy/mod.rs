@@ -1,4 +1,5 @@
 // src/strategy/mod.rs
+
 use std::collections::VecDeque;
 use serde::{Deserialize, Serialize};
 use anyhow::{Result};
@@ -108,7 +109,7 @@ impl Strategy {
         
         // Process each candle to establish state
         for candle in candles {
-            let _ = self.analyze_candle(candle)?;
+            let _ = self.analyze_candle(candle, false)?;
         }
         
         debug!("Strategy initialized with {} pivot highs and {} pivot lows", 
@@ -117,10 +118,15 @@ impl Strategy {
         Ok(())
     }
     
-    pub fn analyze_candle(&mut self, candle: &Candle) -> Result<Vec<Signal>> {
+    pub fn analyze_candle(&mut self, candle: &Candle, has_open_position: bool) -> Result<Vec<Signal>> {
         // Reset signal flags from previous runs
         self.long_signal = false;
         self.short_signal = false;
+        
+        // If a position is already open, return empty signals vector
+        if has_open_position {
+            return Ok(Vec::new());
+        }
         
         // Parse high and low
         let high = candle.high;
