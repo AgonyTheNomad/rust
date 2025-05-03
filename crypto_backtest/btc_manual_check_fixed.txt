@@ -1,0 +1,744 @@
+MANUAL TRADE CHECKING (FIXED VERSION):
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02042784
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T11:18:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02042784
+-------------------------------------
+NEW POSITION #1 at Candle #312:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10000.00
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02042784
+  Calculation: ($94548.36 - $95007.00) * -0.02042784 = $9.37
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #432 at $94548.36, PnL: $9.37
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02044698
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T13:18:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02044698
+-------------------------------------
+NEW POSITION #2 at Candle #432:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10009.37
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02044698
+  Calculation: ($94548.36 - $95007.00) * -0.02044698 = $9.38
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #433 at $94548.36, PnL: $9.38
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02046614
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T13:19:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02046614
+-------------------------------------
+NEW POSITION #3 at Candle #433:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10018.75
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02046614
+  Calculation: ($94548.36 - $95007.00) * -0.02046614 = $9.39
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #474 at $94548.36, PnL: $9.39
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02048531
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T14:00:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02048531
+-------------------------------------
+NEW POSITION #4 at Candle #474:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10028.13
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02048531
+  Calculation: ($94548.36 - $95007.00) * -0.02048531 = $9.40
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #909 at $94548.36, PnL: $9.40
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02050450
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:15:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02050450
+-------------------------------------
+NEW POSITION #5 at Candle #909:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10037.53
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02050450
+  Calculation: ($94548.36 - $95007.00) * -0.02050450 = $9.40
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #910 at $94548.36, PnL: $9.40
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02052371
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:16:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02052371
+-------------------------------------
+NEW POSITION #6 at Candle #910:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10046.93
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02052371
+  Calculation: ($94548.36 - $95007.00) * -0.02052371 = $9.41
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #912 at $94548.36, PnL: $9.41
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02054294
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:18:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02054294
+-------------------------------------
+NEW POSITION #7 at Candle #912:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10056.35
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02054294
+  Calculation: ($94548.36 - $95007.00) * -0.02054294 = $9.42
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #913 at $94548.36, PnL: $9.42
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02056219
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:19:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02056219
+-------------------------------------
+NEW POSITION #8 at Candle #913:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10065.77
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02056219
+  Calculation: ($94548.36 - $95007.00) * -0.02056219 = $9.43
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #914 at $94548.36, PnL: $9.43
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02058145
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:20:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02058145
+-------------------------------------
+NEW POSITION #9 at Candle #914:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10075.20
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02058145
+  Calculation: ($94548.36 - $95007.00) * -0.02058145 = $9.44
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #915 at $94548.36, PnL: $9.44
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02060074
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:21:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02060074
+-------------------------------------
+NEW POSITION #10 at Candle #915:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10084.64
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02060074
+  Calculation: ($94548.36 - $95007.00) * -0.02060074 = $9.45
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #916 at $94548.36, PnL: $9.45
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02062004
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:22:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02062004
+-------------------------------------
+NEW POSITION #11 at Candle #916:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10094.09
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02062004
+  Calculation: ($94548.36 - $95007.00) * -0.02062004 = $9.46
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #917 at $94548.36, PnL: $9.46
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02063936
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:23:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02063936
+-------------------------------------
+NEW POSITION #12 at Candle #917:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10103.54
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02063936
+  Calculation: ($94548.36 - $95007.00) * -0.02063936 = $9.47
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #918 at $94548.36, PnL: $9.47
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02065869
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:24:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02065869
+-------------------------------------
+NEW POSITION #13 at Candle #918:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10113.01
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02065869
+  Calculation: ($94548.36 - $95007.00) * -0.02065869 = $9.47
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #919 at $94548.36, PnL: $9.47
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02067805
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:25:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02067805
+-------------------------------------
+NEW POSITION #14 at Candle #919:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10122.48
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02067805
+  Calculation: ($94548.36 - $95007.00) * -0.02067805 = $9.48
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #920 at $94548.36, PnL: $9.48
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02069742
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:26:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02069742
+-------------------------------------
+NEW POSITION #15 at Candle #920:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10131.97
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02069742
+  Calculation: ($94548.36 - $95007.00) * -0.02069742 = $9.49
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #921 at $94548.36, PnL: $9.49
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02071681
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:27:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02071681
+-------------------------------------
+NEW POSITION #16 at Candle #921:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10141.46
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02071681
+  Calculation: ($94548.36 - $95007.00) * -0.02071681 = $9.50
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #922 at $94548.36, PnL: $9.50
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02073622
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:28:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02073622
+-------------------------------------
+NEW POSITION #17 at Candle #922:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10150.96
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02073622
+  Calculation: ($94548.36 - $95007.00) * -0.02073622 = $9.51
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #923 at $94548.36, PnL: $9.51
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02075565
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:29:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02075565
+-------------------------------------
+NEW POSITION #18 at Candle #923:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10160.47
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02075565
+  Calculation: ($94548.36 - $95007.00) * -0.02075565 = $9.52
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #924 at $94548.36, PnL: $9.52
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Limit1 Price: $94042.92
+  Limit2 Price: $93780.84
+  Size: -0.02077510
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:30:00Z
+Entry Price: $95007.00
+Stop Loss: $94548.36 (0.48274337680381807% from entry)
+Take Profit: $96108.36 (1.1592408980390934% from entry)
+Limit1 Price: $94042.92 (1.0147462818529185% from entry)
+Limit2 Price: $93780.84 (1.290599640026524% from entry)
+Size: -0.02077510
+-------------------------------------
+NEW POSITION #19 at Candle #924:
+  Type: LONG
+  Entry: $95007.00
+  Stop Loss: $94548.36
+  Take Profit: $96108.36
+  Current Balance: $10169.99
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95007.00
+  Stop Loss Price: $94548.36
+  Position Size: -0.02077510
+  Calculation: ($94548.36 - $95007.00) * -0.02077510 = $9.53
+WARNING: Unexpected positive P&L for long position stop loss!
+CLOSE LONG (Stop Loss): Candle #925 at $94548.36, PnL: $9.53
+
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $94791.50
+  Stop Loss: $93952.72
+  Take Profit: $96805.72
+  Limit1 Price: $93028.35
+  Limit2 Price: $92549.04
+  Size: -0.01137032
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-29T21:31:00Z
+Entry Price: $94791.50
+Stop Loss: $93952.72 (0.8848704788931516% from entry)
+Take Profit: $96805.72 (2.1248930547570044% from entry)
+Limit1 Price: $93028.35 (1.8600338637957958% from entry)
+Limit2 Price: $92549.04 (2.3656741374490364% from entry)
+Size: -0.01137032
+-------------------------------------
+NEW POSITION #20 at Candle #925:
+  Type: LONG
+  Entry: $94791.50
+  Stop Loss: $93952.72
+  Take Profit: $96805.72
+  Current Balance: $10179.52
+
+MANUAL CHECKING SUMMARY:
+Starting Balance: $10000.00
+Final Balance: $10179.52
+Profit/Loss: $179.52
+Open Positions Remaining: 1
+Completed Trades: 19
+Win Rate: 100.00%
+
+DETAILS OF LAST 5 TRADES:
+Trade #5
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-29T21:26:00Z
+Exit Time: 2025-04-29T21:27:00Z
+Duration: 1 candles
+Entry Price: $95007.00
+Exit Price: $94548.36
+Stop Loss: $94548.36
+Take Profit: $96108.36
+Limit1 Price: $94042.92
+Limit2 Price: $93780.84
+Limit1 Hit: false
+Limit2 Hit: false
+P&L: $9.49
+-------------------------------------
+Trade #4
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-29T21:27:00Z
+Exit Time: 2025-04-29T21:28:00Z
+Duration: 1 candles
+Entry Price: $95007.00
+Exit Price: $94548.36
+Stop Loss: $94548.36
+Take Profit: $96108.36
+Limit1 Price: $94042.92
+Limit2 Price: $93780.84
+Limit1 Hit: false
+Limit2 Hit: false
+P&L: $9.50
+-------------------------------------
+Trade #3
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-29T21:28:00Z
+Exit Time: 2025-04-29T21:29:00Z
+Duration: 1 candles
+Entry Price: $95007.00
+Exit Price: $94548.36
+Stop Loss: $94548.36
+Take Profit: $96108.36
+Limit1 Price: $94042.92
+Limit2 Price: $93780.84
+Limit1 Hit: false
+Limit2 Hit: false
+P&L: $9.51
+-------------------------------------
+Trade #2
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-29T21:29:00Z
+Exit Time: 2025-04-29T21:30:00Z
+Duration: 1 candles
+Entry Price: $95007.00
+Exit Price: $94548.36
+Stop Loss: $94548.36
+Take Profit: $96108.36
+Limit1 Price: $94042.92
+Limit2 Price: $93780.84
+Limit1 Hit: false
+Limit2 Hit: false
+P&L: $9.52
+-------------------------------------
+Trade #1
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-29T21:30:00Z
+Exit Time: 2025-04-29T21:31:00Z
+Duration: 1 candles
+Entry Price: $95007.00
+Exit Price: $94548.36
+Stop Loss: $94548.36
+Take Profit: $96108.36
+Limit1 Price: $94042.92
+Limit2 Price: $93780.84
+Limit1 Hit: false
+Limit2 Hit: false
+P&L: $9.53
+-------------------------------------

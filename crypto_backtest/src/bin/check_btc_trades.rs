@@ -1,4 +1,4 @@
-// src/bin/check_btc_trades_fixed.rs
+// src/bin/check_btc_trades.rs
 use std::error::Error;
 use crypto_backtest::fetch_data::load_candles_from_csv;
 use crypto_backtest::strategy::{Strategy, AssetConfig};
@@ -147,13 +147,33 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut winning_trades = 0;
     let mut losing_trades = 0;
     
+    // Flag to indicate when to clear position
+    let mut should_clear_position = false;
+    
     for (i, candle) in check_candles.iter().enumerate() {
+        // Reset the clear flag at the start of each iteration
+        should_clear_position = false;
+        
         // First, check if we need to close the existing position
         if let Some(position) = &mut current_position {
             // Check for stop loss for long positions
             if matches!(position.position_type, PositionType::Long) && candle.low <= position.stop_loss {
                 // Stop loss hit for long
                 let pnl = (position.stop_loss - position.entry_price) * position.size;
+                
+                // Add verification of P&L calculation for debugging
+                writeln!(manual_file, "DEBUG - Long Stop Loss Hit:")?;
+                writeln!(manual_file, "  Entry Price: ${:.2}", position.entry_price)?;
+                writeln!(manual_file, "  Stop Loss Price: ${:.2}", position.stop_loss)?;
+                writeln!(manual_file, "  Position Size: {:.8}", position.size)?;
+                writeln!(manual_file, "  Calculation: (${:.2} - ${:.2}) * {:.8} = ${:.2}", 
+                    position.stop_loss, position.entry_price, position.size, pnl)?;
+                
+                // For long positions, P&L should be negative if stop_loss < entry_price
+                if pnl > 0.0 && position.stop_loss < position.entry_price {
+                    writeln!(manual_file, "WARNING: Unexpected positive P&L for long position stop loss!")?;
+                }
+                
                 current_balance += pnl;
                 sl_hits += 1;
                 
@@ -195,7 +215,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 );
                 
                 // Add to last trades queue
-                last_trades.push_back(trade_detail.clone());
+                last_trades.push_back(trade_detail);
                 if last_trades.len() > 5 {
                     last_trades.pop_front();
                 }
@@ -205,13 +225,27 @@ fn main() -> Result<(), Box<dyn Error>> {
                 completed_trades.push(format!("Long trade: Entry=${:.2}, Exit=${:.2}, PnL=${:.2}", 
                     position.entry_price, position.stop_loss, pnl));
                 
-                // Clear position
-                current_position = None;
+                // Set flag to clear position
+                should_clear_position = true;
             }
             // Check for stop loss for short positions
             else if matches!(position.position_type, PositionType::Short) && candle.high >= position.stop_loss {
                 // Stop loss hit for short
                 let pnl = (position.entry_price - position.stop_loss) * position.size;
+                
+                // Add verification of P&L calculation for debugging
+                writeln!(manual_file, "DEBUG - Short Stop Loss Hit:")?;
+                writeln!(manual_file, "  Entry Price: ${:.2}", position.entry_price)?;
+                writeln!(manual_file, "  Stop Loss Price: ${:.2}", position.stop_loss)?;
+                writeln!(manual_file, "  Position Size: {:.8}", position.size)?;
+                writeln!(manual_file, "  Calculation: (${:.2} - ${:.2}) * {:.8} = ${:.2}", 
+                    position.entry_price, position.stop_loss, position.size, pnl)?;
+                
+                // For short positions, P&L should be negative if stop_loss > entry_price
+                if pnl > 0.0 && position.stop_loss > position.entry_price {
+                    writeln!(manual_file, "WARNING: Unexpected positive P&L for short position stop loss!")?;
+                }
+                
                 current_balance += pnl;
                 sl_hits += 1;
                 
@@ -253,7 +287,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 );
                 
                 // Add to last trades queue
-                last_trades.push_back(trade_detail.clone());
+                last_trades.push_back(trade_detail);
                 if last_trades.len() > 5 {
                     last_trades.pop_front();
                 }
@@ -263,13 +297,27 @@ fn main() -> Result<(), Box<dyn Error>> {
                 completed_trades.push(format!("Short trade: Entry=${:.2}, Exit=${:.2}, PnL=${:.2}", 
                     position.entry_price, position.stop_loss, pnl));
                 
-                // Clear position
-                current_position = None;
+                // Set flag to clear position
+                should_clear_position = true;
             }
             // Check for take profit for long positions
             else if matches!(position.position_type, PositionType::Long) && candle.high >= position.take_profit {
                 // Take profit hit for long
                 let pnl = (position.take_profit - position.entry_price) * position.size;
+                
+                // Add verification of P&L calculation for debugging
+                writeln!(manual_file, "DEBUG - Long Take Profit Hit:")?;
+                writeln!(manual_file, "  Entry Price: ${:.2}", position.entry_price)?;
+                writeln!(manual_file, "  Take Profit Price: ${:.2}", position.take_profit)?;
+                writeln!(manual_file, "  Position Size: {:.8}", position.size)?;
+                writeln!(manual_file, "  Calculation: (${:.2} - ${:.2}) * {:.8} = ${:.2}", 
+                    position.take_profit, position.entry_price, position.size, pnl)?;
+                
+                // For long TP, P&L should be positive if take_profit > entry_price
+                if pnl < 0.0 && position.take_profit > position.entry_price {
+                    writeln!(manual_file, "WARNING: Unexpected negative P&L for long position take profit!")?;
+                }
+                
                 current_balance += pnl;
                 tp_hits += 1;
                 winning_trades += 1;
@@ -306,7 +354,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 );
                 
                 // Add to last trades queue
-                last_trades.push_back(trade_detail.clone());
+                last_trades.push_back(trade_detail);
                 if last_trades.len() > 5 {
                     last_trades.pop_front();
                 }
@@ -316,13 +364,27 @@ fn main() -> Result<(), Box<dyn Error>> {
                 completed_trades.push(format!("Long trade: Entry=${:.2}, Exit=${:.2}, PnL=${:.2}", 
                     position.entry_price, position.take_profit, pnl));
                 
-                // Clear position
-                current_position = None;
+                // Set flag to clear position
+                should_clear_position = true;
             }
             // Check for take profit for short positions
             else if matches!(position.position_type, PositionType::Short) && candle.low <= position.take_profit {
                 // Take profit hit for short
                 let pnl = (position.entry_price - position.take_profit) * position.size;
+                
+                // Add verification of P&L calculation for debugging
+                writeln!(manual_file, "DEBUG - Short Take Profit Hit:")?;
+                writeln!(manual_file, "  Entry Price: ${:.2}", position.entry_price)?;
+                writeln!(manual_file, "  Take Profit Price: ${:.2}", position.take_profit)?;
+                writeln!(manual_file, "  Position Size: {:.8}", position.size)?;
+                writeln!(manual_file, "  Calculation: (${:.2} - ${:.2}) * {:.8} = ${:.2}", 
+                    position.entry_price, position.take_profit, position.size, pnl)?;
+                
+                // For short TP, P&L should be positive if entry_price > take_profit
+                if pnl < 0.0 && position.entry_price > position.take_profit {
+                    writeln!(manual_file, "WARNING: Unexpected negative P&L for short position take profit!")?;
+                }
+                
                 current_balance += pnl;
                 tp_hits += 1;
                 winning_trades += 1;
@@ -359,7 +421,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 );
                 
                 // Add to last trades queue
-                last_trades.push_back(trade_detail.clone());
+                last_trades.push_back(trade_detail);
                 if last_trades.len() > 5 {
                     last_trades.pop_front();
                 }
@@ -369,8 +431,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 completed_trades.push(format!("Short trade: Entry=${:.2}, Exit=${:.2}, PnL=${:.2}", 
                     position.entry_price, position.take_profit, pnl));
                 
-                // Clear position
-                current_position = None;
+                // Set flag to clear position
+                should_clear_position = true;
             }
             
             // Check limit orders (just for logging)
@@ -411,6 +473,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         }
         
+        // Clear position if needed (outside the borrow scope)
+        if should_clear_position {
+            current_position = None;
+        }
+        
         // Only generate new signals if no position is active
         let has_open_position = current_position.is_some();
         if let Ok(signals) = strategy.analyze_candle(candle, has_open_position) {
@@ -420,6 +487,36 @@ fn main() -> Result<(), Box<dyn Error>> {
                     current_balance, 
                     config.max_risk_per_trade
                 ) {
+                    // Position validation - check if price levels make sense
+                    writeln!(manual_file, "\nPOSITION VALIDATION:")?;
+                    writeln!(manual_file, "  Position Type: {}", 
+                        if matches!(position.position_type, PositionType::Long) { "LONG" } else { "SHORT" })?;
+                    writeln!(manual_file, "  Entry Price: ${:.2}", position.entry_price)?;
+                    writeln!(manual_file, "  Stop Loss: ${:.2}", position.stop_loss)?;
+                    writeln!(manual_file, "  Take Profit: ${:.2}", position.take_profit)?;
+                    writeln!(manual_file, "  Limit1 Price: ${:.2}", position.limit1_price.unwrap_or(0.0))?;
+                    writeln!(manual_file, "  Limit2 Price: ${:.2}", position.limit2_price.unwrap_or(0.0))?;
+                    writeln!(manual_file, "  Size: {:.8}", position.size)?;
+                    
+                    // Check the correct order of price levels
+                    if matches!(position.position_type, PositionType::Long) {
+                        // For long positions: stop_loss < limit2 < limit1 < entry < take_profit
+                        if !(position.stop_loss < position.limit2_price.unwrap_or(0.0) && 
+                             position.limit2_price.unwrap_or(0.0) < position.limit1_price.unwrap_or(0.0) && 
+                             position.limit1_price.unwrap_or(0.0) < position.entry_price && 
+                             position.entry_price < position.take_profit) {
+                            writeln!(manual_file, "WARNING: Invalid price levels for long position!")?;
+                        }
+                    } else {
+                        // For short positions: stop_loss > limit2 > limit1 > entry > take_profit
+                        if !(position.stop_loss > position.limit2_price.unwrap_or(0.0) && 
+                             position.limit2_price.unwrap_or(0.0) > position.limit1_price.unwrap_or(0.0) && 
+                             position.limit1_price.unwrap_or(0.0) > position.entry_price && 
+                             position.entry_price > position.take_profit) {
+                            writeln!(manual_file, "WARNING: Invalid price levels for short position!")?;
+                        }
+                    }
+                    
                     // Record position details
                     let position_detail = format!(
                         "NEW POSITION OPENED:\n\
@@ -445,6 +542,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                         (1.0 - position.limit2_price.unwrap_or(0.0) / position.entry_price).abs() * 100.0,
                         position.size
                     );
+                    
+                    // Use position_detail to avoid warning
+                    writeln!(manual_file, "{}", position_detail)?;
                     
                     position_count += 1;
                     writeln!(manual_file, "NEW POSITION #{} at Candle #{}:", position_count, i)?;
