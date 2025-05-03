@@ -38,8 +38,11 @@ impl FibonacciLevels {
         let entry_price = prev_low + self.initial_level * range;
         let take_profit = prev_high + self.tp_level * range;
         let stop_loss = prev_low - self.sl_level * range;
-        let limit1 = prev_low - self.limit1_level * range;
-        let limit2 = prev_low - self.limit2_level * range;
+        
+        // Calculate limit levels relative to entry price and stop loss
+        let entry_to_sl_range = entry_price - stop_loss;
+        let limit1 = entry_price - (self.limit1_level * entry_to_sl_range);
+        let limit2 = entry_price - (self.limit2_level * entry_to_sl_range);
         
         // Add debug output
         println!("LONG POSITION LEVELS:");
@@ -47,6 +50,7 @@ impl FibonacciLevels {
         println!("  Entry: {:.2}", entry_price);
         println!("  Take Profit: {:.2}", take_profit);
         println!("  Stop Loss: {:.2}", stop_loss);
+        println!("  Entry to SL Range: {:.2}", entry_to_sl_range);
         println!("  Limit1: {:.2}", limit1);
         println!("  Limit2: {:.2}", limit2);
         
@@ -74,8 +78,11 @@ impl FibonacciLevels {
         let entry_price = prev_high - self.initial_level * range;
         let take_profit = prev_low - self.tp_level * range;
         let stop_loss = prev_high + self.sl_level * range;
-        let limit1 = prev_high + self.limit1_level * range;
-        let limit2 = prev_high + self.limit2_level * range;
+        
+        // Calculate limit levels relative to entry price and stop loss
+        let entry_to_sl_range = stop_loss - entry_price;
+        let limit1 = entry_price + (self.limit1_level * entry_to_sl_range);
+        let limit2 = entry_price + (self.limit2_level * entry_to_sl_range);
         
         // Add debug output
         println!("SHORT POSITION LEVELS:");
@@ -83,6 +90,7 @@ impl FibonacciLevels {
         println!("  Entry: {:.2}", entry_price);
         println!("  Take Profit: {:.2}", take_profit);
         println!("  Stop Loss: {:.2}", stop_loss);
+        println!("  Entry to SL Range: {:.2}", entry_to_sl_range);
         println!("  Limit1: {:.2}", limit1);
         println!("  Limit2: {:.2}", limit2);
         
@@ -106,8 +114,6 @@ pub struct FibLevels {
     pub entry_price: f64,
     pub take_profit: f64,
     pub stop_loss: f64,
-    #[allow(dead_code)]
     pub limit1: f64,
-    #[allow(dead_code)]
     pub limit2: f64,
 }

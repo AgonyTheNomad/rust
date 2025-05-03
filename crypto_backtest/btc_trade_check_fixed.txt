@@ -1,65 +1,65 @@
 BACKTEST RESULTS SUMMARY:
-Total trades: 35
-Win rate: 100.00%
-Profit factor: inf
-Total profit: $677.16
-Return: 6.77%
-Max drawdown: 0.00%
+Total trades: 37
+Win rate: 24.32%
+Profit factor: 0.51
+Total profit: $-752.81
+Return: -7.53%
+Max drawdown: 10.62%
 Sharpe ratio: 0.00
 
 DETAILS OF LAST 5 TRADES:
 Trade #1
-  Entry Time: 2025-05-03 16:58:56.900568700 UTC
-  Exit Time: 2025-04-30T14:10:00Z
-  Type: Long
-  Entry Price: $94349.00
-  Exit Price: $93248.26
-  Size: -0.01814195
-  P&L: $19.97
+  Entry Time: 2025-05-03 17:28:39.914707800 UTC
+  Exit Time: 2025-05-01T15:19:00Z
+  Type: Short
+  Entry Price: $94383.50
+  Exit Price: $97000.39
+  Size: 0.02211295
+  P&L: $-57.87
   Risk %: 2.00%
-  Profit Factor: -0.58
+  Profit Factor: 0.00
 
 Trade #2
-  Entry Time: 2025-05-03 16:58:56.898998700 UTC
-  Exit Time: 2025-04-30T14:08:00Z
-  Type: Long
-  Entry Price: $94349.00
-  Exit Price: $93248.26
-  Size: -0.01810802
-  P&L: $19.93
+  Entry Time: 2025-05-03 17:28:39.911034 UTC
+  Exit Time: 2025-05-01T15:18:00Z
+  Type: Short
+  Entry Price: $94383.50
+  Exit Price: $97000.39
+  Size: 0.02225133
+  P&L: $-58.23
   Risk %: 2.00%
-  Profit Factor: -0.58
+  Profit Factor: 0.00
 
 Trade #3
-  Entry Time: 2025-05-03 16:58:56.897249800 UTC
-  Exit Time: 2025-04-30T14:06:00Z
-  Type: Long
-  Entry Price: $94349.00
-  Exit Price: $93248.26
-  Size: -0.01807415
-  P&L: $19.89
+  Entry Time: 2025-05-03 17:28:39.907371200 UTC
+  Exit Time: 2025-05-01T15:17:00Z
+  Type: Short
+  Entry Price: $94383.50
+  Exit Price: $97000.39
+  Size: 0.02239057
+  P&L: $-58.59
   Risk %: 2.00%
-  Profit Factor: -0.58
+  Profit Factor: 0.00
 
 Trade #4
-  Entry Time: 2025-05-03 16:58:56.895829900 UTC
-  Exit Time: 2025-04-30T14:05:00Z
-  Type: Long
-  Entry Price: $94349.00
-  Exit Price: $93248.26
-  Size: -0.01804035
-  P&L: $19.86
+  Entry Time: 2025-05-03 17:28:39.903992200 UTC
+  Exit Time: 2025-05-01T15:16:00Z
+  Type: Short
+  Entry Price: $94383.50
+  Exit Price: $97000.39
+  Size: 0.02253069
+  P&L: $-58.96
   Risk %: 2.00%
-  Profit Factor: -0.58
+  Profit Factor: 0.00
 
 Trade #5
-  Entry Time: 2025-05-03 16:58:56.894285600 UTC
-  Exit Time: 2025-04-30T14:01:00Z
-  Type: Long
-  Entry Price: $94349.00
-  Exit Price: $93248.26
-  Size: -0.01800661
-  P&L: $19.82
+  Entry Time: 2025-05-03 17:28:39.900556400 UTC
+  Exit Time: 2025-05-01T15:15:00Z
+  Type: Short
+  Entry Price: $94383.50
+  Exit Price: $97000.39
+  Size: 0.02267168
+  P&L: $-59.33
   Risk %: 2.00%
-  Profit Factor: -0.58
+  Profit Factor: 0.00
 
