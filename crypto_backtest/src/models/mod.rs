@@ -123,6 +123,10 @@ pub struct Trade {
     pub slippage: f64,
 
     // newly added:
+    pub stop_loss: f64,
+    pub take_profit: f64,
+    pub limit1_price: Option<f64>,
+    pub limit2_price: Option<f64>,
     pub limit1_hit: bool,
     pub limit2_hit: bool,
     pub limit1_time: Option<String>,
@@ -132,6 +136,9 @@ pub struct Trade {
     /// if TP was moved, this is the updated TP
     pub new_tp: Option<f64>,
 }
+
+
+
 
 #[derive(Debug)]
 pub struct BacktestState {

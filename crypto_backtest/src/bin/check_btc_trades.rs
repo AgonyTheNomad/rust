@@ -70,6 +70,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             writeln!(file, "Sharpe ratio: {:.2}", results.metrics.sharpe_ratio)?;
 
             // DETAILS OF LAST 5 TRADES
+            // DETAILS OF LAST 5 TRADES
             writeln!(file, "\nDETAILS OF LAST 5 TRADES:")?;
             let last_trades = results.trades.iter().rev().take(5).collect::<Vec<_>>();
             for (i, trade) in last_trades.iter().enumerate() {
@@ -83,20 +84,26 @@ fn main() -> Result<(), Box<dyn Error>> {
                 writeln!(file, "  P&L: ${:.2}", trade.pnl)?;
                 writeln!(file, "  Risk %: {:.2}%", trade.risk_percent * 100.0)?;
                 writeln!(file, "  Profit Factor: {:.2}", trade.profit_factor)?;
-                writeln!(file, "  Limit1 Hit: {}", trade.limit1_hit)?;
-                writeln!(file, "  Limit2 Hit: {}", trade.limit2_hit)?;
-                // **Fixed**: use `exit_tp` fallback, not `take_profit`
+                // —— NEW LINES ——
+                writeln!(file, "  Stop Loss: ${:.2}",     trade.stop_loss)?;
+                writeln!(file, "  Take Profit: ${:.2}",   trade.take_profit)?;
+                writeln!(file, "  Limit1 Price: ${:.2}",  trade.limit1_price.unwrap_or(0.0))?;
+                writeln!(file, "  Limit2 Price: ${:.2}",  trade.limit2_price.unwrap_or(0.0))?;
+                writeln!(file, "  Limit1 Hit: {}",        trade.limit1_hit)?;
+                writeln!(file, "  Limit2 Hit: {}",        trade.limit2_hit)?;
                 if trade.limit1_hit {
                     if let Some(ts) = &trade.limit1_time {
                         writeln!(
                             file,
-                            "  Limit1 hit at {} -> new Take Profit: ${:.2}",
+                            "    ↳ Limit1 was hit at {} → TP updated to ${:.2}",
                             ts,
-                            trade.new_tp.unwrap_or(trade.exit_tp)
+                            trade.new_tp.unwrap_or(trade.take_profit)
                         )?;
                     }
                 }
+                writeln!(file, "")?;
             }
+
 
             println!("Backtest completed successfully.");
             println!("Total trades: {}", results.metrics.total_trades);

@@ -3,26 +3,19 @@ use crate::models::{BacktestState, Trade, PositionType, Candle, Position, Positi
 use crate::stats::StatsTracker;
 use std::time::{Duration, Instant};
 use serde::Serialize;
-use chrono::Utc;
 
 // ───── Metrics Calculator ───────────────────────────────────────────────
 
 struct MetricsCalculator {
-    initial_balance: f64,
-    risk_free_rate: f64,
     trades: Vec<Trade>,
     equity_curve: Vec<f64>,
-    timestamps: Vec<chrono::DateTime<Utc>>,
 }
 
 impl MetricsCalculator {
-    fn new(initial_balance: f64, risk_free_rate: f64) -> Self {
+    fn new(initial_balance: f64) -> Self {
         Self {
-            initial_balance,
-            risk_free_rate,
             trades: Vec::new(),
             equity_curve: vec![initial_balance],
-            timestamps: Vec::new(),
         }
     }
 
@@ -30,90 +23,62 @@ impl MetricsCalculator {
         self.trades.push(trade);
     }
 
-    fn update_equity(&mut self, value: f64, timestamp: chrono::DateTime<Utc>) {
+    fn update_equity(&mut self, value: f64) {
         self.equity_curve.push(value);
-        self.timestamps.push(timestamp);
     }
 
     fn calculate(&self) -> BacktestMetrics {
-        let mut winning_trades: usize = 0;
-        let mut losing_trades: usize = 0;
-        let mut total_wins: f64 = 0.0;
-        let mut total_losses: f64 = 0.0;
-        let mut total_profit: f64 = 0.0;
-        let mut largest_win: f64 = 0.0;
-        let mut largest_loss: f64 = 0.0;
+        let mut wins = 0;
+        let mut losses = 0;
+        let mut sum_win = 0.0;
+        let mut sum_loss = 0.0;
+        let mut total_pnl = 0.0;
+        let mut max_win: f64 = 0.0;
+        let mut max_loss: f64 = 0.0;
 
-        for trade in &self.trades {
-            total_profit += trade.pnl;
-            if trade.pnl > 0.0 {
-                winning_trades += 1;
-                total_wins += trade.pnl;
-                largest_win = largest_win.max(trade.pnl);
+        for t in &self.trades {
+            total_pnl += t.pnl;
+            if t.pnl > 0.0 {
+                wins += 1;
+                sum_win += t.pnl;
+                max_win = max_win.max(t.pnl);
             } else {
-                losing_trades += 1;
-                total_losses += trade.pnl.abs();
-                largest_loss = largest_loss.max(trade.pnl.abs());
+                losses += 1;
+                sum_loss += t.pnl.abs();
+                max_loss = max_loss.max(t.pnl.abs());
             }
         }
 
-        let total_trades = self.trades.len();
-        let win_rate: f64 = if total_trades > 0 {
-            winning_trades as f64 / total_trades as f64
-        } else {
-            0.0
-        };
+        let total = self.trades.len();
+        let win_rate = if total > 0 { wins as f64 / total as f64 } else { 0.0 };
+        let profit_factor = if sum_loss > 0.0 { sum_win / sum_loss } else { f64::INFINITY };
+        let avg_win = if wins > 0 { sum_win / wins as f64 } else { 0.0 };
+        let avg_loss = if losses > 0 { sum_loss / losses as f64 } else { 0.0 };
+        let rr = if avg_loss > 0.0 { avg_win / avg_loss } else { f64::INFINITY };
 
-        let profit_factor: f64 = if total_losses > 0.0 {
-            total_wins / total_losses
-        } else {
-            f64::INFINITY
-        };
-
-        let average_win: f64 = if winning_trades > 0 {
-            total_wins / winning_trades as f64
-        } else {
-            0.0
-        };
-
-        let average_loss: f64 = if losing_trades > 0 {
-            total_losses / losing_trades as f64
-        } else {
-            0.0
-        };
-
-        let risk_reward_ratio: f64 = if average_loss > 0.0 {
-            average_win / average_loss
-        } else {
-            f64::INFINITY
-        };
-
-        // Max drawdown
-        let mut peak: f64 = self.equity_curve[0];
+        // drawdown
+        let mut peak = self.equity_curve[0];
         let mut max_dd: f64 = 0.0;
         for &eq in &self.equity_curve {
-            if eq > peak {
-                peak = eq;
-            } else {
-                max_dd = max_dd.max((peak - eq) / peak);
-            }
+            if eq > peak { peak = eq; }
+            else { max_dd = max_dd.max((peak - eq) / peak); }
         }
 
         BacktestMetrics {
-            total_trades,
-            winning_trades,
-            losing_trades,
+            total_trades: total,
+            winning_trades: wins,
+            losing_trades: losses,
             win_rate,
             profit_factor,
-            total_profit,
+            total_profit: total_pnl,
             max_drawdown: max_dd,
             sharpe_ratio: 0.0,
             sortino_ratio: 0.0,
-            risk_reward_ratio,
-            largest_win,
-            largest_loss,
-            average_win,
-            average_loss,
+            risk_reward_ratio: rr,
+            largest_win: max_win,
+            largest_loss: max_loss,
+            average_win: avg_win,
+            average_loss: avg_loss,
         }
     }
 }
@@ -148,7 +113,7 @@ pub struct Backtester {
     strategy: Strategy,
     initial_balance: f64,
     stats: StatsTracker,
-    metrics_calculator: MetricsCalculator,
+    metrics: MetricsCalculator,
     verbose: bool,
 }
 
@@ -158,7 +123,7 @@ impl Backtester {
             strategy,
             initial_balance,
             stats: StatsTracker::new(),
-            metrics_calculator: MetricsCalculator::new(initial_balance, 0.02),
+            metrics: MetricsCalculator::new(initial_balance),
             verbose: false,
         }
     }
@@ -168,22 +133,11 @@ impl Backtester {
         self.strategy.set_verbose(v);
     }
 
-    pub fn print_pending_orders(&self) {
-        let orders = self.strategy.get_pending_orders_info();
-        println!("Pending orders: {}", orders.len());
-        for (i, o) in orders.iter().enumerate() {
-            println!("  {}. {}", i + 1, o);
-        }
-    }
-
-    pub fn run(
-        &mut self,
-        candles: &[Candle],
-    ) -> Result<BacktestResults, Box<dyn std::error::Error>> {
-        let start_time = Instant::now();
-        // Warmup history if needed
-        if let Some(warmup) = candles.get(0..100) {
-            self.strategy.initialize_with_history(warmup)?;
+    pub fn run(&mut self, candles: &[Candle]) -> Result<BacktestResults, Box<dyn std::error::Error>> {
+        let start = Instant::now();
+        // warm-up
+        if let Some(warm) = candles.get(0..100) {
+            self.strategy.initialize_with_history(warm)?;
         }
 
         let mut state = BacktestState {
@@ -200,78 +154,64 @@ impl Backtester {
         for (i, candle) in candles.iter().enumerate() {
             if self.verbose && i % 100 == 0 {
                 println!(
-                    "Candle {}: H={}, L={} | HasPos={}",
-                    candle.time,
-                    candle.high,
-                    candle.low,
-                    state.position.is_some()
+                    "C{:04}: H={} L={} open?={}",
+                    i, candle.high, candle.low, state.position.is_some()
                 );
             }
 
+            // update equity curve
             state.equity_curve.push(state.account_balance);
-            let ts = candle
-                .time
-                .parse()
-                .unwrap_or_else(|_| Utc::now());
-            self.metrics_calculator
-                .update_equity(state.account_balance, ts);
+            self.metrics.update_equity(state.account_balance);
 
-            // ─── Exit existing position ────────────────────────────────────────
+            // ─── Exit logic ─────────────────────────────────────────────────────
             if let Some(pos) = &mut state.position {
                 if pos.status == PositionStatus::Triggered {
                     pos.status = PositionStatus::Active;
                 }
                 if pos.status == PositionStatus::Active {
-                    if let Some((_exit_type, exit_price, _exit_reason)) =
-                        self.check_exits(pos, candle)
-                    {
+                    if let Some((_t, exit_price, _r)) = self.check_exits(pos, candle) {
                         let pnl = match pos.position_type {
-                            PositionType::Long => {
-                                (exit_price - pos.entry_price) * pos.size
-                            }
-                            PositionType::Short => {
-                                (pos.entry_price - exit_price) * pos.size
-                            }
+                            PositionType::Long => (exit_price - pos.entry_price) * pos.size,
+                            PositionType::Short => (pos.entry_price - exit_price) * pos.size,
                         };
                         state.account_balance += pnl;
 
+                        // record trade
                         let trade = Trade {
-                            entry_time:      pos.entry_time.clone(),
-                            exit_time:       candle.time.clone(),
-                            position_type:   if pos.position_type==PositionType::Long { "Long".into() } else { "Short".into() },
-                            entry_price:     pos.entry_price,
+                            entry_time:    pos.entry_time.clone(),
+                            exit_time:     candle.time.clone(),
+                            position_type: if pos.position_type==PositionType::Long { "Long".into() } else { "Short".into() },
+                            entry_price:   pos.entry_price,
                             exit_price,
-                            exit_tp:         pos.take_profit,      // ← newly required
-                            size:            pos.size,
+                            size:          pos.size,
                             pnl,
-                            risk_percent:    pos.risk_percent,
-                            profit_factor:   if pnl > 0.0 { pnl / (pos.entry_price * pos.size * pos.risk_percent) } else { 0.0 },
-                            margin_used:     pos.margin_used,
-                            fees:            0.0,
-                            slippage:        0.0,
-                            limit1_hit:      pos.limit1_hit,
-                            limit2_hit:      pos.limit2_hit,
-                            limit1_time:     pos.limit1_time.clone(),
-                            limit2_time:     pos.limit2_time.clone(),
-                            new_tp:          pos.new_tp,
+                            risk_percent:  pos.risk_percent,
+                            profit_factor: if pnl>0.0 { pnl/(pos.entry_price*pos.size*pos.risk_percent) } else { 0.0 },
+                            margin_used:   pos.margin_used,
+                            fees:          0.0,
+                            slippage:      0.0,
+                            stop_loss:     pos.stop_loss,
+                            take_profit:   pos.take_profit,
+                            limit1_price:  pos.limit1_price,
+                            limit2_price:  pos.limit2_price,
+                            limit1_hit:    pos.limit1_hit,
+                            limit2_hit:    pos.limit2_hit,
+                            limit1_time:   pos.limit1_time.clone(),
+                            limit2_time:   pos.limit2_time.clone(),
+                            exit_tp:       pos.take_profit,
+                            new_tp:        pos.new_tp,
                         };
-                        
-                        
-
                         state.trades.push(trade.clone());
-                        self.stats
-                            .record_trade(&trade, state.account_balance);
-                        self.metrics_calculator.add_trade(trade);
+                        self.stats.record_trade(&trade, state.account_balance);
+                        self.metrics.add_trade(trade);
                         state.position = None;
                     }
                 }
             }
 
-            // ─── Enter new position ────────────────────────────────────────────
+            // ─── Entry logic ────────────────────────────────────────────────────
             if state.position.is_none() {
-                for signal in
-                    self.strategy.analyze_candle(candle, false)?
-                {
+                for signal in self.strategy.analyze_candle(candle, false)? {
                     let mut pos = self.strategy.create_scaled_position(
                         &signal,
                         state.account_balance,
@@ -283,130 +223,131 @@ impl Backtester {
                 }
             }
 
-            // ─── Update drawdowns ──────────────────────────────────────────────
+            // ─── Drawdown update ───────────────────────────────────────────────
             state.peak_balance = state.peak_balance.max(state.account_balance);
-            state.current_drawdown =
-                (state.peak_balance - state.account_balance) / state.peak_balance;
-            state.max_drawdown =
-                state.max_drawdown.max(state.current_drawdown);
+            state.current_drawdown = (state.peak_balance - state.account_balance) / state.peak_balance;
+            state.max_drawdown = state.max_drawdown.max(state.current_drawdown);
         }
 
-        let metrics = self.calculate_metrics(&state);
+        let m = self.metrics.calculate();
         Ok(BacktestResults {
-            metrics,
-            trades: state.trades,
-            equity_curve: state.equity_curve,
-            duration: start_time.elapsed(),
+            metrics:       m,
+            trades:        state.trades,
+            equity_curve:  state.equity_curve,
+            duration:      start.elapsed(),
         })
     }
 
-    fn check_exits(
-        &self,
-        position: &mut Position,
-        candle: &Candle,
-    ) -> Option<(String, f64, String)> {
-        // LIMIT1 LONG
+    fn check_exits(&self, position: &mut Position, candle: &Candle)
+        -> Option<(String, f64, String)>
+    {
+        // ─── LIMIT1 LONG ─────────────────────────────────────────────────────
         if !position.limit1_hit
             && position.position_type == PositionType::Long
             && candle.low <= position.limit1_price.unwrap_or(f64::MAX)
         {
             position.limit1_hit = true;
+            // **scale in** at limit1_price
+            if let Some(fill) = position.limit1_price {
+                let old_sz  = position.size;
+                let add_sz  = position.limit1_size;
+                let avg_old = position.entry_price;
+                let avg_new = (avg_old*old_sz + fill*add_sz)/(old_sz+add_sz);
+                position.size = old_sz + add_sz;
+                position.entry_price = avg_new;
+                position.margin_used  = (position.entry_price*position.size)
+                    / self.strategy.get_asset_config().leverage;
+            }
+            // move TP
             if let Some(tp1) = position.new_tp1 {
                 position.take_profit = tp1;
-                position.new_tp = Some(tp1);
-                if self.verbose {
-                    println!("L1 LONG: TP→${:.2}", tp1);
-                }
+                position.new_tp     = Some(tp1);
+                if self.verbose { println!("L1 LONG → TP @ ${:.2}", tp1); }
             }
         }
-        // LIMIT2 LONG
+
+        // ─── LIMIT2 LONG ─────────────────────────────────────────────────────
         if !position.limit2_hit
             && position.position_type == PositionType::Long
             && candle.low <= position.limit2_price.unwrap_or(f64::MAX)
         {
             position.limit2_hit = true;
+            if let Some(fill2) = position.limit2_price {
+                let old_sz  = position.size;
+                let add_sz  = position.limit2_size;
+                let avg_old = position.entry_price;
+                let avg_new = (avg_old*old_sz + fill2*add_sz)/(old_sz+add_sz);
+                position.size = old_sz + add_sz;
+                position.entry_price = avg_new;
+                position.margin_used  = (position.entry_price*position.size)
+                    / self.strategy.get_asset_config().leverage;
+            }
             if let Some(tp2) = position.new_tp2 {
                 position.take_profit = tp2;
-                position.new_tp = Some(tp2);
-                if self.verbose {
-                    println!("L2 LONG: TP→${:.2}", tp2);
-                }
+                position.new_tp     = Some(tp2);
+                if self.verbose { println!("L2 LONG → TP @ ${:.2}", tp2); }
             }
         }
-        // LIMIT1 SHORT
+
+        // ─── LIMIT1 SHORT ────────────────────────────────────────────────────
         if !position.limit1_hit
             && position.position_type == PositionType::Short
             && candle.high >= position.limit1_price.unwrap_or(f64::MIN)
         {
             position.limit1_hit = true;
+            if let Some(fill) = position.limit1_price {
+                let old_sz  = position.size;
+                let add_sz  = position.limit1_size;
+                let avg_old = position.entry_price;
+                let avg_new = (avg_old*old_sz + fill*add_sz)/(old_sz+add_sz);
+                position.size = old_sz + add_sz;
+                position.entry_price = avg_new;
+                position.margin_used  = (position.entry_price*position.size)
+                    / self.strategy.get_asset_config().leverage;
+            }
             if let Some(tp1) = position.new_tp1 {
                 position.take_profit = tp1;
-                position.new_tp = Some(tp1);
-                if self.verbose {
-                    println!("L1 SHORT: TP→${:.2}", tp1);
-                }
+                position.new_tp     = Some(tp1);
+                if self.verbose { println!("L1 SHORT → TP @ ${:.2}", tp1); }
             }
         }
-        // LIMIT2 SHORT
+
+        // ─── LIMIT2 SHORT ────────────────────────────────────────────────────
         if !position.limit2_hit
             && position.position_type == PositionType::Short
             && candle.high >= position.limit2_price.unwrap_or(f64::MIN)
         {
             position.limit2_hit = true;
+            if let Some(fill2) = position.limit2_price {
+                let old_sz  = position.size;
+                let add_sz  = position.limit2_size;
+                let avg_old = position.entry_price;
+                let avg_new = (avg_old*old_sz + fill2*add_sz)/(old_sz+add_sz);
+                position.size = old_sz + add_sz;
+                position.entry_price = avg_new;
+                position.margin_used  = (position.entry_price*position.size)
+                    / self.strategy.get_asset_config().leverage;
+            }
             if let Some(tp2) = position.new_tp2 {
                 position.take_profit = tp2;
-                position.new_tp = Some(tp2);
-                if self.verbose {
-                    println!("L2 SHORT: TP→${:.2}", tp2);
-                }
+                position.new_tp     = Some(tp2);
+                if self.verbose { println!("L2 SHORT → TP @ ${:.2}", tp2); }
             }
         }
 
-        // ─── Final exit logic ───────────────────────────────────────────────
-        if position.position_type == PositionType::Long
-            && candle.high >= position.take_profit
-        {
-            return Some((
-                "Take Profit".to_string(),
-                position.take_profit,
-                "Hit TP".to_string(),
-            ));
+        // ─── FINAL EXIT ──────────────────────────────────────────────────────
+        if position.position_type == PositionType::Long && candle.high >= position.take_profit {
+            return Some(("TP".into(), position.take_profit, "hit".into()));
         }
-        if position.position_type == PositionType::Long
-            && candle.low <= position.stop_loss
-        {
-            return Some((
-                "Stop Loss".to_string(),
-                position.stop_loss,
-                "Hit SL".to_string(),
-            ));
+        if position.position_type == PositionType::Long && candle.low  <= position.stop_loss {
+            return Some(("SL".into(), position.stop_loss,  "hit".into()));
         }
-        if position.position_type == PositionType::Short
-            && candle.low <= position.take_profit
-        {
-            return Some((
-                "Take Profit".to_string(),
-                position.take_profit,
-                "Hit TP".to_string(),
-            ));
+        if position.position_type == PositionType::Short && candle.low <= position.take_profit {
+            return Some(("TP".into(), position.take_profit, "hit".into()));
         }
-        if position.position_type == PositionType::Short
-            && candle.high >= position.stop_loss
-        {
-            return Some((
-                "Stop Loss".to_string(),
-                position.stop_loss,
-                "Hit SL".to_string(),
-            ));
+        if position.position_type == PositionType::Short && candle.high >= position.stop_loss {
+            return Some(("SL".into(), position.stop_loss,  "hit".into()));
         }
         None
-    }
-
-    fn calculate_metrics(&self, _state: &BacktestState) -> BacktestMetrics {
-        self.metrics_calculator.calculate()
-    }
-
-    pub fn stats(&self) -> &StatsTracker {
-        &self.stats
     }
 }
