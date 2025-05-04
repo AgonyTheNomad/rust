@@ -1,26 +1,26 @@
 {
   "execution_info": {
-    "duration_ms": 10
+    "duration_ms": 9
   },
   "performance": {
-    "final_balance": 121.12998121162528,
-    "losing_trades": 2,
-    "max_drawdown": 0.02514135931790415,
-    "profit_factor": 5.457208257160476,
-    "risk_reward_ratio": 0.6821510321450595,
+    "final_balance": 100.01074725173305,
+    "losing_trades": 4,
+    "max_drawdown": 0.00025678630773214196,
+    "profit_factor": 1.2533122019759948,
+    "risk_reward_ratio": 2.5066244039519896,
     "sharpe_ratio": 0.0,
     "sortino_ratio": 0.0,
-    "total_profit": 21.12998121162527,
-    "total_trades": 18,
-    "win_rate": 0.8888888888888888,
-    "winning_trades": 16
+    "total_profit": 0.010747251733045884,
+    "total_trades": 6,
+    "win_rate": 0.3333333333333333,
+    "winning_trades": 2
   },
   "strategy_config": {
-    "fib_initial": 0.382,
-    "fib_limit1": 0.786,
-    "fib_limit2": 1.0,
-    "fib_sl": 0.618,
-    "fib_threshold": 0.014475333787465952,
+    "fib_initial": 0.5,
+    "fib_limit1": 0.0,
+    "fib_limit2": 0.618,
+    "fib_sl": 2.618,
+    "fib_threshold": 0.019300445049954602,
     "fib_tp": 1.618,
     "initial_balance": 100.0,
     "leverage": 10.0,

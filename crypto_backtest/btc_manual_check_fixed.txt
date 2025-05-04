@@ -1,109 +1,11 @@
 MANUAL TRADE CHECKING (FIXED VERSION):
 
-POSITION VALIDATION:
-  Position Type: LONG
-  Entry Price: $95007.00
-  Stop Loss: $94548.36
-  Take Profit: $95588.36
-  Limit1 Price: $94723.56
-  Limit2 Price: $94646.51
-  Size: 0.06779724
-NEW POSITION OPENED:
-Type: LONG
-Entry Time: 2025-04-29T11:44:00Z
-Entry Price: $95007.00
-Stop Loss: $94548.36 (0.48274337680381807% from entry)
-Take Profit: $95588.36 (0.6119128064247858% from entry)
-Limit1 Price: $94723.56 (0.2983354068647581% from entry)
-Limit2 Price: $94646.51 (0.3794362941677898% from entry)
-Size: 0.06779724
--------------------------------------
-NEW POSITION #1 at Candle #338:
-  Type: LONG
-  Entry: $95007.00
-  Stop Loss: $94548.36
-  Take Profit: $95588.36
-  Current Balance: $10000.00
-LIMIT1 HIT for position #1 at $94723.56
-LIMIT2 HIT for position #1 at $94646.51
-DEBUG - Long Stop Loss Hit:
-  Entry Price: $95007.00
-  Stop Loss Price: $94548.36
-  Position Size: 0.06779724
-  Calculation: ($94548.36 - $95007.00) * 0.06779724 = $-31.09
-CLOSE LONG (Stop Loss): Candle #432 at $94548.36, PnL: $-31.09
-
-POSITION VALIDATION:
-  Position Type: SHORT
-  Entry Price: $94904.50
-  Stop Loss: $95540.42
-  Take Profit: $94098.42
-  Limit1 Price: $95297.50
-  Limit2 Price: $95404.33
-  Size: 0.04874472
-NEW POSITION OPENED:
-Type: SHORT
-Entry Time: 2025-04-29T13:32:00Z
-Entry Price: $94904.50
-Stop Loss: $95540.42 (0.6700651707769456% from entry)
-Take Profit: $94098.42 (0.8493569851798277% from entry)
-Limit1 Price: $95297.50 (0.4141002755401413% from entry)
-Limit2 Price: $95404.33 (0.5266712242306681% from entry)
-Size: 0.04874472
--------------------------------------
-NEW POSITION #2 at Candle #446:
-  Type: SHORT
-  Entry: $94904.50
-  Stop Loss: $95540.42
-  Take Profit: $94098.42
-  Current Balance: $9968.91
-LIMIT1 HIT for position #2 at $95297.50
-LIMIT2 HIT for position #2 at $95404.33
-DEBUG - Short Take Profit Hit:
-  Entry Price: $94904.50
-  Take Profit Price: $94098.42
-  Position Size: 0.04874472
-  Calculation: ($94904.50 - $94098.42) * 0.04874472 = $39.29
-CLOSE SHORT (Take Profit): Candle #977 at $94098.42, PnL: $39.29
-
 MANUAL CHECKING SUMMARY:
 Starting Balance: $10000.00
-Final Balance: $10008.20
-Profit/Loss: $8.20
+Final Balance: $10000.00
+Profit/Loss: $0.00
 Open Positions Remaining: 0
-Completed Trades: 2
-Win Rate: 50.00%
+Completed Trades: 0
+Win Rate: 0.00%
 
 DETAILS OF LAST 5 TRADES:
-Trade #2
-TRADE CLOSED:
-Type: LONG (Stop Loss)
-Entry Time: 2025-04-29T11:44:00Z
-Exit Time: 2025-04-29T13:18:00Z
-Duration: 94 candles
-Entry Price: $95007.00
-Exit Price: $94548.36
-Stop Loss: $94548.36
-Take Profit: $95588.36
-Limit1 Price: $94723.56
-Limit2 Price: $94646.51
-Limit1 Hit: true
-Limit2 Hit: true
-P&L: $-31.09
--------------------------------------
-Trade #1
-TRADE CLOSED:
-Type: SHORT (Take Profit)
-Entry Time: 2025-04-29T13:32:00Z
-Exit Time: 2025-04-29T22:23:00Z
-Duration: 531 candles
-Entry Price: $94904.50
-Exit Price: $94098.42
-Stop Loss: $95540.42
-Take Profit: $94098.42
-Limit1 Price: $95297.50
-Limit2 Price: $95404.33
-Limit1 Hit: true
-Limit2 Hit: true
-P&L: $39.29
--------------------------------------

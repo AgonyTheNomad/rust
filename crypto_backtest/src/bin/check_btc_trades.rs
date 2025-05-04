@@ -33,16 +33,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     // 4) Configure strategy
     let mut config = default_strategy_config();
     config.name = "BTC Trade Check".into();
-    config.leverage = 20.0;
-    config.max_risk_per_trade = 0.01;
+    config.leverage = 40.0;
+    config.max_risk_per_trade = 0.02;
     config.pivot_lookback = 5;
     config.signal_lookback = 1;
-    config.fib_threshold = 500.0;
-    config.fib_initial = 0.5;
+    config.fib_threshold = 100.0;
+    config.fib_initial = 0.382;
     config.fib_tp = 1.618;
-    config.fib_sl = 0.382;
+    config.fib_sl = 2.618;
     config.fib_limit1 = 0.618;
-    config.fib_limit2 = 0.786;
+    config.fib_limit2 = 1.618;
 
     let asset_config = AssetConfig {
         name: "BTC".into(),
@@ -504,17 +504,17 @@ fn main() -> Result<(), Box<dyn Error>> {
                     if matches!(position.position_type, PositionType::Long) {
                         // For long positions: stop_loss < limit2 < limit1 < entry < take_profit
                         if !(position.stop_loss < position.limit2_price.unwrap_or(0.0) && 
-                             position.limit2_price.unwrap_or(0.0) < position.limit1_price.unwrap_or(0.0) && 
-                             position.limit1_price.unwrap_or(0.0) < position.entry_price && 
-                             position.entry_price < position.take_profit) {
+                            position.limit2_price.unwrap_or(0.0) < position.limit1_price.unwrap_or(0.0) && 
+                            position.limit1_price.unwrap_or(0.0) < position.entry_price && 
+                            position.entry_price < position.take_profit) {
                             writeln!(manual_file, "WARNING: Invalid price levels for long position!")?;
                         }
                     } else {
                         // For short positions: stop_loss > limit2 > limit1 > entry > take_profit
                         if !(position.stop_loss > position.limit2_price.unwrap_or(0.0) && 
-                             position.limit2_price.unwrap_or(0.0) > position.limit1_price.unwrap_or(0.0) && 
-                             position.limit1_price.unwrap_or(0.0) > position.entry_price && 
-                             position.entry_price > position.take_profit) {
+                            position.limit2_price.unwrap_or(0.0) > position.limit1_price.unwrap_or(0.0) && 
+                            position.limit1_price.unwrap_or(0.0) > position.entry_price && 
+                            position.entry_price > position.take_profit) {
                             writeln!(manual_file, "WARNING: Invalid price levels for short position!")?;
                         }
                     }

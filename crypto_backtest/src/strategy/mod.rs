@@ -561,9 +561,15 @@ impl Strategy {
             println!("  Limit2: {:.2}", limit2);
             
             // Validate the order of price levels
-            if !(stop_loss > limit1 && limit1 > limit2 && limit2 > entry_price && entry_price > take_profit) {
+            // instead of stop > limit2 > limit1 > entry > tp
+            if !(stop_loss > limit1
+                && limit1    > limit2
+                && limit2    > entry_price
+                && entry_price > take_profit)
+            {
                 println!("WARNING: Invalid price order for short position!");
             }
+ 
         }
     
         Some(crate::indicators::fibonacci::FibLevels {
@@ -575,213 +581,196 @@ impl Strategy {
         })
     }
     
-    // Method to create a scaled position from a signal
-    pub fn create_scaled_position(&self, signal: &Signal, account_size: f64, risk: f64) -> Result<Position> {
-        // Print pivot information for each position
-        if self.verbose {
-            println!("POSITION CREATION FROM SIGNAL");
-            println!("Signal Details:");
-            println!("  Type: {}", if matches!(signal.position_type, PositionType::Long) { "LONG" } else { "SHORT" });
-            println!("  Entry: {:.2}", signal.price);
-            println!("  Take Profit: {:.2}", signal.take_profit);
-            println!("  Stop Loss: {:.2}", signal.stop_loss);
-            println!("  Reason: {}", signal.reason);
-            println!("  Strength: {:.2}", signal.strength);
-            if let Some(status) = &signal.status {
-                println!("  Status: {}", status);
+    impl Strategy {
+        pub fn create_scaled_position(
+            &self,
+            signal: &Signal,
+            account_size: f64,
+            risk: f64,
+        ) -> Result<Position> {
+            // 0) Debug: print signal details
+            if self.verbose {
+                println!("POSITION CREATION FROM SIGNAL");
+                println!("Signal Details:");
+                println!(
+                    "  Type: {}",
+                    if matches!(signal.position_type, PositionType::Long) {
+                        "LONG"
+                    } else {
+                        "SHORT"
+                    }
+                );
+                println!("  Entry:       {:.2}", signal.price);
+                println!("  Take Profit: {:.2}", signal.take_profit);
+                println!("  Stop Loss:   {:.2}", signal.stop_loss);
+                println!("  Reason:      {}", signal.reason);
+                println!("  Strength:    {:.2}", signal.strength);
+                if let Some(status) = &signal.status {
+                    println!("  Status:      {}", status);
+                }
             }
-        }
-        
-        // Get the Fibonacci levels from the signal - already calculated in the signal
-        // Get the Fibonacci levels from the signal - already calculated in the signal
-        // Get the Fibonacci levels from the signal - calculating based on pivot points
-        let (limit1_price, limit2_price) = match signal.position_type {
-            PositionType::Long => {
-                // For longs, calculate limit orders directly from pivot points
-                // Retrieve pivot high and pivot low from signal reason
-                let reason_parts: Vec<&str> = signal.reason.split(':').collect();
-                let mut prev_high = 0.0;
-                let mut prev_low = 0.0;
-                
-                // Extract pivot values from reason string
-                for part in reason_parts {
-                    if part.contains("Pivot high") {
-                        let high_part = part.trim();
-                        if let Some(val_str) = high_part.split_whitespace().nth(2) {
-                            prev_high = val_str.parse::<f64>().unwrap_or(0.0);
-                        }
-                    } else if part.contains("Pivot low") {
-                        let low_part = part.trim();
-                        if let Some(val_str) = low_part.split_whitespace().nth(2) {
-                            prev_low = val_str.parse::<f64>().unwrap_or(0.0);
-                        }
-                    }
-                }
-                
+    
+            // 1) Extract pivots from signal.reason ("Pivot high: XXX, Pivot low: YYY")
+            let pivots = signal
+                .reason
+                .split(',')
+                .map(str::trim)
+                .collect::<Vec<_>>();
+            let (prev_high, prev_low) = if pivots.len() == 2 {
+                let high = pivots[0]
+                    .split_once(':')
+                    .and_then(|(_, v)| v.trim().parse::<f64>().ok())
+                    .unwrap_or(0.0);
+                let low = pivots[1]
+                    .split_once(':')
+                    .and_then(|(_, v)| v.trim().parse::<f64>().ok())
+                    .unwrap_or(0.0);
                 if self.verbose {
-                    println!("Extracted pivot values - High: {:.2}, Low: {:.2}", prev_high, prev_low);
+                    println!("Extracted pivot values - High: {:.2}, Low: {:.2}", high, low);
                 }
-                
-                // Calculate range and limit prices directly from pivot points
-                let range = prev_high - prev_low;
-                
-                // For longs, limits are between SL and Entry
-                let limit1 = prev_low + (self.config.fib_limit1 * range);
-                let limit2 = prev_low - (self.config.fib_limit2 * range);
-                
-                // Add debug for long position limits
+                (high, low)
+            } else {
                 if self.verbose {
-                    println!("LONG POSITION LIMIT CALCULATION (USING PIVOT POINTS):");
-                    println!("  Pivot High: {:.2}", prev_high);
-                    println!("  Pivot Low: {:.2}", prev_low);
-                    println!("  Pivot Range: {:.2}", range);
-                    println!("  Entry Price: {:.2}", signal.price);
-                    println!("  Take Profit: {:.2}", signal.take_profit);
-                    println!("  Stop Loss: {:.2}", signal.stop_loss);
-                    println!("  Limit1 = Low + Range * {:.2} = {:.2} + {:.2} * {:.2} = {:.2}", 
-                            self.config.fib_limit1, prev_low, range, self.config.fib_limit1, limit1);
-                    println!("  Limit2 = Low - Range * {:.2} = {:.2} - {:.2} * {:.2} = {:.2}", 
-                            self.config.fib_limit2, prev_low, range, self.config.fib_limit2, limit2);
-                    
-                    // Validate price order
-                    if !(signal.stop_loss < limit2 && limit2 < limit1 && limit1 < signal.price && signal.price < signal.take_profit) {
-                        println!("WARNING: Invalid price order for long position limits!");
-                    }
+                    println!("WARNING: Could not parse pivots from reason: {}", signal.reason);
                 }
-                
-                (limit1, limit2)
-            },
-            PositionType::Short => {
-                // For shorts, calculate limit orders directly from pivot points
-                // Retrieve pivot high and pivot low from signal reason
-                let reason_parts: Vec<&str> = signal.reason.split(':').collect();
-                let mut prev_high = 0.0;
-                let mut prev_low = 0.0;
-                
-                // Extract pivot values from reason string
-                for part in reason_parts {
-                    if part.contains("Pivot high") {
-                        let high_part = part.trim();
-                        if let Some(val_str) = high_part.split_whitespace().nth(2) {
-                            prev_high = val_str.parse::<f64>().unwrap_or(0.0);
-                        }
-                    } else if part.contains("Pivot low") {
-                        let low_part = part.trim();
-                        if let Some(val_str) = low_part.split_whitespace().nth(2) {
-                            prev_low = val_str.parse::<f64>().unwrap_or(0.0);
-                        }
-                    }
-                }
-                
+                (0.0, 0.0)
+            };
+    
+            // 2) Compute pivot-range, reject too-small moves
+            let range = prev_high - prev_low;
+            if range < self.config.fib_threshold {
                 if self.verbose {
-                    println!("Extracted pivot values - High: {:.2}, Low: {:.2}", prev_high, prev_low);
+                    println!(
+                        "SIGNAL REJECTED: Range {:.2} < threshold {:.2}",
+                        range, self.config.fib_threshold
+                    );
                 }
-                
-                // Calculate range and limit prices directly from pivot points
-                let range = prev_high - prev_low;
-                
-                // For shorts, limits are between Entry and SL
-                // Limit1 is at or near pivot high
-                let limit1 = prev_high - (self.config.fib_limit1 * range);
-                // Limit2 is between Limit1 and Stop Loss (adding to pivot high)
-                let limit2 = prev_high + (self.config.fib_limit2 * range);
-                
-                // Add debug for short position limits
-                if self.verbose {
-                    println!("SHORT POSITION LIMIT CALCULATION (USING PIVOT POINTS):");
-                    println!("  Pivot High: {:.2}", prev_high);
-                    println!("  Pivot Low: {:.2}", prev_low);
-                    println!("  Pivot Range: {:.2}", range);
-                    println!("  Entry Price: {:.2}", signal.price);
-                    println!("  Take Profit: {:.2}", signal.take_profit);
-                    println!("  Stop Loss: {:.2}", signal.stop_loss);
-                    println!("  Limit1 = High - Range * {:.2} = {:.2} - {:.2} * {:.2} = {:.2}", 
-                            self.config.fib_limit1, prev_high, range, self.config.fib_limit1, limit1);
-                    println!("  Limit2 = High + Range * {:.2} = {:.2} + {:.2} * {:.2} = {:.2}", 
-                            self.config.fib_limit2, prev_high, range, self.config.fib_limit2, limit2);
-                    
-                    // Validate price order
-                    if !(signal.stop_loss > limit2 && limit2 > limit1 && limit1 > signal.price && signal.price > signal.take_profit) {
-                        println!("WARNING: Invalid price order for short position limits!");
-                    }
-                }
-                
-                (limit1, limit2)
+                return Err(anyhow!("Pivot range below threshold"));
             }
-        };
-        
-        // Use the position calculator with the spread-adjusted prices
-        let result = calculate_positions(
-            signal.price,        // Initial entry price
-            signal.take_profit,  // Take profit level
-            signal.stop_loss,    // Stop loss level
-            limit1_price,
-            limit2_price,
-            account_size,
-            risk,
-            self.asset_config.leverage,
-            signal.position_type.clone(),
-            4.0, // h11 default value
-            6.0, // h12 default value
-        )?;
-        
-        // Determine position status based on signal status
-        // Determine position status based on signal status
-        let position_status = if signal.status.as_deref() == Some("Triggered") {
-            PositionStatus::Triggered // Use the new intermediate state
-        } else {
-            PositionStatus::Pending
-        };
-        
-        let position = Position {
-            id: uuid::Uuid::new_v4().to_string(),
-            symbol: signal.symbol.clone(),
-            entry_time: Utc::now().to_string(),
-            entry_price: signal.price,
-            size: result.initial_position_size,
-            stop_loss: signal.stop_loss,
-            take_profit: signal.take_profit,
-            position_type: signal.position_type.clone(),
-            risk_percent: result.final_risk,
-            margin_used: (result.initial_position_size * signal.price) / self.asset_config.leverage,
-            status: position_status,
-            limit1_price: Some(limit1_price),
-            limit2_price: Some(limit2_price),
-            limit1_hit: false,
-            limit2_hit: false,
-            limit1_size: result.limit1_position_size,
-            limit2_size: result.limit2_position_size,
-            new_tp1: Some(result.new_tp1),
-            new_tp2: Some(result.new_tp2),
-            entry_order_id: None,
-            tp_order_id: None,
-            sl_order_id: None,
-            limit1_order_id: None,
-            limit2_order_id: None,
-            // ← missing fields:
-            limit1_time: None,
-            limit2_time: None,
-            new_tp: None,
-        };
-        
-        
-        
-        // Final validation of the created position
-        if self.verbose {
-            println!("FINAL POSITION VALIDATION:");
-            println!("  Type: {}", if matches!(position.position_type, PositionType::Long) { "LONG" } else { "SHORT" });
-            println!("  Entry: {:.2}", position.entry_price);
-            println!("  Take Profit: {:.2}", position.take_profit);
-            println!("  Stop Loss: {:.2}", position.stop_loss);
-            println!("  Limit1: {:.2}", position.limit1_price.unwrap_or(0.0));
-            println!("  Limit2: {:.2}", position.limit2_price.unwrap_or(0.0));
-            println!("  Size: {:.8}", position.size);
-            println!("  Limit1 Size: {:.8}", position.limit1_size);
-            println!("  Limit2 Size: {:.8}", position.limit2_size);
-            println!("  Status: {:?}", position.status);
+    
+            // 3) Main levels (all based on pivot-range)
+            let entry_price = match signal.position_type {
+                PositionType::Long => prev_low + self.config.fib_initial * range,
+                PositionType::Short => prev_high - self.config.fib_initial * range,
+            };
+            let take_profit = match signal.position_type {
+                PositionType::Long => prev_high + self.config.fib_tp * range,
+                PositionType::Short => prev_low - self.config.fib_tp * range,
+            };
+            let stop_loss = match signal.position_type {
+                PositionType::Long => prev_low - self.config.fib_sl * range,
+                PositionType::Short => prev_high + self.config.fib_sl * range,
+            };
+    
+            // 4) Pivot-range based limits:
+            //    For a SHORT we want limit2 (farthest) = prev_high - fib_limit1 * range,
+            //        and limit1 (closer) = prev_high - fib_limit2 * range.
+            //    For a LONG we do the mirror: limit2 = prev_low + fib_limit1 * range, etc.
+            let (limit1_price, limit2_price) = match signal.position_type {
+                PositionType::Long => {
+                    let l2 = prev_low + self.config.fib_limit1 * range;
+                    let l1 = prev_low + self.config.fib_limit2 * range;
+                    (l1, l2)
+                }
+                PositionType::Short => {
+                    let l2 = prev_high - self.config.fib_limit1 * range;
+                    let l1 = prev_high - self.config.fib_limit2 * range;
+                    (l1, l2)
+                }
+            };
+    
+            // 5) Verbose debug print of all levels
+            if self.verbose {
+                println!(
+                    "{} POSITION LEVELS (USING PIVOT POINTS):",
+                    if matches!(signal.position_type, PositionType::Long) {
+                        "LONG"
+                    } else {
+                        "SHORT"
+                    }
+                );
+                println!("  Pivot High: {:.2}", prev_high);
+                println!("  Pivot Low:  {:.2}", prev_low);
+                println!("  Price Range: {:.2}", range);
+                println!("  Entry:       {:.2}", entry_price);
+                println!("  Take Profit: {:.2}", take_profit);
+                println!("  Stop Loss:   {:.2}", stop_loss);
+                println!("  Limit1:      {:.2}", limit1_price);
+                println!("  Limit2:      {:.2}", limit2_price);
+    
+                // enforce correct ordering
+                let ok = if matches!(signal.position_type, PositionType::Long) {
+                    stop_loss < limit2_price
+                        && limit2_price < limit1_price
+                        && limit1_price < entry_price
+                        && entry_price < take_profit
+                } else {
+                    stop_loss > limit2_price
+                        && limit2_price > limit1_price
+                        && limit1_price > entry_price
+                        && entry_price > take_profit
+                };
+                if !ok {
+                    println!("WARNING: Invalid price order for {:?} position!", signal.position_type);
+                }
+            }
+    
+            // 6) Size the position & get limit sizes
+            let sizing = calculate_positions(
+                entry_price,
+                take_profit,
+                stop_loss,
+                limit1_price,
+                limit2_price,
+                account_size,
+                risk,
+                self.asset_config.leverage,
+                signal.position_type.clone(),
+                4.0, // h11 default
+                6.0, // h12 default
+            )?;
+    
+            // 7) Construct the Position
+            let position = Position {
+                id: uuid::Uuid::new_v4().to_string(),
+                symbol: signal.symbol.clone(),
+                entry_time: Utc::now().to_string(),
+                entry_price,
+                size: sizing.initial_position_size,
+                stop_loss,
+                take_profit,
+                position_type: signal.position_type.clone(),
+                risk_percent: sizing.final_risk,
+                margin_used: (sizing.initial_position_size * entry_price) / self.asset_config.leverage,
+                status: if signal.status.as_deref() == Some("Triggered") {
+                    PositionStatus::Triggered
+                } else {
+                    PositionStatus::Pending
+                },
+                limit1_price: Some(limit1_price),
+                limit2_price: Some(limit2_price),
+                limit1_hit: false,
+                limit2_hit: false,
+                limit1_size: sizing.limit1_position_size,
+                limit2_size: sizing.limit2_position_size,
+                new_tp1: Some(sizing.new_tp1),
+                new_tp2: Some(sizing.new_tp2),
+                entry_order_id: None,
+                tp_order_id: None,
+                sl_order_id: None,
+                limit1_order_id: None,
+                limit2_order_id: None,
+                limit1_time: None,
+                limit2_time: None,
+                new_tp: None,
+            };
+    
+            if self.verbose {
+                println!("FINAL POSITION VALIDATION: {:?}", position);
+            }
+    
+            Ok(position)
         }
-        
-        Ok(position)
     }
     
     fn generate_signals(&mut self) {

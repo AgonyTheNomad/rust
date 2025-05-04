@@ -200,10 +200,11 @@ impl DynamicFibonacciOptimizer {
                     for &sl in &self.config.sl_levels {
                         for &limit1 in &self.config.limit1_levels {
                             for &limit2 in &self.config.limit2_levels {
-                                // Skip invalid combinations
-                                if limit1 >= limit2 || sl >= limit1 {
-                                    continue;
-                                }
+                                // We're creating combinations for both long and short positions
+                                // For short positions, the ordering is: SL > Limit2 > Limit1 > Entry > TP
+                                // For long positions, the ordering is: SL < Limit2 < Limit1 < Entry < TP
+                                // Since the strategy handles the positioning during backtesting,
+                                // we don't need to filter here - just generate all combinations
                                 
                                 for &threshold_factor in &self.config.threshold_factors {
                                     let actual_threshold = base_threshold * threshold_factor;
@@ -218,7 +219,6 @@ impl DynamicFibonacciOptimizer {
         
         combinations
     }
-    
     /// Run optimizations in parallel
     fn run_parallel_optimizations(
         &self,

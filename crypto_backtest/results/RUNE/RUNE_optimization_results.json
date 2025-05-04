@@ -39,13 +39,394 @@
       1.25
     ],
     "tp_levels": [
+      0.0,
+      0.618,
       1.0,
-      2.618,
-      3.0,
-      4.414,
-      5.618
+      1.414,
+      1.618
     ]
   },
-  "top_results": [],
-  "total_combinations_tested": 0
+  "top_results": [
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.0,
+      "limit2_level": 0.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00019238907791490354,
+        "Profit Factor": 1.8574573507165668,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.041292737906141845,
+        "Total Trades": 11.0,
+        "Win Rate": 0.5454545454545454
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.414
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.0,
+      "limit2_level": 1.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00019238907791490354,
+        "Profit Factor": 1.8574573507165668,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.041292737906141845,
+        "Total Trades": 11.0,
+        "Win Rate": 0.5454545454545454
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.414
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.0,
+      "limit2_level": 2.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00019238907791490354,
+        "Profit Factor": 1.8574573507165668,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.041292737906141845,
+        "Total Trades": 11.0,
+        "Win Rate": 0.5454545454545454
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.414
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.618,
+      "limit2_level": 0.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00019238907791490354,
+        "Profit Factor": 1.8574573507165668,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.041292737906141845,
+        "Total Trades": 11.0,
+        "Win Rate": 0.5454545454545454
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.414
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.618,
+      "limit2_level": 1.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00019238907791490354,
+        "Profit Factor": 1.8574573507165668,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.041292737906141845,
+        "Total Trades": 11.0,
+        "Win Rate": 0.5454545454545454
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.414
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.618,
+      "limit2_level": 2.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00019238907791490354,
+        "Profit Factor": 1.8574573507165668,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.041292737906141845,
+        "Total Trades": 11.0,
+        "Win Rate": 0.5454545454545454
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.414
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 1.618,
+      "limit2_level": 0.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00019238907791490354,
+        "Profit Factor": 1.8574573507165668,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.041292737906141845,
+        "Total Trades": 11.0,
+        "Win Rate": 0.5454545454545454
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.414
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 1.618,
+      "limit2_level": 1.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00019238907791490354,
+        "Profit Factor": 1.8574573507165668,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.041292737906141845,
+        "Total Trades": 11.0,
+        "Win Rate": 0.5454545454545454
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.414
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 1.618,
+      "limit2_level": 2.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00019238907791490354,
+        "Profit Factor": 1.8574573507165668,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.041292737906141845,
+        "Total Trades": 11.0,
+        "Win Rate": 0.5454545454545454
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.414
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.0,
+      "limit2_level": 0.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.0001501722265429192,
+        "Profit Factor": 1.824954612904725,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.027457327929258347,
+        "Total Trades": 12.0,
+        "Win Rate": 0.3333333333333333
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.0
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.0,
+      "limit2_level": 1.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.0001501722265429192,
+        "Profit Factor": 1.824954612904725,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.027457327929258347,
+        "Total Trades": 12.0,
+        "Win Rate": 0.3333333333333333
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.0
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.0,
+      "limit2_level": 2.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.0001501722265429192,
+        "Profit Factor": 1.824954612904725,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.027457327929258347,
+        "Total Trades": 12.0,
+        "Win Rate": 0.3333333333333333
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.0
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.618,
+      "limit2_level": 0.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.0001501722265429192,
+        "Profit Factor": 1.824954612904725,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.027457327929258347,
+        "Total Trades": 12.0,
+        "Win Rate": 0.3333333333333333
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.0
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.618,
+      "limit2_level": 1.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.0001501722265429192,
+        "Profit Factor": 1.824954612904725,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.027457327929258347,
+        "Total Trades": 12.0,
+        "Win Rate": 0.3333333333333333
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.0
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.618,
+      "limit2_level": 2.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.0001501722265429192,
+        "Profit Factor": 1.824954612904725,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.027457327929258347,
+        "Total Trades": 12.0,
+        "Win Rate": 0.3333333333333333
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.0
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 1.618,
+      "limit2_level": 0.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.0001501722265429192,
+        "Profit Factor": 1.824954612904725,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.027457327929258347,
+        "Total Trades": 12.0,
+        "Win Rate": 0.3333333333333333
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.0
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 1.618,
+      "limit2_level": 1.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.0001501722265429192,
+        "Profit Factor": 1.824954612904725,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.027457327929258347,
+        "Total Trades": 12.0,
+        "Win Rate": 0.3333333333333333
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.0
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 1.618,
+      "limit2_level": 2.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.0001501722265429192,
+        "Profit Factor": 1.824954612904725,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.027457327929258347,
+        "Total Trades": 12.0,
+        "Win Rate": 0.3333333333333333
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.0
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.0,
+      "limit2_level": 0.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00045672066918868383,
+        "Profit Factor": 1.1834853695774863,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.01109934811317463,
+        "Total Trades": 10.0,
+        "Win Rate": 0.5
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.618
+    },
+    {
+      "actual_threshold": 0.029104353632478645,
+      "initial_level": 0.5,
+      "limit1_level": 0.0,
+      "limit2_level": 1.618,
+      "lookback_period": 13,
+      "performance": {
+        "Max Drawdown": 0.00045672066918868383,
+        "Profit Factor": 1.1834853695774863,
+        "Sharpe Ratio": 0.0,
+        "Sortino Ratio": 0.0,
+        "Total Profit": 0.01109934811317463,
+        "Total Trades": 10.0,
+        "Win Rate": 0.5
+      },
+      "sl_level": 1.618,
+      "threshold_factor": 1.25,
+      "tp_level": 1.618
+    }
+  ],
+  "total_combinations_tested": 20
 }

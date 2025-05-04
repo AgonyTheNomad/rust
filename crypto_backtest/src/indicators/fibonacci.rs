@@ -34,38 +34,33 @@ impl FibonacciLevels {
             return None;
         }
 
-        // Calculate the price levels
-        let entry_price = prev_low + self.initial_level * range;
-        let take_profit = prev_high + self.tp_level * range;
-        let stop_loss = prev_low - self.sl_level * range;
-        
-        // Calculate limit levels relative to entry price and stop loss
-        let entry_to_sl_range = entry_price - stop_loss;
-        let limit1 = entry_price - (self.limit1_level * entry_to_sl_range);
-        let limit2 = entry_price - (self.limit2_level * entry_to_sl_range);
-        
-        // Add debug output
+        // main levels (all using pivot-range)
+        let entry_price = prev_low   + self.initial_level * range;
+        let take_profit = prev_high  + self.tp_level      * range;
+        let stop_loss   = prev_low   - self.sl_level      * range;
+
+        // new limits also on pivot-range
+        let limit1 = prev_low + self.limit1_level * range;
+        let limit2 = prev_low + self.limit2_level * range;
+
         println!("LONG POSITION LEVELS:");
-        println!("  Price Range: {} (from {} to {})", range, prev_low, prev_high);
-        println!("  Entry: {:.2}", entry_price);
+        println!("  Price Range: {:.2} ({}→{})", range, prev_low, prev_high);
+        println!("  Entry:       {:.2}", entry_price);
         println!("  Take Profit: {:.2}", take_profit);
-        println!("  Stop Loss: {:.2}", stop_loss);
-        println!("  Entry to SL Range: {:.2}", entry_to_sl_range);
-        println!("  Limit1: {:.2}", limit1);
-        println!("  Limit2: {:.2}", limit2);
-        
-        // Validate the order of price levels
-        if !(stop_loss < limit2 && limit2 < limit1 && limit1 < entry_price && entry_price < take_profit) {
+        println!("  Stop Loss:   {:.2}", stop_loss);
+        println!("  Limit1:      {:.2}", limit1);
+        println!("  Limit2:      {:.2}", limit2);
+
+        // enforce: SL < L2 < L1 < Entry < TP
+        if !( stop_loss   < limit2
+           && limit2      < limit1
+           && limit1      < entry_price
+           && entry_price < take_profit)
+        {
             println!("WARNING: Invalid price order for long position!");
         }
 
-        Some(FibLevels {
-            entry_price,
-            take_profit,
-            stop_loss,
-            limit1,
-            limit2,
-        })
+        Some(FibLevels { entry_price, take_profit, stop_loss, limit1, limit2 })
     }
 
     pub fn calculate_short_levels(&self, prev_high: f64, prev_low: f64) -> Option<FibLevels> {
@@ -74,38 +69,34 @@ impl FibonacciLevels {
             return None;
         }
 
-        // Calculate the price levels
-        let entry_price = prev_high - self.initial_level * range;
-        let take_profit = prev_low - self.tp_level * range;
-        let stop_loss = prev_high + self.sl_level * range;
-        
-        // Calculate limit levels relative to entry price and stop loss
-        let entry_to_sl_range = stop_loss - entry_price;
-        let limit1 = entry_price + (self.limit1_level * entry_to_sl_range);
-        let limit2 = entry_price + (self.limit2_level * entry_to_sl_range);
-        
-        // Add debug output
+        // main levels (all using pivot-range)
+        let entry_price = prev_high  - self.initial_level * range;
+        let take_profit = prev_low   - self.tp_level      * range;
+        let stop_loss   = prev_high  + self.sl_level      * range;
+
+        // swap so that limit2 (farthest) uses the smaller multiplier,
+        // and limit1 (closer) uses the larger multiplier
+        let limit2 = prev_high - self.limit1_level * range; // farthest from entry
+        let limit1 = prev_high - self.limit2_level * range; // closer to entry
+
         println!("SHORT POSITION LEVELS:");
-        println!("  Price Range: {} (from {} to {})", range, prev_low, prev_high);
-        println!("  Entry: {:.2}", entry_price);
+        println!("  Price Range: {:.2} ({}→{})", range, prev_low, prev_high);
+        println!("  Entry:       {:.2}", entry_price);
         println!("  Take Profit: {:.2}", take_profit);
-        println!("  Stop Loss: {:.2}", stop_loss);
-        println!("  Entry to SL Range: {:.2}", entry_to_sl_range);
-        println!("  Limit1: {:.2}", limit1);
-        println!("  Limit2: {:.2}", limit2);
-        
-        // Validate the order of price levels
-        if !(stop_loss > limit2 && limit2 > limit1 && limit1 > entry_price && entry_price > take_profit) {
+        println!("  Stop Loss:   {:.2}", stop_loss);
+        println!("  Limit1:      {:.2}", limit1);
+        println!("  Limit2:      {:.2}", limit2);
+
+        // enforce: SL > L2 > L1 > Entry > TP
+        if !( stop_loss    > limit2
+           && limit2       > limit1
+           && limit1       > entry_price
+           && entry_price  > take_profit)
+        {
             println!("WARNING: Invalid price order for short position!");
         }
 
-        Some(FibLevels {
-            entry_price,
-            take_profit,
-            stop_loss,
-            limit1,
-            limit2,
-        })
+        Some(FibLevels { entry_price, take_profit, stop_loss, limit1, limit2 })
     }
 }
 
