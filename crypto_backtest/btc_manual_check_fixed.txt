@@ -1,11 +1,139 @@
 MANUAL TRADE CHECKING (FIXED VERSION):
 
+POSITION VALIDATION:
+  Position Type: LONG
+  Entry Price: $95102.73
+  Stop Loss: $94523.73
+  Take Profit: $95534.27
+  Limit1 Price: $95341.27
+  Limit2 Price: $95148.27
+  Size: 0.03462257
+WARNING: Invalid price levels for long position!
+NEW POSITION OPENED:
+Type: LONG
+Entry Time: 2025-04-30T12:08:00Z
+Entry Price: $95102.73
+Stop Loss: $94523.73 (0.6088153561444654% from entry)
+Take Profit: $95534.27 (0.4537703787796943% from entry)
+Limit1 Price: $95341.27 (0.25083192673154286% from entry)
+Limit2 Price: $95148.27 (0.04789347468336924% from entry)
+Size: 0.03462257
+-------------------------------------
+NEW POSITION #1 at Candle #40:
+  Type: LONG
+  Entry: $95102.73
+  Stop Loss: $94523.73
+  Take Profit: $95534.27
+  Current Balance: $10000.00
+LIMIT1 HIT for position #1 at $95341.27
+LIMIT2 HIT for position #1 at $95148.27
+DEBUG - Long Stop Loss Hit:
+  Entry Price: $95102.73
+  Stop Loss Price: $94523.73
+  Position Size: 0.03462257
+  Calculation: ($94523.73 - $95102.73) * 0.03462257 = $-20.05
+CLOSE LONG (Stop Loss): Candle #68 at $94523.73, PnL: $-20.05
+
+POSITION VALIDATION:
+  Position Type: SHORT
+  Entry Price: $94314.38
+  Stop Loss: $95010.38
+  Take Profit: $93795.62
+  Limit1 Price: $94027.62
+  Limit2 Price: $94259.62
+  Size: 0.02844253
+WARNING: Invalid price levels for short position!
+NEW POSITION OPENED:
+Type: SHORT
+Entry Time: 2025-04-30T13:24:00Z
+Entry Price: $94314.38
+Stop Loss: $95010.38 (0.7379574880503892% from entry)
+Take Profit: $93795.62 (0.5500243144269001% from entry)
+Limit1 Price: $94027.62 (0.3040384850767741% from entry)
+Limit2 Price: $94259.62 (0.05805265572663698% from entry)
+Size: 0.02844253
+-------------------------------------
+NEW POSITION #2 at Candle #116:
+  Type: SHORT
+  Entry: $94314.38
+  Stop Loss: $95010.38
+  Take Profit: $93795.62
+  Current Balance: $9979.95
+LIMIT1 HIT for position #2 at $94027.62
+LIMIT2 HIT for position #2 at $94259.62
+DEBUG - Short Take Profit Hit:
+  Entry Price: $94314.38
+  Take Profit Price: $93795.62
+  Position Size: 0.02844253
+  Calculation: ($94314.38 - $93795.62) * 0.02844253 = $14.75
+CLOSE SHORT (Take Profit): Candle #133 at $93795.62, PnL: $14.75
+
+POSITION VALIDATION:
+  Position Type: SHORT
+  Entry Price: $93343.11
+  Stop Loss: $95494.11
+  Take Profit: $91739.89
+  Limit1 Price: $92456.89
+  Limit2 Price: $93173.89
+  Size: 0.00889183
+WARNING: Invalid price levels for short position!
+NEW POSITION OPENED:
+Type: SHORT
+Entry Time: 2025-04-30T14:10:00Z
+Entry Price: $93343.11
+Stop Loss: $95494.11 (2.304401569838488% from entry)
+Take Profit: $91739.89 (1.7175473033862798% from entry)
+Limit1 Price: $92456.89 (0.9494134467734505% from entry)
+Limit2 Price: $93173.89 (0.18127959016063233% from entry)
+Size: 0.00889183
+-------------------------------------
+NEW POSITION #3 at Candle #162:
+  Type: SHORT
+  Entry: $93343.11
+  Stop Loss: $95494.11
+  Take Profit: $91739.89
+  Current Balance: $9994.71
+LIMIT1 HIT for position #3 at $92456.89
+LIMIT2 HIT for position #3 at $93173.89
+
 MANUAL CHECKING SUMMARY:
 Starting Balance: $10000.00
-Final Balance: $10000.00
-Profit/Loss: $0.00
-Open Positions Remaining: 0
-Completed Trades: 0
-Win Rate: 0.00%
+Final Balance: $9994.71
+Profit/Loss: $-5.29
+Open Positions Remaining: 1
+Completed Trades: 2
+Win Rate: 50.00%
 
 DETAILS OF LAST 5 TRADES:
+Trade #2
+TRADE CLOSED:
+Type: LONG (Stop Loss)
+Entry Time: 2025-04-30T12:08:00Z
+Exit Time: 2025-04-30T12:36:00Z
+Duration: 28 candles
+Entry Price: $95102.73
+Exit Price: $94523.73
+Stop Loss: $94523.73
+Take Profit: $95534.27
+Limit1 Price: $95341.27
+Limit2 Price: $95148.27
+Limit1 Hit: true
+Limit2 Hit: true
+P&L: $-20.05
+-------------------------------------
+Trade #1
+TRADE CLOSED:
+Type: SHORT (Take Profit)
+Entry Time: 2025-04-30T13:24:00Z
+Exit Time: 2025-04-30T13:41:00Z
+Duration: 17 candles
+Entry Price: $94314.38
+Exit Price: $93795.62
+Stop Loss: $95010.38
+Take Profit: $93795.62
+Limit1 Price: $94027.62
+Limit2 Price: $94259.62
+Limit1 Hit: true
+Limit2 Hit: true
+P&L: $14.75
+-------------------------------------

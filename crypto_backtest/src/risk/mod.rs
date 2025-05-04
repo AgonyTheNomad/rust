@@ -1,6 +1,6 @@
 // src/risk/mod.rs
 use crate::models::{Account, PositionType};
-
+use anyhow::{Result, anyhow};
 // Import the position calculator module
 pub mod position_calculator;
 pub use position_calculator::{PositionResult, calculate_positions, PositionScaleResult};
@@ -43,7 +43,7 @@ impl RiskManager {
         limit2: f64,
         leverage: f64,
         position_type: PositionType,
-    ) -> Result<PositionScaleResult, String> {
+    ) -> Result<PositionScaleResult, anyhow::Error> {
         // Apply spread to prices based on position type
         let (entry_with_spread, tp_with_spread, sl_with_spread) = match position_type {
             PositionType::Long => (
@@ -71,6 +71,6 @@ impl RiskManager {
             position_type,
             4.0, // h11 default value
             6.0, // h12 default value
-        ).map_err(|e| e.to_string())
+        ).map_err(|e| anyhow::anyhow!("{}", e))
     }
 }

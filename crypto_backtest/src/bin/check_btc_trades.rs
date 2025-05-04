@@ -1,11 +1,13 @@
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
-use std::collections::VecDeque;
+use std::collections::{VecDeque, HashMap};
 use crypto_backtest::fetch_data::load_candles_from_csv;
 use crypto_backtest::strategy::{Strategy, AssetConfig};
-use crypto_backtest::models::{PositionType, default_strategy_config};
+use crypto_backtest::models::{PositionType, default_strategy_config, Account, Position, PositionStatus, Signal};
 use crypto_backtest::backtest::Backtester;
+use crypto_backtest::risk::{RiskManager, RiskParameters};
+use anyhow::Result;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // 1) Load candle data
@@ -69,7 +71,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             writeln!(file, "Max drawdown: {:.2}%", results.metrics.max_drawdown * 100.0)?;
             writeln!(file, "Sharpe ratio: {:.2}", results.metrics.sharpe_ratio)?;
 
-            // DETAILS OF LAST 5 TRADES
             // DETAILS OF LAST 5 TRADES
             writeln!(file, "\nDETAILS OF LAST 5 TRADES:")?;
             let last_trades = results.trades.iter().rev().take(5).collect::<Vec<_>>();
