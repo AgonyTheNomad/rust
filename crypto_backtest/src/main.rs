@@ -40,7 +40,7 @@ fn run_single_backtest(candles: &[crate::models::Candle]) -> Result<(), Box<dyn 
     let config = StrategyConfig {
         initial_balance: 10_000.0,
         leverage: 50.0,
-        max_risk_per_trade: 0.01,
+        max_risk_per_trade: 0.1,
         pivot_lookback: 5,
         signal_lookback: 1,
         fib_limit1: 0.618,

@@ -26,7 +26,7 @@
       8,
       13
     ],
-    "max_risk_per_trade": 0.02,
+    "max_risk_per_trade": 0.1,
     "min_signal_strength": 0.5,
     "sl_levels": [
       1.618,
@@ -54,11 +54,11 @@
       "limit2_level": 0.618,
       "lookback_period": 8,
       "performance": {
-        "Max Drawdown": 0.021055731347405387,
-        "Profit Factor": 3.5943838061295716,
+        "Max Drawdown": 0.1052786567370256,
+        "Profit Factor": 3.3188434944984295,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 17.986308827263624,
+        "Total Profit": 124.73408050256639,
         "Total Trades": 171.0,
         "Win Rate": 0.9824561403508771
       },
@@ -73,11 +73,11 @@
       "limit2_level": 1.618,
       "lookback_period": 8,
       "performance": {
-        "Max Drawdown": 0.021055731347405387,
-        "Profit Factor": 3.5943838061295716,
+        "Max Drawdown": 0.1052786567370256,
+        "Profit Factor": 3.3188434944984295,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 17.986308827263624,
+        "Total Profit": 124.73408050256639,
         "Total Trades": 171.0,
         "Win Rate": 0.9824561403508771
       },
@@ -92,11 +92,11 @@
       "limit2_level": 2.618,
       "lookback_period": 8,
       "performance": {
-        "Max Drawdown": 0.021055731347405387,
-        "Profit Factor": 3.5943838061295716,
+        "Max Drawdown": 0.1052786567370256,
+        "Profit Factor": 3.3188434944984295,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 17.986308827263624,
+        "Total Profit": 124.73408050256639,
         "Total Trades": 171.0,
         "Win Rate": 0.9824561403508771
       },
@@ -111,11 +111,11 @@
       "limit2_level": 0.618,
       "lookback_period": 8,
       "performance": {
-        "Max Drawdown": 0.021055731347405387,
-        "Profit Factor": 3.5943838061295716,
+        "Max Drawdown": 0.1052786567370256,
+        "Profit Factor": 3.3188434944984295,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 17.986308827263624,
+        "Total Profit": 124.73408050256639,
         "Total Trades": 171.0,
         "Win Rate": 0.9824561403508771
       },
@@ -130,11 +130,11 @@
       "limit2_level": 1.618,
       "lookback_period": 8,
       "performance": {
-        "Max Drawdown": 0.021055731347405387,
-        "Profit Factor": 3.5943838061295716,
+        "Max Drawdown": 0.1052786567370256,
+        "Profit Factor": 3.3188434944984295,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 17.986308827263624,
+        "Total Profit": 124.73408050256639,
         "Total Trades": 171.0,
         "Win Rate": 0.9824561403508771
       },
@@ -149,11 +149,11 @@
       "limit2_level": 2.618,
       "lookback_period": 8,
       "performance": {
-        "Max Drawdown": 0.021055731347405387,
-        "Profit Factor": 3.5943838061295716,
+        "Max Drawdown": 0.1052786567370256,
+        "Profit Factor": 3.3188434944984295,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 17.986308827263624,
+        "Total Profit": 124.73408050256639,
         "Total Trades": 171.0,
         "Win Rate": 0.9824561403508771
       },
@@ -168,11 +168,11 @@
       "limit2_level": 0.618,
       "lookback_period": 8,
       "performance": {
-        "Max Drawdown": 0.021055731347405387,
-        "Profit Factor": 3.5943838061295716,
+        "Max Drawdown": 0.1052786567370256,
+        "Profit Factor": 3.3188434944984295,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 17.986308827263624,
+        "Total Profit": 124.73408050256639,
         "Total Trades": 171.0,
         "Win Rate": 0.9824561403508771
       },
@@ -187,11 +187,11 @@
       "limit2_level": 1.618,
       "lookback_period": 8,
       "performance": {
-        "Max Drawdown": 0.021055731347405387,
-        "Profit Factor": 3.5943838061295716,
+        "Max Drawdown": 0.1052786567370256,
+        "Profit Factor": 3.3188434944984295,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 17.986308827263624,
+        "Total Profit": 124.73408050256639,
         "Total Trades": 171.0,
         "Win Rate": 0.9824561403508771
       },
@@ -206,11 +206,11 @@
       "limit2_level": 2.618,
       "lookback_period": 8,
       "performance": {
-        "Max Drawdown": 0.021055731347405387,
-        "Profit Factor": 3.5943838061295716,
+        "Max Drawdown": 0.1052786567370256,
+        "Profit Factor": 3.3188434944984295,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 17.986308827263624,
+        "Total Profit": 124.73408050256639,
         "Total Trades": 171.0,
         "Win Rate": 0.9824561403508771
       },
@@ -225,11 +225,11 @@
       "limit2_level": 0.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.020766297834135312,
-        "Profit Factor": 4.5824936552257185,
+        "Max Drawdown": 0.10383148917067626,
+        "Profit Factor": 4.108250071196825,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 16.43822705385486,
+        "Total Profit": 109.79508752669487,
         "Total Trades": 38.0,
         "Win Rate": 0.9473684210526315
       },
@@ -244,11 +244,11 @@
       "limit2_level": 1.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.020766297834135312,
-        "Profit Factor": 4.5824936552257185,
+        "Max Drawdown": 0.10383148917067626,
+        "Profit Factor": 4.108250071196825,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 16.43822705385486,
+        "Total Profit": 109.79508752669487,
         "Total Trades": 38.0,
         "Win Rate": 0.9473684210526315
       },
@@ -263,11 +263,11 @@
       "limit2_level": 2.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.020766297834135312,
-        "Profit Factor": 4.5824936552257185,
+        "Max Drawdown": 0.10383148917067626,
+        "Profit Factor": 4.108250071196825,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 16.43822705385486,
+        "Total Profit": 109.79508752669487,
         "Total Trades": 38.0,
         "Win Rate": 0.9473684210526315
       },
@@ -282,11 +282,11 @@
       "limit2_level": 0.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.020766297834135312,
-        "Profit Factor": 4.5824936552257185,
+        "Max Drawdown": 0.10383148917067626,
+        "Profit Factor": 4.108250071196825,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 16.43822705385486,
+        "Total Profit": 109.79508752669487,
         "Total Trades": 38.0,
         "Win Rate": 0.9473684210526315
       },
@@ -301,11 +301,11 @@
       "limit2_level": 1.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.020766297834135312,
-        "Profit Factor": 4.5824936552257185,
+        "Max Drawdown": 0.10383148917067626,
+        "Profit Factor": 4.108250071196825,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 16.43822705385486,
+        "Total Profit": 109.79508752669487,
         "Total Trades": 38.0,
         "Win Rate": 0.9473684210526315
       },
@@ -320,11 +320,11 @@
       "limit2_level": 2.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.020766297834135312,
-        "Profit Factor": 4.5824936552257185,
+        "Max Drawdown": 0.10383148917067626,
+        "Profit Factor": 4.108250071196825,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 16.43822705385486,
+        "Total Profit": 109.79508752669487,
         "Total Trades": 38.0,
         "Win Rate": 0.9473684210526315
       },
@@ -339,11 +339,11 @@
       "limit2_level": 0.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.020766297834135312,
-        "Profit Factor": 4.5824936552257185,
+        "Max Drawdown": 0.10383148917067626,
+        "Profit Factor": 4.108250071196825,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 16.43822705385486,
+        "Total Profit": 109.79508752669487,
         "Total Trades": 38.0,
         "Win Rate": 0.9473684210526315
       },
@@ -358,11 +358,11 @@
       "limit2_level": 1.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.020766297834135312,
-        "Profit Factor": 4.5824936552257185,
+        "Max Drawdown": 0.10383148917067626,
+        "Profit Factor": 4.108250071196825,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 16.43822705385486,
+        "Total Profit": 109.79508752669487,
         "Total Trades": 38.0,
         "Win Rate": 0.9473684210526315
       },
@@ -377,11 +377,11 @@
       "limit2_level": 2.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.020766297834135312,
-        "Profit Factor": 4.5824936552257185,
+        "Max Drawdown": 0.10383148917067626,
+        "Profit Factor": 4.108250071196825,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 16.43822705385486,
+        "Total Profit": 109.79508752669487,
         "Total Trades": 38.0,
         "Win Rate": 0.9473684210526315
       },
@@ -396,11 +396,11 @@
       "limit2_level": 0.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.0900541951350194,
-        "Profit Factor": 1.5237159909240219,
+        "Max Drawdown": 0.391931331975661,
+        "Profit Factor": 1.4187739014681147,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 15.547082182468408,
+        "Total Profit": 89.26403086708935,
         "Total Trades": 186.0,
         "Win Rate": 0.9301075268817204
       },
@@ -415,11 +415,11 @@
       "limit2_level": 1.618,
       "lookback_period": 2,
       "performance": {
-        "Max Drawdown": 0.0900541951350194,
-        "Profit Factor": 1.5237159909240219,
+        "Max Drawdown": 0.391931331975661,
+        "Profit Factor": 1.4187739014681147,
         "Sharpe Ratio": 0.0,
         "Sortino Ratio": 0.0,
-        "Total Profit": 15.547082182468408,
+        "Total Profit": 89.26403086708935,
         "Total Trades": 186.0,
         "Win Rate": 0.9301075268817204
       },

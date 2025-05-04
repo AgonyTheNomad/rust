@@ -49,7 +49,7 @@ impl Default for DynamicOptimizationConfig {
             initial_balance: 10_000.0,
             drop_threshold: 9_000.0,
             
-            max_risk_per_trade: 0.02,
+            max_risk_per_trade: 0.1,
             leverage: 20.0,
             
             lookback_periods: vec![5, 8, 10, 13],

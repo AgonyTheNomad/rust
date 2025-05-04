@@ -36,7 +36,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut config = default_strategy_config();
     config.name = "BTC Trade Check".into();
     config.leverage = 40.0;
-    config.max_risk_per_trade = 0.02;
+    config.max_risk_per_trade = 0.1;
     config.pivot_lookback = 5;
     config.signal_lookback = 1;
     config.fib_threshold = 100.0;

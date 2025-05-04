@@ -254,125 +254,117 @@ impl Backtester {
     }
 
     fn check_exits(&self, position: &mut Position, candle: &Candle)
-        -> Option<(String, f64, String)>
+    -> Option<(String, f64, String)>
+{
+    // ─── LIMIT1 LONG ─────────────────────────────────────────────────────
+    if !position.limit1_hit
+        && position.position_type == PositionType::Long
+        && candle.low <= position.limit1_price.unwrap_or(f64::MAX)
     {
-        // ─── LIMIT1 LONG ─────────────────────────────────────────────────────
-        if !position.limit1_hit
-            && position.position_type == PositionType::Long
-            && candle.low <= position.limit1_price.unwrap_or(f64::MAX)
-        {
-            position.limit1_hit = true;
-            position.limit1_time = Some(candle.time.clone()); // Record when limit1 was hit
-            // **scale in** at limit1_price
-            if let Some(fill) = position.limit1_price {
-                let old_sz  = position.size;
-                let add_sz  = position.limit1_size;
-                let avg_old = position.entry_price;
-                let avg_new = (avg_old*old_sz + fill*add_sz)/(old_sz+add_sz);
-                position.size = old_sz + add_sz;
-                position.entry_price = avg_new;
-                position.margin_used  = (position.entry_price*position.size)
-                    / self.strategy.get_asset_config().leverage;
-            }
-            // move TP
-            if let Some(tp1) = position.new_tp1 {
-                position.take_profit = tp1;
-                position.new_tp     = Some(tp1);
-                if self.verbose { println!("L1 LONG → TP @ ${:.2}", tp1); }
-            }
+        position.limit1_hit = true;
+        position.limit1_time = Some(candle.time.clone()); // Record when limit1 was hit
+        // **scale in** at limit1_price
+        if let Some(fill) = position.limit1_price {
+            let old_sz  = position.size;
+            let add_sz  = position.limit1_size;
+            let avg_old = position.entry_price;
+            let avg_new = (avg_old*old_sz + fill*add_sz)/(old_sz+add_sz);
+            position.size = old_sz + add_sz;
+            position.entry_price = avg_new;
+            position.margin_used  = (position.entry_price*position.size)
+                / self.strategy.get_asset_config().leverage;
         }
-
-        // ─── LIMIT2 LONG ─────────────────────────────────────────────────────
-        if !position.limit2_hit
-            && position.position_type == PositionType::Long
-            && candle.low <= position.limit2_price.unwrap_or(f64::MAX)
-        {
-            position.limit2_hit = true;
-            position.limit2_time = Some(candle.time.clone()); // Record when limit2 was hit
-            if let Some(fill2) = position.limit2_price {
-                let old_sz  = position.size;
-                let add_sz  = position.limit2_size;
-                let avg_old = position.entry_price;
-                let avg_new = (avg_old*old_sz + fill2*add_sz)/(old_sz+add_sz);
-                position.size = old_sz + add_sz;
-                position.entry_price = avg_new;
-                position.margin_used  = (position.entry_price*position.size)
-                    / self.strategy.get_asset_config().leverage;
-            }
-            if let Some(tp2) = position.new_tp2 {
-                position.take_profit = tp2;
-                position.new_tp     = Some(tp2);
-                if self.verbose { println!("L2 LONG → TP @ ${:.2}", tp2); }
-            }
+        // move TP
+        if let Some(tp1) = position.new_tp1 {
+            position.take_profit = tp1;
+            position.new_tp     = Some(tp1);
+            if self.verbose { println!("L1 LONG → TP @ ${:.2}", tp1); }
         }
-
-        // ─── LIMIT1 SHORT ────────────────────────────────────────────────────
-        if !position.limit1_hit
-            && position.position_type == PositionType::Short
-            && candle.high >= position.limit1_price.unwrap_or(f64::MIN)
-        {
-            position.limit1_hit = true;
-            position.limit1_time = Some(candle.time.clone()); // Record when limit1 was hit
-            if let Some(fill) = position.limit1_price {
-                let old_sz  = position.size;
-                let add_sz  = position.limit1_size;
-                let avg_old = position.entry_price;
-                let avg_new = (avg_old*old_sz + fill*add_sz)/(old_sz+add_sz);
-                position.size = old_sz + add_sz;
-                position.entry_price = avg_new;
-                position.margin_used  = (position.entry_price*position.size)
-                    / self.strategy.get_asset_config().leverage;
-            }
-            if let Some(tp1) = position.new_tp1 {
-                position.take_profit = tp1;
-                position.new_tp     = Some(tp1);
-                if self.verbose { println!("L1 SHORT → TP @ ${:.2}", tp1); }
-            }
-        }
-
-        // ─── LIMIT2 SHORT ────────────────────────────────────────────────────
-        if !position.limit2_hit
-            && position.position_type == PositionType::Short
-            && candle.high >= position.limit2_price.unwrap_or(f64::MIN)
-        {
-            position.limit2_hit = true;
-            position.limit2_time = Some(candle.time.clone()); // Record when limit2 was hit
-            if let Some(fill2) = position.limit2_price {
-                let old_sz  = position.size;
-                let add_sz  = position.limit2_size;
-                let avg_old = position.entry_price;
-                let avg_new = (avg_old*old_sz + fill2*add_sz)/(old_sz+add_sz);
-                position.size = old_sz + add_sz;
-                position.entry_price = avg_new;
-                position.margin_used  = (position.entry_price*position.size)
-                    / self.strategy.get_asset_config().leverage;
-            }
-            if let Some(tp2) = position.new_tp2 {
-                position.take_profit = tp2;
-                position.new_tp     = Some(tp2);
-                if self.verbose { println!("L2 SHORT → TP @ ${:.2}", tp2); }
-            }
-        }
-
-        // ─── FINAL EXIT ──────────────────────────────────────────────────────
-        // Take profit hits are always checked
-        if position.position_type == PositionType::Long && candle.high >= position.take_profit {
-            return Some(("TP".into(), position.take_profit, "hit".into()));
-        }
-        if position.position_type == PositionType::Short && candle.low <= position.take_profit {
-            return Some(("TP".into(), position.take_profit, "hit".into()));
-        }
-        
-        // Stop loss hits are only checked if ignore_stop_loss is false
-        if !self.ignore_stop_loss {
-            if position.position_type == PositionType::Long && candle.low <= position.stop_loss {
-                return Some(("SL".into(), position.stop_loss, "hit".into()));
-            }
-            if position.position_type == PositionType::Short && candle.high >= position.stop_loss {
-                return Some(("SL".into(), position.stop_loss, "hit".into()));
-            }
-        }
-        
-        None
     }
+
+    // ─── LIMIT2 LONG ─────────────────────────────────────────────────────
+    if !position.limit2_hit
+        && position.position_type == PositionType::Long
+        && candle.low <= position.limit2_price.unwrap_or(f64::MAX)
+    {
+        position.limit2_hit = true;
+        position.limit2_time = Some(candle.time.clone()); // Record when limit2 was hit
+        if let Some(fill2) = position.limit2_price {
+            let old_sz  = position.size;
+            let add_sz  = position.limit2_size;
+            let avg_old = position.entry_price;
+            let avg_new = (avg_old*old_sz + fill2*add_sz)/(old_sz+add_sz);
+            position.size = old_sz + add_sz;
+            position.entry_price = avg_new;
+            position.margin_used  = (position.entry_price*position.size)
+                / self.strategy.get_asset_config().leverage;
+        }
+        if let Some(tp2) = position.new_tp2 {
+            position.take_profit = tp2;
+            position.new_tp     = Some(tp2);
+            if self.verbose { println!("L2 LONG → TP @ ${:.2}", tp2); }
+        }
+    }
+
+    // ─── LIMIT1 SHORT ────────────────────────────────────────────────────
+    if !position.limit1_hit
+        && position.position_type == PositionType::Short
+        && candle.high >= position.limit1_price.unwrap_or(f64::MIN)
+    {
+        position.limit1_hit = true;
+        position.limit1_time = Some(candle.time.clone()); // Record when limit1 was hit
+        if let Some(fill) = position.limit1_price {
+            let old_sz  = position.size;
+            let add_sz  = position.limit1_size;
+            let avg_old = position.entry_price;
+            let avg_new = (avg_old*old_sz + fill*add_sz)/(old_sz+add_sz);
+            position.size = old_sz + add_sz;
+            position.entry_price = avg_new;
+            position.margin_used  = (position.entry_price*position.size)
+                / self.strategy.get_asset_config().leverage;
+        }
+        if let Some(tp1) = position.new_tp1 {
+            position.take_profit = tp1;
+            position.new_tp     = Some(tp1);
+            if self.verbose { println!("L1 SHORT → TP @ ${:.2}", tp1); }
+        }
+    }
+
+    // ─── LIMIT2 SHORT ────────────────────────────────────────────────────
+    if !position.limit2_hit
+        && position.position_type == PositionType::Short
+        && candle.high >= position.limit2_price.unwrap_or(f64::MIN)
+    {
+        position.limit2_hit = true;
+        position.limit2_time = Some(candle.time.clone()); // Record when limit2 was hit
+        if let Some(fill2) = position.limit2_price {
+            let old_sz  = position.size;
+            let add_sz  = position.limit2_size;
+            let avg_old = position.entry_price;
+            let avg_new = (avg_old*old_sz + fill2*add_sz)/(old_sz+add_sz);
+            position.size = old_sz + add_sz;
+            position.entry_price = avg_new;
+            position.margin_used  = (position.entry_price*position.size)
+                / self.strategy.get_asset_config().leverage;
+        }
+        if let Some(tp2) = position.new_tp2 {
+            position.take_profit = tp2;
+            position.new_tp     = Some(tp2);
+            if self.verbose { println!("L2 SHORT → TP @ ${:.2}", tp2); }
+        }
+    }
+
+    // ─── FINAL EXIT ──────────────────────────────────────────────────────
+    // Take profit hits are the ONLY way to exit a position
+    if position.position_type == PositionType::Long && candle.high >= position.take_profit {
+        return Some(("TP".into(), position.take_profit, "hit".into()));
+    }
+    if position.position_type == PositionType::Short && candle.low <= position.take_profit {
+        return Some(("TP".into(), position.take_profit, "hit".into()));
+    }
+    
+    // No stop loss checking at all - completely removed
+
+    None
+}
 }

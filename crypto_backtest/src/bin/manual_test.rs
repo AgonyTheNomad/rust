@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut config = default_strategy_config();
     config.name = "Manual Test".to_string();
     config.leverage = 50.0;
-    config.max_risk_per_trade = 0.02;
+    config.max_risk_per_trade = 0.1;
     config.pivot_lookback = 3;
     config.signal_lookback = 1;
     config.fib_threshold = 5.0;

@@ -16,7 +16,7 @@ pub struct RiskParameters {
 impl Default for RiskParameters {
     fn default() -> Self {
         Self {
-            max_risk_per_trade: 0.02,
+            max_risk_per_trade: 0.1,
             max_position_size: 10.0,
             max_leverage: 20.0,
             spread: 0.0003,        // Default spread of 0.03%

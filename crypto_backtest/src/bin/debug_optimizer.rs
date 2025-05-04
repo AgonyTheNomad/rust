@@ -98,7 +98,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let mut config = default_strategy_config();
             config.name = "Aggressive".to_string();
             config.leverage = 50.0;
-            config.max_risk_per_trade = 0.02;
+            config.max_risk_per_trade = 0.1;
             config.pivot_lookback = 3;
             config.signal_lookback = 1;
             config.fib_threshold = 5.0;
@@ -114,7 +114,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let mut config = default_strategy_config();
             config.name = "Balanced".to_string();
             config.leverage = 30.0;
-            config.max_risk_per_trade = 0.015;
+            config.max_risk_per_trade = 0.1;
             config.pivot_lookback = 8;
             config.signal_lookback = 2;
             config.fib_threshold = 15.0;

@@ -96,7 +96,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut config = default_strategy_config();
         config.name = format!("BTC Param Set {}", param_index + 1);
         config.leverage = 20.0;
-        config.max_risk_per_trade = 0.01; // Lower risk per trade to be safer
+        config.max_risk_per_trade = 0.1; // Lower risk per trade to be safer
         config.pivot_lookback = params.pivot_lookback;
         config.signal_lookback = 1;
         config.fib_threshold = params.threshold;

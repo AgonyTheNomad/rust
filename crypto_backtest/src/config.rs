@@ -110,7 +110,7 @@ impl Default for GlobalConfig {
         Self {
             initial_balance: 10000.0,
             leverage: 20.0,
-            max_risk_per_trade: 0.02,
+            max_risk_per_trade: 0.1,
             pivot_lookback: 5,
             signal_lookback: 1,
             fib_threshold: 10.0,
