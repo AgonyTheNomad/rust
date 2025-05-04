@@ -34,30 +34,40 @@ impl FibonacciLevels {
             return None;
         }
 
-        // main levels (all using pivot-range)
-        let entry_price = prev_low   + self.initial_level * range;
-        let take_profit = prev_high  + self.tp_level      * range;
-        let stop_loss   = prev_low   - self.sl_level      * range;
+        // Calculate main price levels
+        let entry_price = prev_low + self.initial_level * range;
+        let take_profit = prev_high + self.tp_level * range;
+        let stop_loss = prev_low - self.sl_level * range;
+        
+        // For a proper scale-in strategy: 
+        // Limit orders should be between entry price and stop loss
+        // Calculate how far entry is from stop loss
+        let entry_to_sl_distance = entry_price - stop_loss;
+        
+        // Place Limit1 at 1/3 of the way from entry to stop loss
+        let limit1 = entry_price - (entry_to_sl_distance * 0.33);
+        
+        // Place Limit2 at 2/3 of the way from entry to stop loss
+        let limit2 = entry_price - (entry_to_sl_distance * 0.66);
+        
+        // This ensures: SL < Limit2 < Limit1 < Entry < TP
 
-        // new limits also on pivot-range
-        let limit1 = prev_low + self.limit1_level * range;
-        let limit2 = prev_low + self.limit2_level * range;
+       // println!("LONG POSITION LEVELS:");
+        //println!("  Price Range: {:.2} ({}→{})", range, prev_low, prev_high);
+        //println!("  Entry:       {:.2}", entry_price);
+        //println!("  Take Profit: {:.2}", take_profit);
+        //println!("  Stop Loss:   {:.2}", stop_loss);
+        //println!("  Limit1:      {:.2}", limit1);
+        //println!("  Limit2:      {:.2}", limit2);
 
-        println!("LONG POSITION LEVELS:");
-        println!("  Price Range: {:.2} ({}→{})", range, prev_low, prev_high);
-        println!("  Entry:       {:.2}", entry_price);
-        println!("  Take Profit: {:.2}", take_profit);
-        println!("  Stop Loss:   {:.2}", stop_loss);
-        println!("  Limit1:      {:.2}", limit1);
-        println!("  Limit2:      {:.2}", limit2);
-
-        // enforce: SL < L2 < L1 < Entry < TP
-        if !( stop_loss   < limit2
-           && limit2      < limit1
-           && limit1      < entry_price
+        // Validate the ordering
+        if !(stop_loss < limit2 
+           && limit2 < limit1 
+           && limit1 < entry_price 
            && entry_price < take_profit)
         {
-            println!("WARNING: Invalid price order for long position!");
+            //println!("WARNING: Invalid price order for long position!");
+            return None; // Return None if levels are invalid
         }
 
         Some(FibLevels { entry_price, take_profit, stop_loss, limit1, limit2 })
@@ -69,34 +79,52 @@ impl FibonacciLevels {
             return None;
         }
 
-        // main levels (all using pivot-range)
-        let entry_price = prev_high  - self.initial_level * range;
-        let take_profit = prev_low   - self.tp_level      * range;
-        let stop_loss   = prev_high  + self.sl_level      * range;
+        // Calculate main price levels
+        let entry_price = prev_high - self.initial_level * range;
+        let take_profit = prev_low - self.tp_level * range;
+        let stop_loss = prev_high + self.sl_level * range;
+        
+        // For a proper scale-in strategy:
+        // Limit orders should be between entry price and stop loss
+        let entry_to_sl_distance = stop_loss - entry_price;
+        
+        // Place Limit1 at 1/3 of the way from entry to stop loss
+        let limit1 = entry_price + (entry_to_sl_distance * 0.33);
+        
+        // Place Limit2 at 2/3 of the way from entry to stop loss
+        let limit2 = entry_price + (entry_to_sl_distance * 0.66);
+        
+        // This ensures: TP < Entry < Limit1 < Limit2 < SL
 
-        // swap so that limit2 (farthest) uses the smaller multiplier,
-        // and limit1 (closer) uses the larger multiplier
-        let limit2 = prev_high - self.limit1_level * range; // farthest from entry
-        let limit1 = prev_high - self.limit2_level * range; // closer to entry
+        //println!("SHORT POSITION LEVELS:");
+        //println!("  Price Range: {:.2} ({}→{})", range, prev_low, prev_high);
+        //println!("  Entry:       {:.2}", entry_price);
+        //println!("  Take Profit: {:.2}", take_profit);
+        //println!("  Stop Loss:   {:.2}", stop_loss);
+       // println!("  Limit1:      {:.2}", limit1);
+        //println!("  Limit2:      {:.2}", limit2);
 
-        println!("SHORT POSITION LEVELS:");
-        println!("  Price Range: {:.2} ({}→{})", range, prev_low, prev_high);
-        println!("  Entry:       {:.2}", entry_price);
-        println!("  Take Profit: {:.2}", take_profit);
-        println!("  Stop Loss:   {:.2}", stop_loss);
-        println!("  Limit1:      {:.2}", limit1);
-        println!("  Limit2:      {:.2}", limit2);
-
-        // enforce: SL > L2 > L1 > Entry > TP
-        if !( stop_loss    > limit2
-           && limit2       > limit1
-           && limit1       > entry_price
-           && entry_price  > take_profit)
+        // Validate the ordering
+        if !(take_profit < entry_price
+           && entry_price < limit1
+           && limit1 < limit2
+           && limit2 < stop_loss)
         {
-            println!("WARNING: Invalid price order for short position!");
+           // println!("WARNING: Invalid price order for short position!");
+            return None; // Return None if levels are invalid
         }
 
         Some(FibLevels { entry_price, take_profit, stop_loss, limit1, limit2 })
+    }
+    
+    // Helper method to validate if a set of levels is valid for a long position
+    pub fn validate_long_levels(&self, entry: f64, tp: f64, sl: f64, limit1: f64, limit2: f64) -> bool {
+        sl < limit2 && limit2 < limit1 && limit1 < entry && entry < tp
+    }
+    
+    // Helper method to validate if a set of levels is valid for a short position
+    pub fn validate_short_levels(&self, entry: f64, tp: f64, sl: f64, limit1: f64, limit2: f64) -> bool {
+        tp < entry && entry < limit1 && limit1 < limit2 && limit2 < sl
     }
 }
 

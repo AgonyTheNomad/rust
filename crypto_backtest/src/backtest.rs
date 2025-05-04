@@ -115,6 +115,7 @@ pub struct Backtester {
     stats: StatsTracker,
     metrics: MetricsCalculator,
     verbose: bool,
+    ignore_stop_loss: bool, // New flag to control stop loss behavior
 }
 
 impl Backtester {
@@ -125,12 +126,26 @@ impl Backtester {
             stats: StatsTracker::new(),
             metrics: MetricsCalculator::new(initial_balance),
             verbose: false,
+            ignore_stop_loss: false, // Default to using stop losses
+        }
+    }
+
+    // New method to enable/disable stop losses
+    pub fn set_ignore_stop_loss(&mut self, ignore: bool) {
+        self.ignore_stop_loss = ignore;
+        if self.verbose {
+            println!("Stop loss execution is now {}", if ignore { "DISABLED" } else { "ENABLED" });
         }
     }
 
     pub fn set_verbose(&mut self, v: bool) {
         self.verbose = v;
         self.strategy.set_verbose(v);
+    }
+    
+    // Get a reference to the stats tracker
+    pub fn stats(&self) -> &StatsTracker {
+        &self.stats
     }
 
     pub fn run(&mut self, candles: &[Candle]) -> Result<BacktestResults, Box<dyn std::error::Error>> {
@@ -247,6 +262,7 @@ impl Backtester {
             && candle.low <= position.limit1_price.unwrap_or(f64::MAX)
         {
             position.limit1_hit = true;
+            position.limit1_time = Some(candle.time.clone()); // Record when limit1 was hit
             // **scale in** at limit1_price
             if let Some(fill) = position.limit1_price {
                 let old_sz  = position.size;
@@ -272,6 +288,7 @@ impl Backtester {
             && candle.low <= position.limit2_price.unwrap_or(f64::MAX)
         {
             position.limit2_hit = true;
+            position.limit2_time = Some(candle.time.clone()); // Record when limit2 was hit
             if let Some(fill2) = position.limit2_price {
                 let old_sz  = position.size;
                 let add_sz  = position.limit2_size;
@@ -295,6 +312,7 @@ impl Backtester {
             && candle.high >= position.limit1_price.unwrap_or(f64::MIN)
         {
             position.limit1_hit = true;
+            position.limit1_time = Some(candle.time.clone()); // Record when limit1 was hit
             if let Some(fill) = position.limit1_price {
                 let old_sz  = position.size;
                 let add_sz  = position.limit1_size;
@@ -318,6 +336,7 @@ impl Backtester {
             && candle.high >= position.limit2_price.unwrap_or(f64::MIN)
         {
             position.limit2_hit = true;
+            position.limit2_time = Some(candle.time.clone()); // Record when limit2 was hit
             if let Some(fill2) = position.limit2_price {
                 let old_sz  = position.size;
                 let add_sz  = position.limit2_size;
@@ -336,18 +355,24 @@ impl Backtester {
         }
 
         // ─── FINAL EXIT ──────────────────────────────────────────────────────
+        // Take profit hits are always checked
         if position.position_type == PositionType::Long && candle.high >= position.take_profit {
             return Some(("TP".into(), position.take_profit, "hit".into()));
-        }
-        if position.position_type == PositionType::Long && candle.low  <= position.stop_loss {
-            return Some(("SL".into(), position.stop_loss,  "hit".into()));
         }
         if position.position_type == PositionType::Short && candle.low <= position.take_profit {
             return Some(("TP".into(), position.take_profit, "hit".into()));
         }
-        if position.position_type == PositionType::Short && candle.high >= position.stop_loss {
-            return Some(("SL".into(), position.stop_loss,  "hit".into()));
+        
+        // Stop loss hits are only checked if ignore_stop_loss is false
+        if !self.ignore_stop_loss {
+            if position.position_type == PositionType::Long && candle.low <= position.stop_loss {
+                return Some(("SL".into(), position.stop_loss, "hit".into()));
+            }
+            if position.position_type == PositionType::Short && candle.high >= position.stop_loss {
+                return Some(("SL".into(), position.stop_loss, "hit".into()));
+            }
         }
+        
         None
     }
 }

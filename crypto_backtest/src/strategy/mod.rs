@@ -4,13 +4,8 @@ use std::collections::{VecDeque, HashMap};
 use serde::{Deserialize, Serialize};
 use anyhow::{Result, anyhow};
 use log::*;
-// Remove unused import
-// use chrono::Utc;
 
-// Remove unused imports for Position and PositionStatus
 use crate::models::{Candle, PositionType, Signal, Account}; 
-// Remove unused import
-// use crate::risk::position_calculator::calculate_positions;
 use crate::indicators::fibonacci::FibonacciLevels;
 use crate::indicators::pivot_points::PivotPoints;
 use crate::models::{Position, PositionStatus};
@@ -233,7 +228,8 @@ impl Strategy {
                     println!("=============================");
                 }
                 
-                if let Some(levels) = self.calculate_long_levels(
+                // Use the Fibonacci module to calculate levels
+                if let Some(levels) = self.fib.calculate_long_levels(
                     self.prev_pivot_high.unwrap(),
                     self.prev_pivot_low.unwrap(),
                 ) {
@@ -287,7 +283,8 @@ impl Strategy {
                     println!("=============================");
                 }
                 
-                if let Some(levels) = self.calculate_short_levels(
+                // Use the Fibonacci module to calculate levels
+                if let Some(levels) = self.fib.calculate_short_levels(
                     self.prev_pivot_high.unwrap(),
                     self.prev_pivot_low.unwrap(),
                 ) {
@@ -455,11 +452,9 @@ impl Strategy {
                 },
             };
             
-            // Fix unused variable warning by using underscore prefix
             if let Some(_price) = triggered_price {
                 // Order triggered - modify the signal to indicate it's been triggered
                 let mut triggered_signal = order.signal.clone();
-                // Fixed: Now using Some() to wrap the String value
                 triggered_signal.status = Some("Triggered".to_string());
                 
                 triggered.push(triggered_signal);
@@ -502,99 +497,14 @@ impl Strategy {
             .collect()
     }
     
-    // Improved implementation of level calculation with proper limit order placement
-    fn calculate_long_levels(&self, prev_high: f64, prev_low: f64) -> Option<crate::indicators::fibonacci::FibLevels> {
-        let range = prev_high - prev_low;
-        if range < self.config.fib_threshold {
-            return None;
-        }
-    
-        // Calculate the main price levels
-        let entry_price = prev_low + self.config.fib_initial * range;
-        let take_profit = prev_low + self.config.fib_tp * range; // Use Fibonacci extension
-        let stop_loss = prev_low - self.config.fib_sl * range; // Set stop loss below the low
-        
-        // Calculate limit prices directly from pivot points
-        let limit1 = prev_low + self.config.fib_limit1 * range;
-        let limit2 = prev_low + self.config.fib_limit2 * range;
-        
-        if self.verbose {
-            println!("LONG POSITION LEVELS (USING PIVOT POINTS):");
-            println!("  Price Range: {:.2} (from {:.2} to {:.2})", range, prev_low, prev_high);
-            println!("  Entry: {:.2}", entry_price);
-            println!("  Take Profit: {:.2}", take_profit);
-            println!("  Stop Loss: {:.2}", stop_loss);
-            println!("  Limit1: {:.2}", limit1);
-            println!("  Limit2: {:.2}", limit2);
-            
-            // Validate the order of price levels
-            if !(stop_loss < limit2 && limit2 < limit1 && limit1 < entry_price && entry_price < take_profit) {
-                println!("WARNING: Invalid price order for long position!");
-            }
-        }
-    
-        Some(crate::indicators::fibonacci::FibLevels {
-            entry_price,
-            take_profit,
-            stop_loss,
-            limit1,
-            limit2,
-        })
-    }
-    
-    fn calculate_short_levels(&self, prev_high: f64, prev_low: f64) -> Option<crate::indicators::fibonacci::FibLevels> {
-        let range = prev_high - prev_low;
-        if range < self.config.fib_threshold {
-            return None;
-        }
-    
-        // Calculate the main price levels
-        let entry_price = prev_high - self.config.fib_initial * range;
-        let take_profit = prev_high - self.config.fib_tp * range; // Use Fibonacci extension downward
-        let stop_loss = prev_high + self.config.fib_sl * range; // Set stop loss above the high
-        
-        // Calculate limit prices directly from pivot points
-        let limit1 = prev_high - self.config.fib_limit1 * range; 
-        let limit2 = prev_high - self.config.fib_limit2 * range;
-        
-        if self.verbose {
-            println!("SHORT POSITION LEVELS (USING PIVOT POINTS):");
-            println!("  Price Range: {:.2} (from {:.2} to {:.2})", range, prev_low, prev_high);
-            println!("  Entry: {:.2}", entry_price);
-            println!("  Take Profit: {:.2}", take_profit);
-            println!("  Stop Loss: {:.2}", stop_loss);
-            println!("  Limit1: {:.2}", limit1);
-            println!("  Limit2: {:.2}", limit2);
-            
-            // Validate the order of price levels
-            // instead of stop > limit2 > limit1 > entry > tp
-            if !(stop_loss > limit1
-                && limit1    > limit2
-                && limit2    > entry_price
-                && entry_price > take_profit)
-            {
-                println!("WARNING: Invalid price order for short position!");
-            }
- 
-        }
-    
-        Some(crate::indicators::fibonacci::FibLevels {
-            entry_price,
-            take_profit,
-            stop_loss,
-            limit1,
-            limit2,
-        })
-    }
-    
-    // Here's the fixed create_scaled_position method
+    // Updated version of create_scaled_position that uses the Fibonacci module
     pub fn create_scaled_position(
         &self,
         signal: &Signal,
         account_size: f64,
         risk: f64,
     ) -> Result<Position> {
-        // 0) Debug: print signal details
+        // Debug output for signal details
         if self.verbose {
             println!("POSITION CREATION FROM SIGNAL");
             println!("Signal Details:");
@@ -616,7 +526,7 @@ impl Strategy {
             }
         }
 
-        // 1) Extract pivots from signal.reason ("Pivot high: XXX, Pivot low: YYY")
+        // Extract pivots from signal.reason ("Pivot high: XXX, Pivot low: YYY")
         let pivots = signal
             .reason
             .split(',')
@@ -642,7 +552,7 @@ impl Strategy {
             (0.0, 0.0)
         };
 
-        // 2) Compute pivot-range, reject too-small moves
+        // Calculate range and reject too-small moves
         let range = prev_high - prev_low;
         if range < self.config.fib_threshold {
             if self.verbose {
@@ -654,41 +564,24 @@ impl Strategy {
             return Err(anyhow!("Pivot range below threshold"));
         }
 
-        // 3) Main levels (all based on pivot-range)
-        let entry_price = match signal.position_type {
-            PositionType::Long => prev_low + self.config.fib_initial * range,
-            PositionType::Short => prev_high - self.config.fib_initial * range,
-        };
-        let take_profit = match signal.position_type {
-            PositionType::Long => prev_high + self.config.fib_tp * range,
-            PositionType::Short => prev_low - self.config.fib_tp * range,
-        };
-        let stop_loss = match signal.position_type {
-            PositionType::Long => prev_low - self.config.fib_sl * range,
-            PositionType::Short => prev_high + self.config.fib_sl * range,
-        };
-
-        // 4) Pivot-range based limits:
-        //    For a SHORT we want limit2 (farthest) = prev_high - fib_limit1 * range,
-        //        and limit1 (closer) = prev_high - fib_limit2 * range.
-        //    For a LONG we do the mirror: limit2 = prev_low + fib_limit1 * range, etc.
-        let (limit1_price, limit2_price) = match signal.position_type {
+        // Get Fibonacci levels from the specialized calculator
+        let fib_levels = match signal.position_type {
             PositionType::Long => {
-                let l2 = prev_low + self.config.fib_limit1 * range;
-                let l1 = prev_low + self.config.fib_limit2 * range;
-                (l1, l2)
-            }
+                // Use Fibonacci module to calculate levels
+                self.fib.calculate_long_levels(prev_high, prev_low)
+                    .ok_or_else(|| anyhow!("Invalid Fibonacci levels for long position"))?
+            },
             PositionType::Short => {
-                let l2 = prev_high - self.config.fib_limit1 * range;
-                let l1 = prev_high - self.config.fib_limit2 * range;
-                (l1, l2)
-            }
+                // Use Fibonacci module to calculate levels
+                self.fib.calculate_short_levels(prev_high, prev_low)
+                    .ok_or_else(|| anyhow!("Invalid Fibonacci levels for short position"))?
+            },
         };
 
-        // 5) Verbose debug print of all levels
+        // Debug output for calculated levels
         if self.verbose {
             println!(
-                "{} POSITION LEVELS (USING PIVOT POINTS):",
+                "{} POSITION LEVELS (CALCULATED BY FIBONACCI MODULE):",
                 if matches!(signal.position_type, PositionType::Long) {
                     "LONG"
                 } else {
@@ -698,30 +591,14 @@ impl Strategy {
             println!("  Pivot High: {:.2}", prev_high);
             println!("  Pivot Low:  {:.2}", prev_low);
             println!("  Price Range: {:.2}", range);
-            println!("  Entry:       {:.2}", entry_price);
-            println!("  Take Profit: {:.2}", take_profit);
-            println!("  Stop Loss:   {:.2}", stop_loss);
-            println!("  Limit1:      {:.2}", limit1_price);
-            println!("  Limit2:      {:.2}", limit2_price);
-
-            // enforce correct ordering
-            let ok = if matches!(signal.position_type, PositionType::Long) {
-                stop_loss < limit2_price
-                    && limit2_price < limit1_price
-                    && limit1_price < entry_price
-                    && entry_price < take_profit
-            } else {
-                stop_loss > limit2_price
-                    && limit2_price > limit1_price
-                    && limit1_price > entry_price
-                    && entry_price > take_profit
-            };
-            if !ok {
-                println!("WARNING: Invalid price order for {:?} position!", signal.position_type);
-            }
+            println!("  Entry:       {:.2}", fib_levels.entry_price);
+            println!("  Take Profit: {:.2}", fib_levels.take_profit);
+            println!("  Stop Loss:   {:.2}", fib_levels.stop_loss);
+            println!("  Limit1:      {:.2}", fib_levels.limit1);
+            println!("  Limit2:      {:.2}", fib_levels.limit2);
         }
 
-        // 6) Size the position & get limit sizes
+        // Prepare for position sizing
         let risk_params = RiskParameters {
             max_risk_per_trade: risk,
             max_position_size: 10.0,
@@ -742,34 +619,34 @@ impl Strategy {
         // Calculate position scale using risk manager
         let sizing = risk_manager.calculate_positions_with_risk(
             &account,
-            entry_price,
-            take_profit,
-            stop_loss,
-            limit1_price,
-            limit2_price,
+            fib_levels.entry_price,
+            fib_levels.take_profit,
+            fib_levels.stop_loss,
+            fib_levels.limit1,
+            fib_levels.limit2,
             self.asset_config.leverage,
             signal.position_type.clone(),
         )?;
 
-        // 7) Construct the Position
+        // Construct the Position
         let position = Position {
             id: uuid::Uuid::new_v4().to_string(),
             symbol: signal.symbol.clone(),
             entry_time: chrono::Utc::now().to_string(),
-            entry_price,
+            entry_price: fib_levels.entry_price,
             size: sizing.initial_position_size,
-            stop_loss,
-            take_profit,
+            stop_loss: fib_levels.stop_loss,
+            take_profit: fib_levels.take_profit,
             position_type: signal.position_type.clone(),
             risk_percent: sizing.final_risk,
-            margin_used: (sizing.initial_position_size * entry_price) / self.asset_config.leverage,
+            margin_used: (sizing.initial_position_size * fib_levels.entry_price) / self.asset_config.leverage,
             status: if signal.status.as_deref() == Some("Triggered") {
                 PositionStatus::Triggered
             } else {
                 PositionStatus::Pending
             },
-            limit1_price: Some(limit1_price),
-            limit2_price: Some(limit2_price),
+            limit1_price: Some(fib_levels.limit1),
+            limit2_price: Some(fib_levels.limit2),
             limit1_hit: false,
             limit2_hit: false,
             limit1_size: sizing.limit1_position_size,
@@ -786,8 +663,20 @@ impl Strategy {
             new_tp: None,
         };
 
+        // Final validation
         if self.verbose {
-            println!("FINAL POSITION VALIDATION: {:?}", position);
+            println!("FINAL POSITION VALIDATION:");
+            println!("  Entry Price: ${:.2}", position.entry_price);
+            println!("  Take Profit: ${:.2}", position.take_profit);
+            println!("  Stop Loss: ${:.2}", position.stop_loss);
+            println!("  Limit1: ${:.2}", position.limit1_price.unwrap_or(0.0));
+            println!("  Limit2: ${:.2}", position.limit2_price.unwrap_or(0.0));
+            println!("  Initial Size: {:.8}", position.size);
+            println!("  Limit1 Size: {:.8}", position.limit1_size);
+            println!("  Limit2 Size: {:.8}", position.limit2_size);
+            println!("  Risk Percent: {:.2}%", position.risk_percent * 100.0);
+            println!("  New TP1: ${:.2}", position.new_tp1.unwrap_or(0.0));
+            println!("  New TP2: ${:.2}", position.new_tp2.unwrap_or(0.0));
         }
 
         Ok(position)
