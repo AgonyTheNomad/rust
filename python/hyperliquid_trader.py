@@ -10,6 +10,7 @@ import asyncio
 import argparse
 import logging
 from pathlib import Path
+from dotenv import load_dotenv
 
 from trading.trader import HyperliquidTrader
 
@@ -60,6 +61,9 @@ def parse_args():
 
 async def main():
     """Main function"""
+    # Load environment variables
+    load_dotenv()
+    
     logger.info("Starting Hyperliquid Trader - Modular Version")
     args = parse_args()
     

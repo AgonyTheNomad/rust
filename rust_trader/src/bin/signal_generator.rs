@@ -176,7 +176,7 @@ async fn main() -> Result<()> {
     let mut total_signals = 0;
     
     // Main loop - run continuously
-    let mut interval = time::interval(StdDuration::from_secs(args.interval));
+    let mut interval = time::interval(StdDuration::from_secs(1));
     
     loop {
         interval.tick().await;
@@ -221,15 +221,13 @@ async fn main() -> Result<()> {
                     let signals = strategy.analyze_candle(candle)?;
                     
                     // Output any signals
-                    if !signals.is_empty() {
-                        for signal in &signals {
-                            match signal_manager.write_signal(signal) {
-                                Ok(_) => {
-                                    total_signals += 1;
-                                },
-                                Err(e) => {
-                                    error!("Error writing signal file: {}", e);
-                                }
+                    for signal in &signals {
+                        match signal_manager.write_signal(signal, Some(position)) {
+                            Ok(_) => {
+                                total_signals += 1;
+                            },
+                            Err(e) => {
+                                error!("Error writing signal file: {}", e);
                             }
                         }
                     }
