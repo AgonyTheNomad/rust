@@ -203,7 +203,7 @@ impl Backtester {
                             risk_percent:  pos.risk_percent,
                             profit_factor: if pnl>0.0 { pnl/(pos.entry_price*pos.size*pos.risk_percent) } else { 0.0 },
                             margin_used:   pos.margin_used,
-                            fees:          0.0,
+                            fees:          0.000144,
                             slippage:      0.0,
                             stop_loss:     pos.stop_loss,
                             take_profit:   pos.take_profit,

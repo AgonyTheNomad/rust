@@ -76,7 +76,7 @@ impl MetricsCalculator {
         let mut max_leverage: f64 = 0.0;  // Explicitly type as f64
         let mut total_position_size = 0.0;
         let mut max_position_size: f64 = 0.0;  // Explicitly type as f64
-        let mut total_fees = 0.0;
+        let mut total_fees = 0.000144;
         let mut total_slippage = 0.0;
         let total_duration = 0i64;
 
@@ -424,7 +424,7 @@ mod tests {
                 risk_percent: 1.0,
                 profit_factor: 2.0,
                 margin_used: 5.0,
-                fees: 0.0,
+                fees: 0.000144,
                 slippage: 0.0,
             },
             Trade {
@@ -438,7 +438,7 @@ mod tests {
                 risk_percent: 1.0,
                 profit_factor: 0.0,
                 margin_used: 5.0,
-                fees: 0.0,
+                fees: 0.000144,
                 slippage: 0.0,
             },
         ];
@@ -488,7 +488,7 @@ mod tests {
             risk_percent: 1.0,
             profit_factor: 2.0,
             margin_used: 5.0,
-            fees: 0.0,
+            fees: 0.000144,
             slippage: 0.0,
         });
 
@@ -540,7 +540,7 @@ mod tests {
                 risk_percent: 1.0,
                 profit_factor: 2.0,
                 margin_used: 5.0,
-                fees: 0.0,
+                fees: 0.000144,
                 slippage: 0.0,
             },
             Trade {
@@ -554,7 +554,7 @@ mod tests {
                 risk_percent: 1.0,
                 profit_factor: 0.0,
                 margin_used: 5.0,
-                fees: 0.0,
+                fees: 0.000144,
                 slippage: 0.0,
             },
         ];

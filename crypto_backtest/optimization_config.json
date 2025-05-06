@@ -12,15 +12,16 @@
   "fib_limit2": 0.786,
   "min_signal_strength": 0.5,
   "drop_threshold": 10.0,
-  "lookback_periods": [2, 3, 5, 8, 13],
-  "initial_levels": [0.382, 0.5, 0.618],
-  "tp_levels": [0, 0.618, 1.0, 1.414, 1.618],
+  "lookback_periods": [2, 3, 5, 8, 13, 21, 34],
+  "initial_levels": [0.236, 0.382, 0.5, 0.618, 0.786],
+  "tp_levels": [0, 0.618, 1.0, 1.414, 1.618, 2.0, 2.618, 3.618],
   "sl_levels": [1.618, 2.618, 3.236],
-  "limit1_levels": [0, 0.618, 1.618],
-  "limit2_levels": [0.618, 1.618, 2.618],
-  "threshold_factors": [0.75, 1.0, 1.25],
+  "limit1_levels": [0, 0.5, 0.618, 0.786, 1.618],
+  "limit2_levels": [0.5, 0.618, 0.786, 1.0, 1.618, 2.618],
+  "threshold_factors": [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
   "data_dir": "data",
   "output_dir": "results",
   "parallel": true,
-  "num_best_results": 20
+  "num_best_results": 20,
+  "fee_rate": 0.000144
 }

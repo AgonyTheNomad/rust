@@ -1,95 +1,98 @@
 BACKTEST RESULTS SUMMARY:
-Total trades: 12
+Total trades: 16
 Win rate: 100.00%
 Profit factor: inf
-Total profit: $400.89
-Return: 4.01%
+Total profit: $1169.53
+Return: 11.70%
 Max drawdown: 0.00%
 Sharpe ratio: 0.00
 
 DETAILS OF LAST 5 TRADES:
 Trade #1
-  Entry Time: 2025-05-01T09:58:00Z
-  Exit Time: 2025-05-01T13:23:00Z
-  Type: Long
-  Entry Price: $95586.43
-  Exit Price: $96601.57
-  Size: 0.03433142
-  P&L: $34.85
-  Risk %: 2.00%
-  Profit Factor: 0.53
-  Stop Loss: $94224.43
-  Take Profit: $96601.57
-  Limit1 Price: $95136.97
-  Limit2 Price: $94687.51
+  Entry Time: 2025-05-04T01:55:00Z
+  Exit Time: 2025-05-05T01:30:00Z
+  Type: Short
+  Entry Price: $96084.08
+  Exit Price: $94111.92
+  Size: 0.09107849
+  P&L: $179.62
+  Risk %: 10.00%
+  Profit Factor: 0.21
+  Stop Loss: $98730.08
+  Take Profit: $94111.92
+  Limit1 Price: $96957.26
+  Limit2 Price: $97830.44
   Limit1 Hit: false
   Limit2 Hit: false
 
 Trade #2
-  Entry Time: 2025-05-01T09:46:00Z
-  Exit Time: 2025-05-01T09:50:00Z
-  Type: Long
-  Entry Price: $95458.08
-  Exit Price: $95721.92
-  Size: 0.08037311
-  P&L: $21.21
-  Risk %: 1.00%
-  Profit Factor: 0.28
-  Stop Loss: $95104.08
-  Take Profit: $95721.92
-  Limit1 Price: $95341.26
-  Limit2 Price: $95224.44
+  Entry Time: 2025-05-03T08:53:00Z
+  Exit Time: 2025-05-04T01:43:00Z
+  Type: Short
+  Entry Price: $96328.66
+  Exit Price: $95700.34
+  Size: 0.12188819
+  P&L: $76.58
+  Risk %: 4.00%
+  Profit Factor: 0.16
+  Stop Loss: $97171.66
+  Take Profit: $95700.34
+  Limit1 Price: $96606.85
+  Limit2 Price: $96885.04
   Limit1 Hit: false
   Limit2 Hit: false
 
 Trade #3
-  Entry Time: 2025-05-01T06:43:00Z
-  Exit Time: 2025-05-01T09:35:00Z
+  Entry Time: 2025-05-03T04:36:00Z
+  Exit Time: 2025-05-03T07:36:00Z
   Type: Long
-  Entry Price: $94868.99
-  Exit Price: $95466.01
-  Size: 0.06069522
-  P&L: $36.24
-  Risk %: 2.00%
-  Profit Factor: 0.31
-  Stop Loss: $94067.99
-  Take Profit: $95466.01
-  Limit1 Price: $94604.66
-  Limit2 Price: $94340.33
-  Limit1 Hit: false
-  Limit2 Hit: false
-
-Trade #4
-  Entry Time: 2025-05-01T04:05:00Z
-  Exit Time: 2025-05-01T06:23:00Z
-  Type: Short
-  Entry Price: $95087.78
-  Exit Price: $95029.92
-  Size: 0.83793398
-  P&L: $48.49
-  Risk %: 2.00%
-  Profit Factor: 0.03
-  Stop Loss: $95375.09
-  Take Profit: $95029.92
-  Limit1 Price: $95007.26
-  Limit2 Price: $95188.43
+  Entry Price: $96292.12
+  Exit Price: $96350.13
+  Size: 1.31194072
+  P&L: $76.11
+  Risk %: 3.00%
+  Profit Factor: 0.02
+  Stop Loss: $96001.67
+  Take Profit: $96350.13
+  Limit1 Price: $96373.52
+  Limit2 Price: $96190.37
   Limit1 Hit: true
   Limit2 Hit: true
+    ↳ Limit1 was hit at 2025-05-03T06:02:00Z → TP updated to $96350.13
+
+Trade #4
+  Entry Time: 2025-05-03T02:30:00Z
+  Exit Time: 2025-05-03T04:23:00Z
+  Type: Long
+  Entry Price: $96464.46
+  Exit Price: $96512.08
+  Size: 1.05881314
+  P&L: $50.42
+  Risk %: 2.00%
+  Profit Factor: 0.02
+  Stop Loss: $96217.97
+  Take Profit: $96512.08
+  Limit1 Price: $96533.54
+  Limit2 Price: $96378.11
+  Limit1 Hit: true
+  Limit2 Hit: true
+    ↳ Limit1 was hit at 2025-05-03T02:45:00Z → TP updated to $96512.08
 
 Trade #5
-  Entry Time: 2025-05-01T03:06:00Z
-  Exit Time: 2025-05-01T03:13:00Z
+  Entry Time: 2025-05-03T01:00:00Z
+  Exit Time: 2025-05-03T02:07:00Z
   Type: Long
-  Entry Price: $94861.82
-  Exit Price: $94915.27
-  Size: 0.32134819
-  P&L: $17.18
-  Risk %: 1.00%
-  Profit Factor: 0.06
-  Stop Loss: $94597.69
-  Take Profit: $94915.27
-  Limit1 Price: $94832.86
-  Limit2 Price: $94717.03
+  Entry Price: $96572.40
+  Exit Price: $96647.93
+  Size: 0.46903806
+  P&L: $35.43
+  Risk %: 2.00%
+  Profit Factor: 0.04
+  Stop Loss: $96217.97
+  Take Profit: $96647.93
+  Limit1 Price: $96533.54
+  Limit2 Price: $96378.11
   Limit1 Hit: true
   Limit2 Hit: false
+    ↳ Limit1 was hit at 2025-05-03T01:15:00Z → TP updated to $96647.93
 
