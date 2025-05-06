@@ -103,7 +103,8 @@ pub struct Position {
     pub limit2_order_id: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+// Add to src/models/mod.rs
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Trade {
     pub id: String,
     pub position_id: String,
@@ -121,6 +122,47 @@ pub struct Trade {
     pub fees: f64,
     pub slippage: f64,
     pub exit_reason: ExitReason,
+    // Add these new fields
+    pub limit1_price: Option<f64>,
+    pub limit2_price: Option<f64>,
+    pub limit1_hit: bool,
+    pub limit2_hit: bool,
+    pub tp1_price: Option<f64>,
+    pub tp2_price: Option<f64>,
+}
+
+impl Trade {
+    pub fn from_position(position: &Position, exit_price: f64, exit_reason: ExitReason) -> Self {
+        Self {
+            id: uuid::Uuid::new_v4().to_string(),
+            position_id: position.id.clone(),
+            symbol: position.symbol.clone(),
+            entry_time: position.entry_time,
+            exit_time: Utc::now(),
+            position_type: format!("{:?}", position.position_type),
+            entry_price: position.entry_price,
+            exit_price,
+            size: position.size,
+            pnl: position.current_pnl(exit_price),
+            risk_percent: position.risk_percent,
+            profit_factor: if position.current_pnl(exit_price) > 0.0 { 
+                position.current_pnl(exit_price) / (position.size * position.entry_price) 
+            } else { 
+                0.0 
+            },
+            margin_used: position.margin_used,
+            fees: 0.0,
+            slippage: 0.0,
+            exit_reason,
+            // Add limit and TP levels
+            limit1_price: position.limit1_price,
+            limit2_price: position.limit2_price,
+            limit1_hit: position.limit1_hit,
+            limit2_hit: position.limit2_hit,
+            tp1_price: position.new_tp1,
+            tp2_price: position.new_tp2,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]

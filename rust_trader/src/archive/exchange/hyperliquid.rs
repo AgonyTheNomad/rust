@@ -680,9 +680,16 @@ impl Exchange for HyperliquidExchange {
             risk_percent: position.risk_percent,
             profit_factor: if pnl > 0.0 { pnl / (position.size * position.entry_price) } else { 0.0 },
             margin_used: position.margin_used,
-            fees: 0.0, // Could calculate based on position size & exchange fee rate
+            fees: 0.0,
             slippage: 0.0,
             exit_reason: ExitReason::ManualClose,
+            // Add these new fields
+            limit1_price: position.limit1_price,
+            limit2_price: position.limit2_price,
+            limit1_hit: position.limit1_hit,
+            limit2_hit: position.limit2_hit,
+            tp1_price: position.new_tp1,
+            tp2_price: position.new_tp2,
         };
         
         // Log trade to InfluxDB
@@ -780,8 +787,8 @@ impl Exchange for HyperliquidExchange {
         Ok(updated_position)
     }
     
-    fn convert_position_to_signal(&self, position: &Position) -> Result<crate::models::Signal> {
-        Ok(crate::models::Signal {
+    fn convert_position_to_signal(&self, position: &Position) -> Result<(crate::models::Signal, Option<(Option<f64>, Option<f64>, f64, f64, Option<f64>, Option<f64>)>)> {
+        let signal = crate::models::Signal {
             id: uuid::Uuid::new_v4().to_string(),
             symbol: position.symbol.clone(),
             timestamp: Utc::now(),
@@ -792,5 +799,18 @@ impl Exchange for HyperliquidExchange {
             take_profit: position.take_profit,
             stop_loss: position.stop_loss,
             processed: true,
-        })
+        };
+        
+        // Create position data tuple for limits and TP levels
+        let position_data = Some((
+            position.limit1_price,
+            position.limit2_price,
+            position.limit1_size,
+            position.limit2_size,
+            position.new_tp1,
+            position.new_tp2
+        ));
+        
+        Ok((signal, position_data))
     }
+}

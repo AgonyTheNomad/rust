@@ -325,16 +325,43 @@ impl InfluxDBClient {
         Ok(())
     }
     
+    // Update in src/influxdb/mod.rs
     pub async fn write_trade(&self, trade: &crate::models::Trade) -> Result<()> {
         let write_url = format!("{}/api/v2/write", self.config.url);
+        
+        // Format limit and TP tags
+        let limit1_tag = if let Some(price) = trade.limit1_price {
+            format!("limit1_price={},limit1_hit={},", price, trade.limit1_hit)
+        } else {
+            String::new()
+        };
+        
+        let limit2_tag = if let Some(price) = trade.limit2_price {
+            format!("limit2_price={},limit2_hit={},", price, trade.limit2_hit)
+        } else {
+            String::new()
+        };
+        
+        let tp1_tag = if let Some(price) = trade.tp1_price {
+            format!("tp1_price={},", price)
+        } else {
+            String::new()
+        };
+        
+        let tp2_tag = if let Some(price) = trade.tp2_price {
+            format!("tp2_price={},", price)
+        } else {
+            String::new()
+        };
         
         // Create Line Protocol data
         let timestamp_ns = trade.exit_time.timestamp_nanos();
         let line_protocol = format!(
-            "trades,symbol={},type={},exit_reason={} entry_price={},exit_price={},size={},pnl={},fees={} {}",
+            "trades,symbol={},type={},exit_reason={} entry_price={},exit_price={},size={},pnl={},fees={},{}{}{}{} {}",
             trade.symbol, trade.position_type, 
             format!("{:?}", trade.exit_reason),
             trade.entry_price, trade.exit_price, trade.size, trade.pnl, trade.fees,
+            limit1_tag, limit2_tag, tp1_tag, tp2_tag,
             timestamp_ns
         );
         
@@ -350,7 +377,7 @@ impl InfluxDBClient {
             .send()
             .await
             .context("Failed to send trade data to InfluxDB")?;
-            
+                
         if !response.status().is_success() {
             let status = response.status();
             let error_text = response.text().await?;

@@ -408,63 +408,78 @@ async fn process_symbol(
         state.last_update.insert(symbol.to_string(), last_candle_time);
     }
     
-    // Set up interval for regular processing
-    let mut interval = time::interval(StdDuration::from_secs(config.refresh_interval));
+    // Set up interval for regular processing - check every second
+    let mut interval = time::interval(StdDuration::from_secs(1));
     
     // Main processing loop
     loop {
         interval.tick().await;
         
-        // Get new candles since last update
+        // Get current time
         let now = Utc::now();
-        let new_candles = influx_client.get_candles(symbol, &last_candle_time, &now).await?;
         
-        if !new_candles.is_empty() {
-            debug!("Got {} new candles for {}", new_candles.len(), symbol);
-            
-            // Update last candle time
-            if let Some(last_candle) = new_candles.last() {
-                last_candle_time = DateTime::parse_from_rfc3339(&last_candle.time)
-                    .map_err(|e| anyhow::anyhow!("Failed to parse candle time: {}", e))?
-                    .with_timezone(&Utc);
+        // Check if we're at 1 second past a minute boundary
+        if now.second() == 1 {
+            // We're at XX:XX:01, so process data up to XX:XX-1:59
+            let process_until = now
+                .with_second(0).unwrap() // Set seconds to 0
+                .checked_sub_signed(chrono::Duration::seconds(1)) // Go back 1 second to XX:XX-1:59
+                .unwrap_or(now);
                 
-                // Update state
-                {
-                    let mut state = trading_state.lock().await;
-                    state.last_update.insert(symbol.to_string(), last_candle_time);
+            debug!("Processing data at {}, for data until {}", 
+                  now.format("%H:%M:%S"),
+                  process_until.format("%H:%M:%S"));
+                  
+            // Get candles up to this cutoff time
+            let new_candles = influx_client.get_candles(symbol, &last_candle_time, &process_until).await?;
+            
+            if !new_candles.is_empty() {
+                debug!("Got {} new candles for {}", new_candles.len(), symbol);
+                
+                // Update last candle time
+                if let Some(last_candle) = new_candles.last() {
+                    last_candle_time = DateTime::parse_from_rfc3339(&last_candle.time)
+                        .map_err(|e| anyhow::anyhow!("Failed to parse candle time: {}", e))?
+                        .with_timezone(&Utc);
+                    
+                    // Update state
+                    {
+                        let mut state = trading_state.lock().await;
+                        state.last_update.insert(symbol.to_string(), last_candle_time);
+                    }
+                }
+                
+                // Process each new candle
+                for candle in &new_candles {
+                    process_candle(
+                        exchange.as_ref(),
+                        influx_client.clone(),
+                        Arc::clone(&risk_manager),
+                        Arc::clone(&trading_state),
+                        &mut strategy,
+                        symbol,
+                        candle,
+                        dry_run
+                    ).await?;
+                }
+                
+                // Append to our candle history
+                candles.extend_from_slice(&new_candles);
+                
+                // Trim history if needed
+                if candles.len() > config.max_candles {
+                    candles = candles.split_off(candles.len() - config.max_candles);
                 }
             }
             
-            // Process each new candle
-            for candle in &new_candles {
-                process_candle(
-                    exchange.as_ref(),
-                    influx_client.clone(),
-                    Arc::clone(&risk_manager),
-                    Arc::clone(&trading_state),
-                    &mut strategy,
-                    symbol,
-                    candle,
-                    dry_run
-                ).await?;
-            }
-            
-            // Append to our candle history
-            candles.extend_from_slice(&new_candles);
-            
-            // Trim history if needed
-            if candles.len() > config.max_candles {
-                candles = candles.split_off(candles.len() - config.max_candles);
-            }
+            // Check for open positions that might need updating
+            update_positions(
+                exchange.as_ref(),
+                Arc::clone(&trading_state),
+                symbol,
+                dry_run
+            ).await?;
         }
-        
-        // Check for open positions that might need updating
-        update_positions(
-            exchange.as_ref(),
-            Arc::clone(&trading_state),
-            symbol,
-            dry_run
-        ).await?;
     }
 }
 
@@ -791,7 +806,7 @@ async fn monitor_positions(config_path: PathBuf) -> Result<()> {
     info!("Starting position monitor with refresh interval of {} seconds", refresh_interval);
     
     // Set up interval for regular checks
-    let mut interval = time::interval(StdDuration::from_secs(refresh_interval));
+    let mut interval = time::interval(StdDuration::from_secs(1));
     
     // Main monitoring loop
     loop {

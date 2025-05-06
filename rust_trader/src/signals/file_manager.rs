@@ -26,17 +26,17 @@ impl SignalFileManager {
     }
 
     /// Write a signal to a JSON file
-    pub fn write_signal(&self, signal: &Signal) -> Result<String> {
+    pub fn write_signal(&self, signal: &Signal, position: Option<&Position>) -> Result<String> {
         // Create directory if it doesn't exist
         fs::create_dir_all(&self.output_dir)
             .context("Failed to create signal output directory")?;
-
+    
         // Format the filename
         let position_type_str = match signal.position_type {
             crate::models::PositionType::Long => "LONG",
             crate::models::PositionType::Short => "SHORT",
         };
-
+    
         let timestamp = signal.timestamp.timestamp_millis();
         let filename = format!(
             "{}_{}_{}_{}.json",
@@ -45,11 +45,11 @@ impl SignalFileManager {
             timestamp,
             signal.id.split('-').next().unwrap_or("signal")
         );
-
+    
         let file_path = Path::new(&self.output_dir).join(&filename);
-
-        // Create JSON with additional metadata
-        let signal_json = json!({
+    
+        // Create JSON with additional metadata, including limit levels and TPs if available
+        let mut signal_json = json!({
             "id": signal.id,
             "symbol": signal.symbol,
             "timestamp": signal.timestamp.to_rfc3339(),
@@ -66,7 +66,21 @@ impl SignalFileManager {
                 "test": false
             }
         });
-
+        
+        // Add limit and TP levels if position information is provided
+        if let Some(pos) = position {
+            let levels = json!({
+                "limit1_price": pos.limit1_price,
+                "limit2_price": pos.limit2_price,
+                "limit1_size": pos.limit1_size,
+                "limit2_size": pos.limit2_size,
+                "new_tp1": pos.new_tp1,
+                "new_tp2": pos.new_tp2
+            });
+            
+            signal_json["levels"] = levels;
+        }
+    
         // Write to file
         let mut file = File::create(&file_path)
             .context(format!("Failed to create signal file: {}", file_path.display()))?;
