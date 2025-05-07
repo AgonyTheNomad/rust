@@ -111,7 +111,7 @@ impl Strategy {
         Ok(())
     }
     
-    pub fn analyze_candle(&mut self, candle: &Candle) -> Result<Vec<Signal>> {
+    pub fn analyze_candle(&mut self, candle: &Candle) -> Result<Vec<(Signal, Position)>> {
         // Reset signal flags from previous runs
         self.long_signal = false;
         self.short_signal = false;
@@ -152,7 +152,7 @@ impl Strategy {
         self.generate_signals_from_detected_pivots();
         
         // Create and return signals if generated
-        let mut signals = Vec::new();
+        let mut signal_positions = Vec::new();
         
         if self.long_signal && self.prev_pivot_high.is_some() && self.prev_pivot_low.is_some() {
             if let Some(levels) = self.fib.calculate_long_levels(
@@ -172,7 +172,35 @@ impl Strategy {
                         strength,
                     );
                     
-                    signals.push(signal);
+                    // Create a position object with ONLY the price levels, not sizes
+                    let position = Position {
+                        id: uuid::Uuid::new_v4().to_string(),
+                        symbol: self.asset_config.name.clone(),
+                        entry_time: Utc::now(),
+                        entry_price: levels.entry_price,
+                        size: 0.0, // No default size - will be calculated elsewhere
+                        stop_loss: levels.stop_loss,
+                        take_profit: levels.take_profit,
+                        position_type: PositionType::Long,
+                        risk_percent: 0.0, // No default risk - will be calculated elsewhere
+                        margin_used: 0.0,
+                        status: PositionStatus::Pending,
+                        limit1_price: Some(levels.limit1),
+                        limit2_price: Some(levels.limit2),
+                        limit1_hit: false,
+                        limit2_hit: false,
+                        limit1_size: 0.0, // No default size for limit orders
+                        limit2_size: 0.0, // No default size for limit orders
+                        new_tp1: None,
+                        new_tp2: None,
+                        entry_order_id: None,
+                        tp_order_id: None,
+                        sl_order_id: None,
+                        limit1_order_id: None,
+                        limit2_order_id: None,
+                    };
+                    
+                    signal_positions.push((signal, position));
                     debug!("Generated LONG signal at {}: Entry={}, TP={}, SL={}, Strength={}",
                         candle.time, levels.entry_price, levels.take_profit, levels.stop_loss, strength);
                 }
@@ -198,7 +226,35 @@ impl Strategy {
                         strength,
                     );
                     
-                    signals.push(signal);
+                    // Create a position object with ONLY the price levels, not sizes
+                    let position = Position {
+                        id: uuid::Uuid::new_v4().to_string(),
+                        symbol: self.asset_config.name.clone(),
+                        entry_time: Utc::now(),
+                        entry_price: levels.entry_price,
+                        size:, // No default size - will be calculated elsewhere
+                        stop_loss: levels.stop_loss,
+                        take_profit: levels.take_profit,
+                        position_type: PositionType::Short,
+                        risk_percent: 0.0, // No default risk - will be calculated elsewhere 
+                        margin_used: 0.0,
+                        status: PositionStatus::Pending,
+                        limit1_price: Some(levels.limit1),
+                        limit2_price: Some(levels.limit2),
+                        limit1_hit: false,
+                        limit2_hit: false,
+                        limit1_size: 0.0, // No default size for limit orders
+                        limit2_size: 0.0, // No default size for limit orders
+                        new_tp1: None,
+                        new_tp2: None,
+                        entry_order_id: None,
+                        tp_order_id: None,
+                        sl_order_id: None,
+                        limit1_order_id: None,
+                        limit2_order_id: None,
+                    };
+                    
+                    signal_positions.push((signal, position));
                     debug!("Generated SHORT signal at {}: Entry={}, TP={}, SL={}, Strength={}",
                         candle.time, levels.entry_price, levels.take_profit, levels.stop_loss, strength);
                 }
@@ -206,7 +262,7 @@ impl Strategy {
             }
         }
         
-        Ok(signals)
+        Ok(signal_positions)
     }
     
     fn generate_signals(&mut self) {
