@@ -1,12 +1,12 @@
 // src/bin/trader.rs
 use anyhow::{Context, Result};
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, Duration, Utc, Timelike}; // Add Timelike trait
 use clap::{Parser, Subcommand};
 use log::*;
 use rust_trader::{
     exchange::{Exchange, ExchangeConfig, create_exchange},
     influxdb::{InfluxDBClient, InfluxDBConfig},
-    models::{Candle, Position, Signal, PositionStatus},
+    models::{Candle, Position, Signal, PositionStatus, PositionType},
     risk::{RiskManager, RiskParameters},
     setup_logging,
     strategy::{Strategy, StrategyConfig, AssetConfig},
@@ -361,6 +361,7 @@ impl TradingState {
 }
 
 // Process a single symbol
+// Process a single symbol
 async fn process_symbol(
     exchange: Arc<Box<dyn Exchange>>,
     influx_client: Arc<InfluxDBClient>,
@@ -408,81 +409,88 @@ async fn process_symbol(
         state.last_update.insert(symbol.to_string(), last_candle_time);
     }
     
-    // Set up interval for regular processing - check every second
-    let mut interval = time::interval(StdDuration::from_secs(1));
-    
-    // Main processing loop
+    // Main processing loop with optimized timing
     loop {
-        interval.tick().await;
-        
         // Get current time
         let now = Utc::now();
         
-        // Check if we're at 1 second past a minute boundary
-        if now.second() == 1 {
-            // We're at XX:XX:01, so process data up to XX:XX-1:59
-            let process_until = now
-                .with_second(0).unwrap() // Set seconds to 0
-                .checked_sub_signed(chrono::Duration::seconds(1)) // Go back 1 second to XX:XX-1:59
-                .unwrap_or(now);
+        // Calculate time to next processing point (XX:XX:01 of next minute or current minute)
+        let next_process_time = if now.second() < 1 {
+            // We're before XX:XX:01 in the current minute
+            now.with_second(1).unwrap()
+        } else {
+            // We're after XX:XX:01, wait until next minute
+            (now + chrono::Duration::minutes(1)).with_second(1).unwrap()
+        };
+        
+        // Calculate sleep duration
+        let sleep_duration = (next_process_time - now).to_std().unwrap_or(StdDuration::from_secs(1));
+        
+        // Sleep until exactly the next processing time
+        tokio::time::sleep(sleep_duration).await;
+        
+        // We're now at XX:XX:01, process the previous candle
+        let now = Utc::now();
+        let process_until = now
+            .with_second(0).unwrap() // Set seconds to 0
+            .checked_sub_signed(chrono::Duration::seconds(1)) // Go back 1 second to XX:XX-1:59
+            .unwrap_or(now);
                 
-            debug!("Processing data at {}, for data until {}", 
-                  now.format("%H:%M:%S"),
-                  process_until.format("%H:%M:%S"));
-                  
-            // Get candles up to this cutoff time
-            let new_candles = influx_client.get_candles(symbol, &last_candle_time, &process_until).await?;
+        debug!("Processing data at {}, for data until {}", 
+              now.format("%H:%M:%S"),
+              process_until.format("%H:%M:%S"));
+              
+        // Get candles up to this cutoff time
+        let new_candles = influx_client.get_candles(symbol, &last_candle_time, &process_until).await?;
+        
+        if !new_candles.is_empty() {
+            debug!("Got {} new candles for {}", new_candles.len(), symbol);
             
-            if !new_candles.is_empty() {
-                debug!("Got {} new candles for {}", new_candles.len(), symbol);
+            // Update last candle time
+            if let Some(last_candle) = new_candles.last() {
+                last_candle_time = DateTime::parse_from_rfc3339(&last_candle.time)
+                    .map_err(|e| anyhow::anyhow!("Failed to parse candle time: {}", e))?
+                    .with_timezone(&Utc);
                 
-                // Update last candle time
-                if let Some(last_candle) = new_candles.last() {
-                    last_candle_time = DateTime::parse_from_rfc3339(&last_candle.time)
-                        .map_err(|e| anyhow::anyhow!("Failed to parse candle time: {}", e))?
-                        .with_timezone(&Utc);
-                    
-                    // Update state
-                    {
-                        let mut state = trading_state.lock().await;
-                        state.last_update.insert(symbol.to_string(), last_candle_time);
-                    }
-                }
-                
-                // Process each new candle
-                for candle in &new_candles {
-                    process_candle(
-                        exchange.as_ref(),
-                        influx_client.clone(),
-                        Arc::clone(&risk_manager),
-                        Arc::clone(&trading_state),
-                        &mut strategy,
-                        symbol,
-                        candle,
-                        dry_run
-                    ).await?;
-                }
-                
-                // Append to our candle history
-                candles.extend_from_slice(&new_candles);
-                
-                // Trim history if needed
-                if candles.len() > config.max_candles {
-                    candles = candles.split_off(candles.len() - config.max_candles);
+                // Update state
+                {
+                    let mut state = trading_state.lock().await;
+                    state.last_update.insert(symbol.to_string(), last_candle_time);
                 }
             }
             
-            // Check for open positions that might need updating
-            update_positions(
-                exchange.as_ref(),
-                Arc::clone(&trading_state),
-                symbol,
-                dry_run
-            ).await?;
+            // Process each new candle
+            for candle in &new_candles {
+                process_candle(
+                    exchange.as_ref(),
+                    influx_client.clone(),
+                    Arc::clone(&risk_manager),
+                    Arc::clone(&trading_state),
+                    &mut strategy,
+                    symbol,
+                    candle,
+                    dry_run
+                ).await?;
+            }
+            
+            // Append to our candle history
+            candles.extend_from_slice(&new_candles);
+            
+            // Trim history if needed
+            if candles.len() > config.max_candles {
+                candles = candles.split_off(candles.len() - config.max_candles);
+            }
         }
+        
+        // Check for open positions that might need updating
+        update_positions(
+            exchange.as_ref(),
+            Arc::clone(&trading_state),
+            symbol,
+            dry_run
+        ).await?;
     }
 }
-
 // Process a single candle
 async fn process_candle(
     exchange: &Box<dyn Exchange>,
@@ -507,14 +515,14 @@ async fn process_candle(
     }
     
     // Analyze candle with strategy
-    let signals = strategy.analyze_candle(candle)?;
+    let signal_positions = strategy.analyze_candle(candle)?;
     
-    if !signals.is_empty() {
+    if !signal_positions.is_empty() {
         info!("Generated {} signals for {} from candle {}", 
-            signals.len(), symbol, candle.time);
+            signal_positions.len(), symbol, candle.time);
         
         // Process each signal
-        for signal in signals {
+        for (signal, position_template) in signal_positions {
             // Store signal
             {
                 let mut state = trading_state.lock().await;
@@ -554,13 +562,17 @@ async fn process_candle(
                         )?
                     };
                     
-                    // Create position object
-                    let position = create_position(
-                        symbol,
-                        signal,
-                        position_info.size,
-                        strategy.get_asset_config().leverage,
-                    );
+                    // Get risk percentage
+                    let max_risk_per_trade = {
+                        let rm = risk_manager.lock().await;
+                        rm.parameters.max_risk_per_trade
+                    };
+                    
+                    // Create position object using the template provided by the strategy
+                    let mut position = position_template.clone();
+                    position.size = position_info.size;
+                    position.risk_percent = max_risk_per_trade;
+                    position.margin_used = position_info.margin_required;
                     
                     // Open the position on the exchange
                     info!("Opening {:?} position for {} at {}: size = {}, SL = {}, TP = {}", 

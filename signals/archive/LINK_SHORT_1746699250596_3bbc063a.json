@@ -1,0 +1,33 @@
+{
+  "id": "3bbc063a-ab8d-4704-85d2-507d57fee11e",
+  "levels": {
+    "entry_price": 9.190895999999999,
+    "limit1_price": 22.308,
+    "limit1_size": 0.0,
+    "limit2_price": 26.561391999999998,
+    "limit2_size": 0.0,
+    "new_tp1": null,
+    "new_tp2": null,
+    "position_id": "eeca248a-c1a1-44a3-92c3-b2c9cdc11547",
+    "position_type": "Short",
+    "risk_percent": 0.0,
+    "size": 0.0,
+    "status": "Pending",
+    "stop_loss": 18.381792,
+    "take_profit": -9.190896
+  },
+  "metadata": {
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1746699250596
+  },
+  "position_type": "SHORT",
+  "price": 9.190895999999999,
+  "processed": false,
+  "reason": "Pivot high: 14.872, Pivot low: 0",
+  "stop_loss": 18.381792,
+  "strength": 0.85,
+  "symbol": "LINK",
+  "take_profit": -9.190896,
+  "timestamp": "2025-05-08T10:14:10.596400600+00:00"
+}

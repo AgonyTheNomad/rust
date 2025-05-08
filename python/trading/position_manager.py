@@ -7,6 +7,7 @@ Handles tracking and management of positions and orders.
 import time
 import logging
 import asyncio
+from pathlib import Path
 from typing import Dict, Set, Tuple, List, Any, Optional
 
 logger = logging.getLogger("hyperliquid_trader")
@@ -16,7 +17,7 @@ class PositionManager:
     Manages tracking and updating of positions and open orders.
     """
     
-    def __init__(self, info, exchange, address, max_positions=5):
+    def __init__(self, info, exchange, address, max_positions=5, signals_dir=None, open_dir=None, archive_dir=None):
         """
         Initialize the position manager.
         
@@ -30,11 +31,22 @@ class PositionManager:
             The wallet address
         max_positions : int
             Maximum number of allowed positions
+        signals_dir : Path or str
+            Directory for signal files
+        open_dir : Path or str
+            Directory for open signal files
+        archive_dir : Path or str
+            Directory for archived signal files
         """
         self.info = info
         self.exchange = exchange
         self.address = address
         self.max_positions = max_positions
+        
+        # Signal directories
+        self.signals_dir = Path(signals_dir) if signals_dir else None
+        self.open_dir = Path(open_dir) if open_dir else None
+        self.archive_dir = Path(archive_dir) if archive_dir else None
         
         # Trading state
         self.open_positions = {}
@@ -248,11 +260,34 @@ class PositionManager:
                     symbols_to_remove.append(symbol)
                     updated = True
             
-            # Remove filled or canceled orders from tracking
+            # Remove filled or canceled orders from tracking and move signal files if directories are set
             for symbol in symbols_to_remove:
                 if symbol in self.open_orders:
-                    self.open_orders.pop(symbol, None)
+                    order_info = self.open_orders.pop(symbol, None)
                     logger.info(f"Removed {symbol} from open orders tracking")
+                    
+                    # If we have directories set, try to move the signal file
+                    if self.open_dir and self.archive_dir and order_info:
+                        # Try to find and move the corresponding signal file
+                        signal_id = order_info.get('signal_id', 'unknown')
+                        for open_file in self.open_dir.glob('*.json'):
+                            try:
+                                with open(open_file, 'r') as f:
+                                    signal_data = json.load(f)
+                                
+                                if signal_data.get('id') == signal_id:
+                                    # Mark as processed
+                                    signal_data['processed'] = True
+                                    with open(open_file, 'w') as f:
+                                        json.dump(signal_data, f, indent=2)
+                                    
+                                    # Move to archive
+                                    target = self.archive_dir / open_file.name
+                                    open_file.rename(target)
+                                    logger.info(f"Moved signal {open_file.name} from open to archive")
+                                    break
+                            except Exception as e:
+                                logger.error(f"Error processing signal file {open_file}: {e}")
             
             # --- STEP 4: Place TP/SL for filled orders ---
             for symbol, position_id, position_info in symbols_filled:

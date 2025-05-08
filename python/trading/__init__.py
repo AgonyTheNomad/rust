@@ -44,12 +44,14 @@ class HyperliquidTrader:
         self.signals_dir = Path(signals_dir)
         self.archive_dir = Path(archive_dir)
         self.commands_dir = Path(commands_dir)
+        self.open_dir = Path(signals_dir) / "open"  # Add this line
         self.account_info_file = Path("./account_info.json")
         
         # Create directories if they don't exist
         self.signals_dir.mkdir(exist_ok=True)
         self.archive_dir.mkdir(exist_ok=True)
         self.commands_dir.mkdir(exist_ok=True)
+        self.open_dir.mkdir(exist_ok=True)
         
         # Load config
         with open(config_path, 'r') as f:

@@ -1,0 +1,33 @@
+{
+  "id": "fb3a5d1b-ea50-4d4d-b28a-e15b995e950b",
+  "levels": {
+    "entry_price": 1903.989,
+    "limit1_price": 1913.25,
+    "limit1_size": 0.0,
+    "limit2_price": 1916.253,
+    "limit2_size": 0.0,
+    "new_tp1": null,
+    "new_tp2": null,
+    "position_id": "8069cafa-6c3d-4842-9a07-e029f4802009",
+    "position_type": "Short",
+    "risk_percent": 0.0,
+    "size": 0.0,
+    "status": "Pending",
+    "stop_loss": 1910.478,
+    "take_profit": 1891.011
+  },
+  "metadata": {
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1746679902584
+  },
+  "position_type": "SHORT",
+  "price": 1903.989,
+  "processed": false,
+  "reason": "Pivot high: 1908, Pivot low: 1897.5",
+  "stop_loss": 1910.478,
+  "strength": 0.7,
+  "symbol": "ETH",
+  "take_profit": 1891.011,
+  "timestamp": "2025-05-08T04:51:42.584326700+00:00"
+}

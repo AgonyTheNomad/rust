@@ -1,5 +1,5 @@
 // src/signals/file_manager.rs
-use crate::models::Signal;
+use crate::models::{Signal, Position};
 use anyhow::{Context, Result};
 use std::fs::{self, File};
 use std::io::Write;

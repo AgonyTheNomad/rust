@@ -1,0 +1,33 @@
+{
+  "id": "4402e66c-042c-41c7-876e-8f9cdd788b35",
+  "levels": {
+    "entry_price": 99722.302,
+    "limit1_price": 99668.5,
+    "limit1_size": 0.0,
+    "limit2_price": 99651.054,
+    "limit2_size": 0.0,
+    "new_tp1": null,
+    "new_tp2": null,
+    "position_id": "8fd48ac9-835e-4bf7-85b6-07160d8c577b",
+    "position_type": "Long",
+    "risk_percent": 0.0,
+    "size": 0.0,
+    "status": "Pending",
+    "stop_loss": 99684.604,
+    "take_profit": 99797.698
+  },
+  "metadata": {
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1746692478824
+  },
+  "position_type": "LONG",
+  "price": 99722.302,
+  "processed": false,
+  "reason": "Pivot high: 99760, Pivot low: 99699",
+  "stop_loss": 99684.604,
+  "strength": 0.7,
+  "symbol": "BTC",
+  "take_profit": 99797.698,
+  "timestamp": "2025-05-08T08:21:18.824361800+00:00"
+}

@@ -58,6 +58,7 @@ class HyperliquidTrader:
         # Trading state
         self.is_paused = False
         self.tick_sizes = {}
+        self.set_forced_tick_sizes()
         
         # Configuration parameters
         self.max_signal_age = self.config.get('max_signal_age_minutes', 5)
@@ -92,6 +93,25 @@ class HyperliquidTrader:
         logger.info(f"Using signals directory: {signals_dir}")
         logger.info(f"Using {'TESTNET' if self.config.get('use_testnet') else 'MAINNET'}")
     
+    def set_forced_tick_sizes(self):
+        """Set forced tick sizes that we know are correct"""
+        forced_tick_sizes = {
+            "BTC": 1.0,  # BTC uses whole dollar increments
+            "ETH": 0.1,
+            "SOL": 0.01,
+            "APT": 0.001,
+            "ARB": 0.001,
+            "AVAX": 0.001,
+            "DOGE": 0.00001,
+            "LINK": 0.001,
+            "MATIC": 0.0001,
+            "XRP": 0.0001,
+            "BNB": 0.01,
+            "MKR": 0.1  # MKR uses 0.1 increments
+        }
+        self.tick_sizes.update(forced_tick_sizes)
+        logger.info(f"Using forced tick sizes: {self.tick_sizes}")
+    
     async def fetch_asset_metadata(self):
         """
         Fetch and store metadata for all assets including tick sizes.
@@ -111,6 +131,9 @@ class HyperliquidTrader:
             # Apply critical overrides
             self.tick_sizes = price_utils.apply_critical_overrides(self.tick_sizes)
             
+            # Re-apply forced tick sizes to ensure they take precedence
+            self.set_forced_tick_sizes()
+            
             logger.info(f"Loaded tick sizes for {len(self.tick_sizes)} symbols:")
             for symbol, tick in sorted(self.tick_sizes.items()):
                 logger.info(f"  {symbol}: {tick}")
@@ -124,6 +147,9 @@ class HyperliquidTrader:
             # Use defaults if API fetch failed
             self.tick_sizes = price_utils.get_default_tick_sizes()
             self.tick_sizes = price_utils.apply_critical_overrides(self.tick_sizes)
+            
+            # Re-apply forced tick sizes here too
+            self.set_forced_tick_sizes()
             
             # Share tick sizes with components that need them
             self.signal_processor.set_tick_sizes(self.tick_sizes)

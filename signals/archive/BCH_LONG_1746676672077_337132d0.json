@@ -1,0 +1,33 @@
+{
+  "id": "337132d0-cefb-4ac5-bb59-5bb66760b411",
+  "levels": {
+    "entry_price": 403.714,
+    "limit1_price": 393.13,
+    "limit1_size": 0.0,
+    "limit2_price": 389.698,
+    "limit2_size": 0.0,
+    "new_tp1": null,
+    "new_tp2": null,
+    "position_id": "fd06347c-f080-4430-a400-03d369b20baf",
+    "position_type": "Long",
+    "risk_percent": 0.0,
+    "size": 0.0,
+    "status": "Pending",
+    "stop_loss": 396.298,
+    "take_profit": 418.546
+  },
+  "metadata": {
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1746676672077
+  },
+  "position_type": "LONG",
+  "price": 403.714,
+  "processed": false,
+  "reason": "Pivot high: 411.13, Pivot low: 399.13",
+  "stop_loss": 396.298,
+  "strength": 0.7999999999999999,
+  "symbol": "BCH",
+  "take_profit": 418.546,
+  "timestamp": "2025-05-08T03:57:52.077096100+00:00"
+}

@@ -5,15 +5,13 @@ use clap::Parser;
 use log::*;
 use rust_trader::{
     influxdb::{InfluxDBClient, InfluxDBConfig},
-    models::{Candle, Signal, PositionType},
+    models::{Candle, Signal, Position},
     setup_logging,
-    signals::{fibonacci::FibonacciLevels, pivots::PivotPoints},
     SignalFileManager, // Use the re-exported SignalFileManager
     strategy::{Strategy, StrategyConfig, AssetConfig},
 };
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::Write;
 use std::path::PathBuf;
 use std::time::Duration as StdDuration;
 use tokio::time;
@@ -218,13 +216,18 @@ async fn main() -> Result<()> {
                 // Process each new candle
                 for candle in &new_candles {
                     // Generate signals for this candle
-                    let signals = strategy.analyze_candle(candle)?;
+                    let signal_positions = strategy.analyze_candle(candle)?;
                     
                     // Output any signals
-                    for signal in &signals {
+                    for (signal, position) in &signal_positions {
                         match signal_manager.write_signal(signal, Some(position)) {
                             Ok(_) => {
                                 total_signals += 1;
+                                
+                                // Log signal to InfluxDB
+                                if let Err(e) = influx_client.write_signal(signal).await {
+                                    error!("Error writing signal to InfluxDB: {}", e);
+                                }
                             },
                             Err(e) => {
                                 error!("Error writing signal file: {}", e);

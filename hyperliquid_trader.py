@@ -663,16 +663,23 @@ class HyperliquidTrader:
                         # Mark signal as being processed with an open order
                         signal['processing'] = True
                         signal['order_id'] = result.get('oid')
+                        
+                        # Write updated signal data first
                         with open(signal_file, 'w') as f:
                             json.dump(signal, f, indent=2)
                         
-                        logger.info(f"Signal {signal_file.name} has an open order {result.get('oid')} - keeping signal file")
+                        # Move signal file to open directory
+                        target = self.open_dir / signal_file.name
+                        signal_file.rename(target)
+                        
+                        logger.info(f"Signal {signal_file.name} has an open order {result.get('oid')} - moved to open orders directory")
                         
                         # Add to open order symbols
                         open_order_symbols.add(exchange_symbol)
                         
                         # Increment processed count
                         processed_count += 1
+
                     else:
                         error_reason = result.get('message', str(result)) if result else "Unknown error"
                         logger.warning(f"Failed to process signal {signal_file.name} - will retry later. Reason: {error_reason}")

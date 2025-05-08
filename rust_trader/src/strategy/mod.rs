@@ -2,13 +2,14 @@ use std::collections::VecDeque;
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use log::*;
+use chrono::Utc;
 
 pub mod fibonacci;
 pub mod pivots;
 
 use fibonacci::FibonacciLevels;
 use pivots::PivotPoints;
-use crate::models::{Candle, PositionType, Signal};
+use crate::models::{Candle, PositionType, Signal, Position, PositionStatus};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct StrategyConfig {
@@ -232,7 +233,7 @@ impl Strategy {
                         symbol: self.asset_config.name.clone(),
                         entry_time: Utc::now(),
                         entry_price: levels.entry_price,
-                        size:, // No default size - will be calculated elsewhere
+                        size: 0.0, // No default size - will be calculated elsewhere
                         stop_loss: levels.stop_loss,
                         take_profit: levels.take_profit,
                         position_type: PositionType::Short,

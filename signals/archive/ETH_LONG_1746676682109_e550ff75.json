@@ -1,0 +1,34 @@
+{
+  "id": "e550ff75-efd6-4256-8381-bcea58716bfc",
+  "levels": {
+    "entry_price": 1894.53,
+    "limit1_price": 1881.3,
+    "limit1_size": 0.0,
+    "limit2_price": 1877.01,
+    "limit2_size": 0.0,
+    "new_tp1": null,
+    "new_tp2": null,
+    "position_id": "df2f4fb5-1d86-4f2b-9aff-a62b979b4f43",
+    "position_type": "Long",
+    "risk_percent": 0.0,
+    "size": 0.0,
+    "status": "Pending",
+    "stop_loss": 1885.26,
+    "take_profit": 1913.07
+  },
+  "metadata": {
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1746676682109
+  },
+  "position_type": "LONG",
+  "price": 1894.53,
+  "processed": true,
+  "reason": "Pivot high: 1903.8, Pivot low: 1888.8",
+  "stop_loss": 1885.26,
+  "strength": 0.7999999999999999,
+  "symbol": "ETH",
+  "take_profit": 1913.07,
+  "timestamp": "2025-05-08T03:58:02.109378500+00:00",
+  "ignored_reason": "Symbol already has an open order"
+}

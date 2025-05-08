@@ -291,14 +291,17 @@ class SignalProcessor:
                 
                 return True
                 
-            elif isinstance(result, dict) and result.get('status') == 'open_order':
+            if isinstance(result, dict) and result.get('status') == 'open_order':
                 # Mark signal as being processed with an open order
                 signal['processing'] = True
                 signal['order_id'] = result.get('oid')
                 with open(signal_file, 'w') as f:
                     json.dump(signal, f, indent=2)
                 
-                logger.info(f"Signal {signal_file.name} has an open order {result.get('oid')} - keeping signal file")
+                # Move signal file to open directory
+                target = self.open_dir / signal_file.name
+                signal_file.rename(target)
+                logger.info(f"Signal {signal_file.name} has an open order {result.get('oid')} - moved to open directory")
                 
                 # Add to position manager's tracked open orders
                 self.position_manager.open_orders[exchange_symbol] = result

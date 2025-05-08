@@ -66,7 +66,7 @@ pub enum PositionStatus {
     Closed,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ExitReason {
     TakeProfit,
     StopLoss,
