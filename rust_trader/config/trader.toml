@@ -19,7 +19,7 @@ additional_params = { }  # Empty HashMap, but required field
 [influxdb]
 url = "http://192.168.68.52:30086"
 token = "QJfVtZTmqXfq7QIwAjCFAsQ4YRF9IBlEawlgNPANNOg2kTSyhjuTEFTbQ2Qzl0C7oBzhja3nRyluqQ0LegegOw=="
-org = "ValhallaVault"
+org = "09a2af2123823a6a"
 bucket = "hyper_candles"
 
 [risk]

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use anyhow::{Context, Result};
 use std::collections::HashMap;
-use log::{debug, info};
+use log::{debug, info, error};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InfluxDBConfig {
@@ -61,6 +61,10 @@ impl InfluxDBClient {
             .build()
             .context("Failed to build HTTP client")?;
 
+        // Log the configuration
+        info!("Created InfluxDB client: URL={}, Org={}, Bucket={}, Token length={}",
+              config.url, config.org, config.bucket, config.token.len());
+
         Ok(Self { config, client })
     }
 
@@ -88,6 +92,8 @@ impl InfluxDBClient {
 
         // Prepare request to InfluxDB API v2
         let api_url = format!("{}/api/v2/query", self.config.url);
+        
+        debug!("Sending request to: {}", api_url);
         
         let response = self.client
             .post(&api_url)
@@ -155,7 +161,60 @@ impl InfluxDBClient {
     }
 
     pub async fn get_symbols(&self) -> Result<Vec<String>> {
-        // Construct a Flux query to get distinct symbols
+        // Log configuration details
+        info!("InfluxDB configuration: URL={}, Org={}, Bucket={}, Token={}...", 
+              self.config.url, 
+              self.config.org, 
+              self.config.bucket,
+              &self.config.token.chars().take(10).collect::<String>());
+
+        // Try a simpler test query first to verify authentication works
+        let test_query = format!(
+            r#"from(bucket: "{}")
+                |> range(start: -1h)
+                |> limit(n: 1)"#,
+            self.config.bucket
+        );
+
+        info!("Testing connection with simple query first");
+        
+        // Prepare request to InfluxDB API v2
+        let api_url = format!("{}/api/v2/query", self.config.url);
+        
+        // Log request details
+        info!("Sending request to: {}", api_url);
+        info!("Organization: {}", self.config.org);
+        
+        let test_response = self.client
+            .post(&api_url)
+            .header("Authorization", format!("Token {}", self.config.token))
+            .header("Content-Type", "application/json")
+            .header("Accept", "application/csv")
+            .query(&[("org", &self.config.org)])
+            .body(serde_json::to_string(&FluxQuery { query: test_query.clone() })?)
+            .send()
+            .await;
+        
+        // Check if test request succeeded
+        match test_response {
+            Ok(response) => {
+                if response.status() != StatusCode::OK {
+                    let status = response.status();
+                    let error_text = response.text().await?;
+                    error!("Test query failed with status {}: {}", status, error_text);
+                    error!("Query was: {}", test_query);
+                    return Err(anyhow::anyhow!("InfluxDB test query failed with status {}: {}", status, error_text));
+                } else {
+                    info!("Test query succeeded, proceeding with symbols query");
+                }
+            },
+            Err(e) => {
+                error!("Failed to send test query: {}", e);
+                return Err(anyhow::anyhow!("Failed to send test query: {}", e));
+            }
+        }
+
+        // Now try the original symbols query
         let flux_query = format!(
             r#"
             import "influxdata/influxdb/schema"
@@ -168,9 +227,9 @@ impl InfluxDBClient {
             self.config.bucket
         );
 
+        info!("Sending symbols query: {}", flux_query);
+
         // Prepare request to InfluxDB API v2
-        let api_url = format!("{}/api/v2/query", self.config.url);
-        
         let response = self.client
             .post(&api_url)
             .header("Authorization", format!("Token {}", self.config.token))
@@ -185,6 +244,7 @@ impl InfluxDBClient {
         if response.status() != StatusCode::OK {
             let status = response.status();
             let error_text = response.text().await?;
+            error!("Symbols query failed with status {}: {}", status, error_text);
             return Err(anyhow::anyhow!("InfluxDB symbols query failed with status {}: {}", status, error_text));
         }
 
@@ -295,7 +355,7 @@ impl InfluxDBClient {
         };
 
         // Create Line Protocol data
-        let timestamp_ns = signal.timestamp.timestamp_nanos();
+        let timestamp_ns = signal.timestamp.timestamp_nanos_opt().unwrap_or(0);
         let line_protocol = format!(
             "signals,symbol={},type={} price={},take_profit={},stop_loss={},strength={},reason=\"{}\" {}",
             signal.symbol, position_type, 
@@ -355,7 +415,7 @@ impl InfluxDBClient {
         };
         
         // Create Line Protocol data
-        let timestamp_ns = trade.exit_time.timestamp_nanos();
+        let timestamp_ns = trade.exit_time.timestamp_nanos_opt().unwrap_or(0);
         let line_protocol = format!(
             "trades,symbol={},type={},exit_reason={} entry_price={},exit_price={},size={},pnl={},fees={},{}{}{}{} {}",
             trade.symbol, trade.position_type, 

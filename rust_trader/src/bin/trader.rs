@@ -361,7 +361,6 @@ impl TradingState {
 }
 
 // Process a single symbol
-// Process a single symbol
 async fn process_symbol(
     exchange: Arc<Box<dyn Exchange>>,
     influx_client: Arc<InfluxDBClient>,
@@ -491,6 +490,7 @@ async fn process_symbol(
         ).await?;
     }
 }
+
 // Process a single candle
 async fn process_candle(
     exchange: &Box<dyn Exchange>,
@@ -570,9 +570,25 @@ async fn process_candle(
                     
                     // Create position object using the template provided by the strategy
                     let mut position = position_template.clone();
+                    
+                    // Store the scaling ratios for limit orders before setting the size
+                    let limit1_ratio = position.limit1_size; // This is currently storing the ratio (e.g., 3.0)
+                    let limit2_ratio = position.limit2_size; // This is currently storing the ratio (e.g., 5.0)
+                    
+                    // Set the actual size based on risk calculation
                     position.size = position_info.size;
                     position.risk_percent = max_risk_per_trade;
                     position.margin_used = position_info.margin_required;
+                    
+                    // Now calculate the ACTUAL limit order sizes based on the ratios
+                    // The ratios provided by the strategy are multipliers relative to the base position size
+                    position.limit1_size = position.size * limit1_ratio;
+                    position.limit2_size = position.size * limit2_ratio;
+                    
+                    // Log the calculated position sizes
+                    info!("Position scaling: base={}, limit1={} (x{}), limit2={} (x{})",
+                         position.size, position.limit1_size, limit1_ratio, 
+                         position.limit2_size, limit2_ratio);
                     
                     // Open the position on the exchange
                     info!("Opening {:?} position for {} at {}: size = {}, SL = {}, TP = {}", 
@@ -595,8 +611,25 @@ async fn process_candle(
                     info!("Skipping trade due to risk management constraints");
                 }
             } else {
+                // Even in dry run mode, we should calculate the sizes for informational purposes
+                let mut position = position_template.clone();
+                
+                // Store scaling ratios
+                let limit1_ratio = position.limit1_size;
+                let limit2_ratio = position.limit2_size;
+                
+                // In dry run mode, let's use a hypothetical size for demonstration
+                let hypothetical_size = 1.0; // Just for display in dry run
+                
+                // Calculate scaled sizes based on ratios
+                let limit1_size = hypothetical_size * limit1_ratio;
+                let limit2_size = hypothetical_size * limit2_ratio;
+                
                 info!("[DRY RUN] Would open {:?} position for {} at {} (SL: {}, TP: {})",
                     signal.position_type, symbol, signal.price, signal.stop_loss, signal.take_profit);
+                    
+                info!("[DRY RUN] Position scaling would be: base={}, limit1={} (x{}), limit2={} (x{})",
+                    hypothetical_size, limit1_size, limit1_ratio, limit2_size, limit2_ratio);
             }
         }
     }
@@ -753,6 +786,7 @@ async fn update_positions(
     Ok(())
 }
 
+// Fetch historical data and save to CSV
 // Fetch historical data and save to CSV
 async fn fetch_historical_data(symbol: &str, days: u32, output_dir: &PathBuf) -> Result<()> {
     // Load InfluxDB config from environment
