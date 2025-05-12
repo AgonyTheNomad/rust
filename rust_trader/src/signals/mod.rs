@@ -42,9 +42,9 @@ impl SignalGenerator {
     }
     
     // Process a candle and generate signals if conditions are met
-    pub fn process_candle(&mut self, symbol: &str, candle: &Candle) -> Result<Vec<Signal>> {
+    pub fn process_candle(&mut self, _symbol: &str, candle: &Candle) -> Result<Vec<Signal>> {
         // Detect pivots
-        let (pivot_high, pivot_low) = self.pivot_detector.identify_pivots(candle.high, candle.low);
+        let (_pivot_high, _pivot_low) = self.pivot_detector.identify_pivots(candle.high, candle.low);
         
         // Generate signals based on detected pivots and Fibonacci levels
         let signals = Vec::new();
@@ -57,7 +57,7 @@ impl SignalGenerator {
     }
     
     // Helper method to calculate signal strength
-    fn calculate_signal_strength(&self, is_long: bool, price_context: &[Candle]) -> f64 {
+    fn calculate_signal_strength(&self, _is_long: bool, _price_context: &[Candle]) -> f64 {
         // Implement your signal strength calculation
         // This could include trend strength, volume confirmation, etc.
         0.7 // Default signal strength

@@ -7,6 +7,7 @@ Handles tracking and management of positions and orders.
 import time
 import logging
 import asyncio
+import json
 from pathlib import Path
 from typing import Dict, Set, Tuple, List, Any, Optional
 
@@ -291,6 +292,9 @@ class PositionManager:
             
             # --- STEP 4: Place TP/SL for filled orders ---
             for symbol, position_id, position_info in symbols_filled:
+                # Cancel all other open orders first - we only want one active position at a time
+                await self.cancel_all_other_orders(symbol)
+                # Then place TP/SL orders for the filled position
                 await self.place_tpsl_orders(symbol, position_id, position_info)
             
             # --- STEP 5: Check if any open positions were closed on the exchange ---
@@ -365,6 +369,72 @@ class PositionManager:
             
         except Exception as e:
             logger.error(f"Error in check_positions: {e}", exc_info=True)
+            return False
+    
+    async def cancel_all_other_orders(self, current_symbol):
+        """
+        Cancel all open orders except for the current symbol.
+        Called when a position is filled to ensure we only trade one position at a time.
+        
+        Parameters:
+        -----------
+        current_symbol : str
+            Symbol to exclude from cancellation
+        """
+        try:
+            # Get a list of all other symbols with open orders
+            other_orders = {s: order for s, order in self.open_orders.items() if s != current_symbol}
+            
+            if other_orders:
+                logger.info(f"Cancelling {len(other_orders)} other open orders since {current_symbol} position was filled")
+                
+                for symbol, order_info in other_orders.items():
+                    try:
+                        if 'oid' in order_info:
+                            oid = order_info['oid']
+                            logger.info(f"Cancelling order {oid} for {symbol}")
+                            
+                            # Cancel the order
+                            cancel_result = await self.with_retries(self.exchange.cancel, oid)
+                            logger.info(f"Cancelled order {oid} for {symbol}: {cancel_result}")
+                            
+                            # Remove from our tracking
+                            self.open_orders.pop(symbol, None)
+                            
+                            # Also archive the signal file if we can find it
+                            if self.open_dir and self.archive_dir:
+                                signal_id = order_info.get('signal_id', 'unknown')
+                                for open_file in self.open_dir.glob('*.json'):
+                                    try:
+                                        with open(open_file, 'r') as f:
+                                            signal_data = json.load(f)
+                                        
+                                        if signal_data.get('id') == signal_id:
+                                            # Mark as processed and add reason
+                                            signal_data['processed'] = True
+                                            signal_data['ignored_reason'] = f"Cancelled because {current_symbol} position was filled"
+                                            
+                                            with open(open_file, 'w') as f:
+                                                json.dump(signal_data, f, indent=2)
+                                            
+                                            # Move to archive
+                                            target = self.archive_dir / open_file.name
+                                            open_file.rename(target)
+                                            logger.info(f"Archived cancelled order signal {open_file.name}")
+                                            break
+                                    except Exception as e:
+                                        logger.error(f"Error processing signal file for cancelled order: {e}")
+                    except Exception as e:
+                        logger.error(f"Error cancelling order for {symbol}: {e}")
+                
+                logger.info("Finished cancelling other open orders")
+                return True
+            else:
+                logger.info(f"No other open orders to cancel when {current_symbol} position was filled")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error in cancel_all_other_orders: {e}")
             return False
     
     async def place_tpsl_orders(self, symbol, position_id, position_info):

@@ -149,6 +149,25 @@ class SignalProcessor:
             True if the signal was processed, False otherwise
         """
         try:
+            # Check if we already have any active positions
+            if active_symbols:
+                # We already have at least one active position, so reject this signal
+                active_pos_list = ", ".join(active_symbols)
+                logger.warning(f"Ignoring signal {signal_file.name} because there's already an active position for {active_pos_list}")
+                
+                # Mark signal as processed but add a note about why it was ignored
+                signal['processed'] = True
+                signal['ignored_reason'] = f"Trading one position at a time - already have active position for {active_pos_list}"
+                
+                with open(signal_file, 'w') as f:
+                    json.dump(signal, f, indent=2)
+                
+                # Archive the signal file
+                target = self.archive_dir / signal_file.name
+                signal_file.rename(target)
+                self.processed_signals.add(signal_file.name)
+                return False
+                
             # Fix for datetime comparison issue
             signal_time = datetime.fromisoformat(signal['timestamp'].replace('Z', '+00:00'))
             now_utc = datetime.now(timezone.utc)

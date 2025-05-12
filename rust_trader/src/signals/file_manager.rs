@@ -26,7 +26,17 @@ impl SignalFileManager {
     }
 
     /// Write a signal to a JSON file
-    pub fn write_signal(&self, signal: &Signal, position: Option<&Position>) -> Result<String> {
+    pub fn write_signal(&self, signal: &Signal, position: Option<&Position>, max_age_seconds: Option<i64>) -> Result<String> {
+        // Check if signal is fresh enough (if max_age is provided)
+        if let Some(max_age) = max_age_seconds {
+            let now = Utc::now();
+            let age = (now - signal.timestamp).num_seconds();
+            
+            if age > max_age {
+                return Err(anyhow::anyhow!("Signal too old ({} seconds), not writing file", age));
+            }
+        }
+        
         // Create directory if it doesn't exist
         fs::create_dir_all(&self.output_dir)
             .context("Failed to create signal output directory")?;
@@ -63,7 +73,8 @@ impl SignalFileManager {
             "metadata": {
                 "generator_version": self.version,
                 "timestamp_ms": timestamp,
-                "test": false
+                "test": false,
+                "generated_at": Utc::now().to_rfc3339()
             }
         });
         
@@ -169,5 +180,108 @@ impl SignalFileManager {
         }
         
         Ok(archived_count)
+    }
+    
+    /// Check if a symbol has an active trading lock
+    pub fn has_trading_lock(&self, symbol: &str) -> bool {
+        let lock_path = Path::new(&self.output_dir).join(format!("{}_TRADING.lock", symbol));
+        lock_path.exists()
+    }
+
+    /// Check and create a symbol lock, return true if lock was acquired
+    pub fn check_and_create_lock(&self, symbol: &str) -> Result<bool> {
+        let lock_path = Path::new(&self.output_dir).join(format!("{}_TRADING.lock", symbol));
+        
+        // Check if lock exists
+        if lock_path.exists() {
+            debug!("Symbol {} is locked for trading", symbol);
+            
+            // Check if the lock is stale (older than 10 minutes)
+            let metadata = std::fs::metadata(&lock_path)?;
+            let modified = metadata.modified()?;
+            let modified_time: DateTime<Utc> = modified.into();
+            let now = Utc::now();
+            
+            if now.signed_duration_since(modified_time) > Duration::minutes(10) {
+                // Lock is stale, remove it
+                std::fs::remove_file(&lock_path)?;
+                debug!("Removed stale lock for symbol {}", symbol);
+            } else {
+                return Ok(false);
+            }
+        }
+        
+        // Create lock file
+        let mut file = File::create(&lock_path)?;
+        let now = Utc::now().to_rfc3339();
+        file.write_all(now.as_bytes())?;
+        
+        debug!("Created trading lock for {}", symbol);
+        Ok(true)
+    }
+
+    /// Release a symbol lock
+    pub fn release_lock(&self, symbol: &str) -> Result<()> {
+        let lock_path = Path::new(&self.output_dir).join(format!("{}_TRADING.lock", symbol));
+        
+        if lock_path.exists() {
+            std::fs::remove_file(lock_path)?;
+            debug!("Released trading lock for {}", symbol);
+        }
+        
+        Ok(())
+    }
+    
+    /// Create a position lock file - used to indicate a position is being managed
+    pub fn create_position_lock(&self, symbol: &str, position_id: &str) -> Result<()> {
+        let lock_path = Path::new(&self.output_dir).join(format!("{}_{}_POSITION.lock", symbol, position_id));
+        let mut file = File::create(&lock_path)?;
+        let now = Utc::now().to_rfc3339();
+        file.write_all(now.as_bytes())?;
+        
+        debug!("Created position lock for {}/{}", symbol, position_id);
+        Ok(())
+    }
+    
+    /// Release a position lock
+    pub fn release_position_lock(&self, symbol: &str, position_id: &str) -> Result<()> {
+        let lock_path = Path::new(&self.output_dir).join(format!("{}_{}_POSITION.lock", symbol, position_id));
+        
+        if lock_path.exists() {
+            std::fs::remove_file(lock_path)?;
+            debug!("Released position lock for {}/{}", symbol, position_id);
+        }
+        
+        Ok(())
+    }
+    
+    /// Clean up stale locks
+    pub fn clean_stale_locks(&self, max_age_minutes: i64) -> Result<usize> {
+        let src_dir = Path::new(&self.output_dir);
+        let cutoff_time = Utc::now() - Duration::minutes(max_age_minutes);
+        let mut removed_count = 0;
+        
+        for entry in fs::read_dir(src_dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            
+            if let Some(filename) = path.file_name().and_then(|s| s.to_str()) {
+                if filename.ends_with(".lock") {
+                    // Check file modification time
+                    let metadata = fs::metadata(&path)?;
+                    let modified = metadata.modified()?;
+                    let modified_time: DateTime<Utc> = modified.into();
+                    
+                    if modified_time < cutoff_time {
+                        // Remove stale lock
+                        fs::remove_file(&path)?;
+                        debug!("Removed stale lock: {}", filename);
+                        removed_count += 1;
+                    }
+                }
+            }
+        }
+        
+        Ok(removed_count)
     }
 }

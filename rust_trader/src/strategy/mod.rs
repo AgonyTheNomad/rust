@@ -1,8 +1,8 @@
-use std::collections::VecDeque;
+use std::collections::{VecDeque, HashMap};
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use log::*;
-use chrono::Utc;
+use chrono::{DateTime, Utc, Duration, Timelike}; // Added Timelike trait import here
 
 pub mod fibonacci;
 pub mod pivots;
@@ -65,6 +65,12 @@ pub struct Strategy {
     detected_pivot_lows: Vec<f64>,
     long_signal: bool,
     short_signal: bool,
+    
+    // New fields for handling only most recent candle signals
+    last_processed_minute: Option<DateTime<Utc>>,
+    last_signal_time: HashMap<String, DateTime<Utc>>,
+    signal_cooldown: Duration,
+    max_signal_age_seconds: i64,
 }
 
 impl Strategy {
@@ -91,6 +97,12 @@ impl Strategy {
             detected_pivot_lows: Vec::new(),
             long_signal: false,
             short_signal: false,
+            
+            // Initialize new fields
+            last_processed_minute: None,
+            last_signal_time: HashMap::new(),
+            signal_cooldown: Duration::minutes(5),  // Don't generate signals for the same symbol more often than every 5 minutes
+            max_signal_age_seconds: 120,  // Signals older than 2 minutes are considered stale
         }
     }
     
@@ -101,9 +113,10 @@ impl Strategy {
     pub fn initialize_with_history(&mut self, candles: &[Candle]) -> Result<()> {
         debug!("Initializing strategy with {} historical candles", candles.len());
         
-        // Process each candle to establish state
+        // Process each candle to establish state, but don't generate signals during initialization
         for candle in candles {
-            let _ = self.analyze_candle(candle)?;
+            // Call analyze_candle_internal which just updates state but doesn't generate signals
+            self.analyze_candle_internal(candle)?;
         }
         
         debug!("Strategy initialized with {} pivot highs and {} pivot lows", 
@@ -112,11 +125,8 @@ impl Strategy {
         Ok(())
     }
     
-    pub fn analyze_candle(&mut self, candle: &Candle) -> Result<Vec<(Signal, Position)>> {
-        // Reset signal flags from previous runs
-        self.long_signal = false;
-        self.short_signal = false;
-        
+    // New internal method that just updates state without generating signals
+    fn analyze_candle_internal(&mut self, candle: &Candle) -> Result<()> {
         // Parse high and low
         let high = candle.high;
         let low = candle.low;
@@ -144,6 +154,67 @@ impl Strategy {
             self.prev_pivot_low = Some(low);
         }
         
+        Ok(())
+    }
+    
+    pub fn analyze_candle(&mut self, candle: &Candle) -> Result<Vec<(Signal, Position)>> {
+        // First update internal state
+        self.analyze_candle_internal(candle)?;
+        
+        // Get the candle's timestamp
+        let candle_time = DateTime::parse_from_rfc3339(&candle.time)
+            .map_err(|e| anyhow::anyhow!("Failed to parse candle time: {}", e))?
+            .with_timezone(&Utc);
+        
+        // Get current time
+        let now = Utc::now();
+        
+        // Calculate the difference (in seconds)
+        let age_seconds = (now - candle_time).num_seconds();
+        
+        // Only generate signals if this is a recent candle
+        if age_seconds > self.max_signal_age_seconds {
+            debug!("Skipping signal generation - candle too old: {} seconds", age_seconds);
+            return Ok(Vec::new());
+        }
+        
+        // Extract minute from timestamp (truncate to minute)
+        let candle_minute = candle_time
+            .with_nanosecond(0).unwrap()
+            .with_second(0).unwrap();
+        
+        // Check if this is a new minute
+        let is_new_minute = match self.last_processed_minute {
+            Some(last_minute) => candle_minute > last_minute,
+            None => true,
+        };
+        
+        // Update the last processed minute
+        self.last_processed_minute = Some(candle_minute);
+        
+        // Only generate signals on new minute candles
+        if !is_new_minute {
+            debug!("Not a new minute, skipping signal generation");
+            return Ok(Vec::new());
+        }
+        
+        // Check signal cooldown
+        let symbol = &self.asset_config.name;
+        if let Some(last_time) = self.last_signal_time.get(symbol) {
+            if now - *last_time < self.signal_cooldown {
+                debug!("Skipping signal generation - in cooldown period for {}", symbol);
+                return Ok(Vec::new());
+            }
+        }
+        
+        // Reset signal flags
+        self.long_signal = false;
+        self.short_signal = false;
+        
+        // Parse high and low
+        let high = candle.high;
+        let low = candle.low;
+        
         // Generate signals
         if self.pivot_high_history.len() >= self.config.signal_lookback + 2 {
             self.generate_signals();
@@ -155,6 +226,7 @@ impl Strategy {
         // Create and return signals if generated
         let mut signal_positions = Vec::new();
         
+        // Process long signals
         if self.long_signal && self.prev_pivot_high.is_some() && self.prev_pivot_low.is_some() {
             if let Some(levels) = self.fib.calculate_long_levels(
                 self.prev_pivot_high.unwrap(),
@@ -204,12 +276,16 @@ impl Strategy {
                     signal_positions.push((signal, position));
                     debug!("Generated LONG signal at {}: Entry={}, TP={}, SL={}, Strength={}",
                         candle.time, levels.entry_price, levels.take_profit, levels.stop_loss, strength);
+                    
+                    // Update last signal time
+                    self.last_signal_time.insert(self.asset_config.name.clone(), now);
                 }
                 self.long_signal = false;
             }
         }
         
-        if self.short_signal && self.prev_pivot_high.is_some() && self.prev_pivot_low.is_some() {
+        // Process short signals (only if we didn't generate a long signal)
+        if signal_positions.is_empty() && self.short_signal && self.prev_pivot_high.is_some() && self.prev_pivot_low.is_some() {
             if let Some(levels) = self.fib.calculate_short_levels(
                 self.prev_pivot_high.unwrap(),
                 self.prev_pivot_low.unwrap(),
@@ -258,6 +334,9 @@ impl Strategy {
                     signal_positions.push((signal, position));
                     debug!("Generated SHORT signal at {}: Entry={}, TP={}, SL={}, Strength={}",
                         candle.time, levels.entry_price, levels.take_profit, levels.stop_loss, strength);
+                    
+                    // Update last signal time
+                    self.last_signal_time.insert(self.asset_config.name.clone(), now);
                 }
                 self.short_signal = false;
             }

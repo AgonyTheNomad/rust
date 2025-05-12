@@ -1,0 +1,11 @@
+C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\release\deps\libgetrandom-7d91fe2d501e420d.rmeta: C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\lib.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\error.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\util.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\error_impls.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\windows.rs
+
+C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\release\deps\libgetrandom-7d91fe2d501e420d.rlib: C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\lib.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\error.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\util.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\error_impls.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\windows.rs
+
+C:\Users\Kolton\Desktop\rust_projects\rust_trader\target\release\deps\getrandom-7d91fe2d501e420d.d: C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\lib.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\error.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\util.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\error_impls.rs C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\windows.rs
+
+C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\lib.rs:
+C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\error.rs:
+C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\util.rs:
+C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\error_impls.rs:
+C:\Users\Kolton\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\getrandom-0.2.15\src\windows.rs:

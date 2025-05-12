@@ -5,7 +5,7 @@ import os
 import sys
 
 url = "http://192.168.68.52:8086"
-token = "62e6050ed92be141b15744783cd3446a4771d1b825feb4f0fa9756a87707953f"
+token = "QJfVtZTmqXfq7QIwAjCFAsQ4YRF9IBlEawlgNPANNOg2kTSyhjuTEFTbQ2Qzl0C7oBzhja3nRyluqQ0LegegOw=="
 org = "ValhallaVault"
 bucket = "hyper_candles"
 
