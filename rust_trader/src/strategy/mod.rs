@@ -317,8 +317,8 @@ impl Strategy {
                         limit1_hit: false,
                         limit2_hit: false,
                         // Store the scaling ratios, not absolute sizes
-                        limit1_size: 3.0, // This represents a 3:1 ratio for scaling
-                        limit2_size: 5.0, // This represents a 5:1 ratio for scaling
+                        limit1_size: 0.0, // This represents a 3:1 ratio for scaling
+                        limit2_size: 0.0, // This represents a 5:1 ratio for scaling
                         new_tp1: Some(self.calculate_tp_adjustment(levels.entry_price, levels.take_profit, levels.limit1, true)),
                         new_tp2: Some(self.calculate_tp_adjustment(levels.entry_price, levels.take_profit, levels.limit2, true)),
                         entry_order_id: None,

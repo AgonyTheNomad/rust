@@ -5,10 +5,11 @@ use clap::Parser;
 use log::*;
 use rust_trader::{
     influxdb::{InfluxDBClient, InfluxDBConfig},
-    models::{Candle, Signal, Position},
+    models::{Account, Candle, Signal, Position, PositionType},
     setup_logging,
     SignalFileManager, 
     strategy::{Strategy, StrategyConfig, AssetConfig},
+    risk::{RiskManager, RiskParameters, PositionScaleResult},
 };
 use std::collections::HashMap;
 use std::fs::{self, File};
@@ -75,6 +76,7 @@ struct Config {
     influxdb: InfluxDBConfig,
     strategy: StrategyConfig,
     assets: HashMap<String, AssetConfig>,
+    risk: RiskParameters,
 }
 
 #[derive(serde::Deserialize)]
@@ -312,7 +314,7 @@ async fn main() -> Result<()> {
     }
     
     // Connect to InfluxDB
-    let influx_client = InfluxDBClient::new(config.influxdb)?;
+    let influx_client = InfluxDBClient::new(config.influxdb.clone())?;
     
     // Get list of symbols to analyze
     let symbols = match args.symbols {
@@ -331,6 +333,9 @@ async fn main() -> Result<()> {
     
     // Create a map to track last update time and strategy instance for each symbol
     let mut symbol_states: HashMap<String, (Strategy, DateTime<Utc>)> = HashMap::new();
+    
+    // Initial account balance for risk calculations
+    let account_balance = 10000.0; // Default value, could be loaded from config
     
     // Initialize with historical data
     for symbol in &symbols {
@@ -390,6 +395,17 @@ async fn main() -> Result<()> {
     
     // Last time we printed and wrote stats
     let mut last_stats_time = Utc::now();
+    
+    // Create a mock account for risk calculations
+    let mock_account = Account {
+        balance: account_balance,
+        equity: account_balance,
+        used_margin: 0.0,
+        positions: HashMap::new(),
+    };
+    
+    // Create risk manager
+    let risk_manager = RiskManager::new(config.risk.clone(), account_balance);
     
     // Main loop - run continuously
     let mut interval = time::interval(StdDuration::from_secs(1));
@@ -480,12 +496,70 @@ async fn main() -> Result<()> {
                         
                         // Generate signals for the latest candle
                         match strategy.analyze_candle(latest_candle) {
-                            Ok(signal_positions) => {
+                            Ok(mut signal_positions) => {
                                 // Process any generated signals
-                                for (signal, position) in &signal_positions {
+                                for (signal, position) in &mut signal_positions {
                                     // Try to create a lock for this symbol
                                     match signal_manager.check_and_create_lock(symbol) {
                                         Ok(true) => {
+                                            // Calculate position sizing using risk management
+                                            if let (Some(limit1), Some(limit2)) = (position.limit1_price, position.limit2_price) {
+                                                // Store original scaling ratios before modifying sizes
+                                                let limit1_ratio = position.limit1_size;
+                                                let limit2_ratio = position.limit2_size;
+                                                
+                                                match risk_manager.calculate_scaled_position(
+                                                    &mock_account,
+                                                    position.entry_price,
+                                                    position.stop_loss,
+                                                    position.take_profit,
+                                                    limit1,
+                                                    limit2,
+                                                    position.position_type.clone()
+                                                ) {
+                                                    Ok(scaling) => {
+                                                        // Update position with calculated values
+                                                        position.size = scaling.initial_position_size;
+                                                        position.limit1_size = scaling.limit1_position_size;
+                                                        position.limit2_size = scaling.limit2_position_size;
+                                                        position.new_tp1 = Some(scaling.new_tp1);
+                                                        position.new_tp2 = Some(scaling.new_tp2);
+                                                        position.risk_percent = scaling.final_risk;
+                                                        
+                                                        info!("Calculated position sizing: base={:.6}, limit1={:.6}, limit2={:.6}, risk={:.2}%",
+                                                              position.size, position.limit1_size, position.limit2_size, 
+                                                              position.risk_percent * 100.0);
+                                                    },
+                                                    Err(e) => {
+                                                        error!("Failed to calculate position sizing: {}", e);
+                                                        stats.record_error();
+                                                        
+                                                        // Fall back to simple position sizing
+                                                        let stop_distance = (position.entry_price - position.stop_loss).abs();
+                                                        let risk_amount = mock_account.balance * config.risk.max_risk_per_trade;
+                                                        let base_size = (risk_amount / stop_distance).min(config.risk.max_position_size);
+                                                        
+                                                        position.size = base_size;
+                                                        position.limit1_size = base_size * limit1_ratio;
+                                                        position.limit2_size = base_size * limit2_ratio;
+                                                        position.risk_percent = config.risk.max_risk_per_trade;
+                                                        
+                                                        info!("Using fallback position sizing: base={:.6}, limit1={:.6}, limit2={:.6}, risk={:.2}%",
+                                                              position.size, position.limit1_size, position.limit2_size, 
+                                                              position.risk_percent * 100.0);
+                                                    }
+                                                }
+                                            } else {
+                                                // If limit prices aren't set, use simple sizing
+                                                let stop_distance = (position.entry_price - position.stop_loss).abs();
+                                                let risk_amount = mock_account.balance * config.risk.max_risk_per_trade;
+                                                position.size = (risk_amount / stop_distance).min(config.risk.max_position_size);
+                                                position.risk_percent = config.risk.max_risk_per_trade;
+                                                
+                                                info!("Using simple position sizing: size={:.6}, risk={:.2}%",
+                                                      position.size, position.risk_percent * 100.0);
+                                            }
+                                            
                                             // Write signal with age check
                                             match signal_manager.write_signal(signal, Some(position), Some(args.max_signal_age)) {
                                                 Ok(_) => {
@@ -498,13 +572,14 @@ async fn main() -> Result<()> {
                                                         stats.record_error();
                                                     }
                                                     
-                                                    info!("Generated {} signal for {} at {}: Entry={}, TP={}, SL={}, Strength={}",
+                                                    info!("Generated {} signal for {} at {}: Entry={}, TP={}, SL={}, Size={:.6}, Strength={}",
                                                         format!("{:?}", signal.position_type),
                                                         signal.symbol,
                                                         signal.timestamp.format("%H:%M:%S"),
                                                         signal.price,
                                                         signal.take_profit,
                                                         signal.stop_loss,
+                                                        position.size,
                                                         signal.strength);
                                                 },
                                                 Err(e) => {

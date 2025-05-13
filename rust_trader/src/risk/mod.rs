@@ -4,7 +4,7 @@ use log::*;
 use serde::{Deserialize, Serialize};
 
 mod position_calculator;
-pub use position_calculator::{PositionCalculator, PositionResult};
+pub use position_calculator::{PositionCalculator, PositionResult, PositionScaleResult};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RiskParameters {
@@ -201,6 +201,34 @@ impl RiskManager {
             risk_amount,
             margin_required,
         })
+    }
+    
+    // New method to calculate scaled position with limits
+    pub fn calculate_scaled_position(
+        &self,
+        account: &Account,
+        entry: f64,
+        stop_loss: f64,
+        take_profit: f64,
+        limit1: f64,
+        limit2: f64,
+        position_type: PositionType
+    ) -> Result<PositionScaleResult> {
+        // Get the risk level
+        let risk = self.determine_risk_per_trade();
+        
+        // Use the position calculator to calculate scaling
+        self.position_calculator.calculate_position_scaling(
+            entry,
+            take_profit,
+            stop_loss,
+            limit1,
+            limit2,
+            account.balance,
+            risk,
+            self.parameters.max_leverage,
+            position_type,
+        )
     }
     
     pub fn determine_risk_per_trade(&self) -> f64 {

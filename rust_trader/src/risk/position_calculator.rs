@@ -30,6 +30,34 @@ impl PositionCalculator {
     pub fn new() -> Self {
         Self::default()
     }
+    
+    // New method to calculate position scaling
+    pub fn calculate_position_scaling(
+        &self,
+        initial: f64,
+        tp: f64,
+        sl: f64,
+        limit_1: f64,
+        limit_2: f64,
+        account_size: f64,
+        risk: f64,
+        leverage: f64,
+        position_type: PositionType,
+    ) -> Result<PositionScaleResult> {
+        calculate_positions(
+            initial,
+            tp,
+            sl,
+            limit_1,
+            limit_2,
+            account_size,
+            risk,
+            leverage,
+            position_type,
+            self.tp_ratio1,  // Using the struct's tp_ratio1 instead of hardcoded h11
+            self.tp_ratio2,  // Using the struct's tp_ratio2 instead of hardcoded h12
+        )
+    }
 }
 
 #[derive(Debug, Clone)]
