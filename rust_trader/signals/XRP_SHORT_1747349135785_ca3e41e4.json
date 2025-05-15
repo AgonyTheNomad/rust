@@ -1,0 +1,34 @@
+{
+  "id": "ca3e41e4-58bd-44c4-9be4-33f02430b099",
+  "levels": {
+    "entry_price": 2.4258828,
+    "limit1_price": 2.4277,
+    "limit1_size": 6336.15855603159,
+    "limit2_price": 2.4315500000000005,
+    "limit2_size": 10560.264260052649,
+    "new_tp1": 2.4188056108846085,
+    "new_tp2": 2.424004708353908,
+    "position_id": "764a29a8-79ff-494e-a762-1c82773b2c91",
+    "position_type": "Short",
+    "risk_percent": 0.02,
+    "size": 2112.05285201053,
+    "status": "Pending",
+    "stop_loss": 2.4401586000000006,
+    "take_profit": 2.392141399999999
+  },
+  "metadata": {
+    "generated_at": "2025-05-15T22:45:35.786024200+00:00",
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1747349135785
+  },
+  "position_type": "SHORT",
+  "price": 2.4258828,
+  "processed": false,
+  "reason": "Pivot high: 2.4277, Pivot low: 2.42",
+  "stop_loss": 2.4401586000000006,
+  "strength": 0.7999999999999999,
+  "symbol": "XRP",
+  "take_profit": 2.392141399999999,
+  "timestamp": "2025-05-15T22:45:35.785368800+00:00"
+}

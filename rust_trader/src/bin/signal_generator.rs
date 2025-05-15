@@ -9,16 +9,17 @@ use rust_trader::{
     setup_logging,
     SignalFileManager, 
     strategy::{Strategy, StrategyConfig, AssetConfig},
-    risk::{RiskManager, RiskParameters, PositionScaleResult},
+    risk::{RiskManager, RiskParameters, PositionCalculator},
 };
 use std::collections::HashMap;
 use std::fs::{self, File};
-use std::io::Write;
+use std::io::{Read, BufReader};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration as StdDuration;
 use tokio::time;
+use serde::Deserialize;
 
 // Define version constants
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -67,6 +68,10 @@ struct Args {
     /// Signal cooldown period in minutes
     #[clap(long, default_value = "5")]
     signal_cooldown: i64,
+    
+    /// Path to backtest results directory for optimized parameters
+    #[clap(long, default_value = "../crypto_backtest/results")]
+    backtest_dir: PathBuf,
 }
 
 // Configuration structure
@@ -88,13 +93,38 @@ struct GeneralConfig {
     historical_days: u32,
 }
 
+// Backtest result structure for parsing optimized parameters
+#[derive(Deserialize)]
+struct BacktestResult {
+    strategy_config: StrategyConfig,
+    performance: BacktestPerformance,
+}
+
+#[derive(Deserialize)]
+struct BacktestPerformance {
+    win_rate: f64,
+    profit_factor: Option<f64>,
+    total_trades: usize,
+}
+
 // Load configuration from TOML file
 fn load_config<P: AsRef<std::path::Path>>(path: P) -> Result<Config> {
-    let mut file = File::open(path).context("Failed to create PID file")?;
+    let mut file = File::open(path).context("Failed to open config file")?;
     let mut contents = String::new();
     std::io::Read::read_to_string(&mut file, &mut contents).context("Failed to read config file")?;
     let config: Config = toml::from_str(&contents).context("Failed to parse config file")?;
     Ok(config)
+}
+
+// Load backtest configuration from JSON file
+fn load_backtest_config<P: AsRef<Path>>(path: P) -> Result<StrategyConfig> {
+    let file = File::open(&path)
+        .context(format!("Failed to open backtest file: {:?}", path.as_ref()))?;
+    let reader = BufReader::new(file);
+    let backtest: BacktestResult = serde_json::from_reader(reader)
+        .context(format!("Failed to parse backtest JSON from {:?}", path.as_ref()))?;
+    
+    Ok(backtest.strategy_config)
 }
 
 // Helper to track signal generator statistics
@@ -372,6 +402,63 @@ async fn main() -> Result<()> {
         let mut strategy_config = config.strategy.clone();
         strategy_config.min_signal_strength = args.min_signal_strength;
         
+        // Check multiple possible file paths for this symbol's backtest results
+        // Try various path formats to handle different directory/file structures
+        let possible_paths = [
+            // Format 1: ../crypto_backtest/results/BTC/BTC_metrics.json (uppercase directory)
+            args.backtest_dir.join(symbol).join(format!("{}_metrics.json", symbol)),
+            
+            // Format 2: ../crypto_backtest/results/BTC_metrics.json
+            args.backtest_dir.join(format!("{}_metrics.json", symbol)),
+        ];
+        
+        // Debug output to see which paths we're checking
+        for path in &possible_paths {
+            debug!("Checking for backtest results at: {:?} - exists: {}", path, path.exists());
+        }
+        
+        // Try each path until we find a valid one
+        let mut found_config = false;
+        for backtest_path in &possible_paths {
+            if backtest_path.exists() {
+                info!("Found backtest config at {:?}", backtest_path);
+                match load_backtest_config(&backtest_path) {
+                    Ok(backtest_config) => {
+                        // Process configuration
+                        info!("Loaded optimized parameters for {}: pivot_lookback={}, signal_lookback={}, fib_threshold={:.4}, initial={:.4}, tp={:.4}, sl={:.4}, limit1={:.4}, limit2={:.4}",
+                             symbol, 
+                             backtest_config.pivot_lookback,
+                             backtest_config.signal_lookback,
+                             backtest_config.fib_threshold,
+                             backtest_config.fib_initial,
+                             backtest_config.fib_tp,
+                             backtest_config.fib_sl,
+                             backtest_config.fib_limit1,
+                             backtest_config.fib_limit2);
+                         
+                        // Update strategy config with optimized values
+                        strategy_config.pivot_lookback = backtest_config.pivot_lookback;
+                        strategy_config.signal_lookback = backtest_config.signal_lookback;
+                        strategy_config.fib_threshold = backtest_config.fib_threshold;
+                        strategy_config.fib_initial = backtest_config.fib_initial;
+                        strategy_config.fib_tp = backtest_config.fib_tp;
+                        strategy_config.fib_sl = backtest_config.fib_sl;
+                        strategy_config.fib_limit1 = backtest_config.fib_limit1;
+                        strategy_config.fib_limit2 = backtest_config.fib_limit2;
+                        found_config = true;
+                        break;
+                    },
+                    Err(e) => {
+                        warn!("Could not load backtest file {:?}: {}", backtest_path, e);
+                    }
+                }
+            }
+        }
+        
+        if !found_config {
+            debug!("No backtest configuration found for {}", symbol);
+        }
+        
         let mut strategy = Strategy::new(strategy_config, asset_config);
         
         // Initialize with historical data
@@ -502,9 +589,12 @@ async fn main() -> Result<()> {
                                     // Try to create a lock for this symbol
                                     match signal_manager.check_and_create_lock(symbol) {
                                         Ok(true) => {
+                                            // IMPORTANT: Store the original signal before any modifications
+                                            let original_signal = signal.clone();
+                                            
                                             // Calculate position sizing using risk management
                                             if let (Some(limit1), Some(limit2)) = (position.limit1_price, position.limit2_price) {
-                                                // Store original scaling ratios before modifying sizes
+                                                // IMPORTANT: Store the original scaling ratios before modifying sizes
                                                 let limit1_ratio = position.limit1_size;
                                                 let limit2_ratio = position.limit2_size;
                                                 
@@ -520,8 +610,21 @@ async fn main() -> Result<()> {
                                                     Ok(scaling) => {
                                                         // Update position with calculated values
                                                         position.size = scaling.initial_position_size;
+                                                        
+                                                        // FIXED: Set the limit sizes using scaling positions
                                                         position.limit1_size = scaling.limit1_position_size;
                                                         position.limit2_size = scaling.limit2_position_size;
+                                                        
+                                                        // If for some reason these end up as 0.0, 
+                                                        // use the original ratios as a fallback
+                                                        if position.limit1_size <= 0.0 {
+                                                            position.limit1_size = position.size * limit1_ratio;
+                                                        }
+                                                        
+                                                        if position.limit2_size <= 0.0 {
+                                                            position.limit2_size = position.size * limit2_ratio;
+                                                        }
+                                                        
                                                         position.new_tp1 = Some(scaling.new_tp1);
                                                         position.new_tp2 = Some(scaling.new_tp2);
                                                         position.risk_percent = scaling.final_risk;
@@ -540,8 +643,11 @@ async fn main() -> Result<()> {
                                                         let base_size = (risk_amount / stop_distance).min(config.risk.max_position_size);
                                                         
                                                         position.size = base_size;
+                                                        
+                                                        // FIXED: Always calculate limit sizes based on base size and ratios
                                                         position.limit1_size = base_size * limit1_ratio;
                                                         position.limit2_size = base_size * limit2_ratio;
+                                                        
                                                         position.risk_percent = config.risk.max_risk_per_trade;
                                                         
                                                         info!("Using fallback position sizing: base={:.6}, limit1={:.6}, limit2={:.6}, risk={:.2}%",
@@ -556,31 +662,40 @@ async fn main() -> Result<()> {
                                                 position.size = (risk_amount / stop_distance).min(config.risk.max_position_size);
                                                 position.risk_percent = config.risk.max_risk_per_trade;
                                                 
+                                                // Make sure limit sizes are properly set even for simple sizing
+                                                if position.limit1_size <= 0.0 && position.size > 0.0 {
+                                                    position.limit1_size = position.size * 3.0; // Default 3:1 ratio
+                                                }
+                                                
+                                                if position.limit2_size <= 0.0 && position.size > 0.0 {
+                                                    position.limit2_size = position.size * 5.0; // Default 5:1 ratio
+                                                }
+                                                
                                                 info!("Using simple position sizing: size={:.6}, risk={:.2}%",
                                                       position.size, position.risk_percent * 100.0);
                                             }
                                             
-                                            // Write signal with age check
-                                            match signal_manager.write_signal(signal, Some(position), Some(args.max_signal_age)) {
+                                            // Write signal with age check - using original signal to preserve it
+                                            match signal_manager.write_signal(&original_signal, Some(position), Some(args.max_signal_age)) {
                                                 Ok(_) => {
                                                     total_signals += 1;
-                                                    stats.record_signal(signal);
+                                                    stats.record_signal(&original_signal);
                                                     
                                                     // Log signal to InfluxDB
-                                                    if let Err(e) = influx_client.write_signal(signal).await {
+                                                    if let Err(e) = influx_client.write_signal(&original_signal).await {
                                                         error!("Error writing signal to InfluxDB: {}", e);
                                                         stats.record_error();
                                                     }
                                                     
                                                     info!("Generated {} signal for {} at {}: Entry={}, TP={}, SL={}, Size={:.6}, Strength={}",
-                                                        format!("{:?}", signal.position_type),
-                                                        signal.symbol,
-                                                        signal.timestamp.format("%H:%M:%S"),
-                                                        signal.price,
-                                                        signal.take_profit,
-                                                        signal.stop_loss,
+                                                        format!("{:?}", original_signal.position_type),
+                                                        original_signal.symbol,
+                                                        original_signal.timestamp.format("%H:%M:%S"),
+                                                        original_signal.price,
+                                                        original_signal.take_profit,
+                                                        original_signal.stop_loss,
                                                         position.size,
-                                                        signal.strength);
+                                                        original_signal.strength);
                                                 },
                                                 Err(e) => {
                                                     error!("Error writing signal file: {}", e);

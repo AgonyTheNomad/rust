@@ -1,0 +1,34 @@
+{
+  "id": "b786b6b2-1600-4594-8f4e-3df07fd1fa23",
+  "levels": {
+    "entry_price": 12.411000000000001,
+    "limit1_price": 12.377,
+    "limit1_size": 702.3984565964602,
+    "limit2_price": 12.343,
+    "limit2_size": 1170.6640943274335,
+    "new_tp1": 12.455362163645153,
+    "new_tp2": 12.408374876778963,
+    "position_id": "715051c6-29de-4a7f-b32a-dde543739355",
+    "position_type": "Long",
+    "risk_percent": 0.02,
+    "size": 234.1328188654867,
+    "status": "Pending",
+    "stop_loss": 12.266976000000001,
+    "take_profit": 12.691023999999999
+  },
+  "metadata": {
+    "generated_at": "2025-05-15T22:45:35.843247800+00:00",
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1747349135842
+  },
+  "position_type": "LONG",
+  "price": 12.411000000000001,
+  "processed": false,
+  "reason": "Pivot high: 12.445, Pivot low: 12.377",
+  "stop_loss": 12.266976000000001,
+  "strength": 0.8999999999999999,
+  "symbol": "INJ",
+  "take_profit": 12.691023999999999,
+  "timestamp": "2025-05-15T22:45:35.842276300+00:00"
+}

@@ -1,0 +1,34 @@
+{
+  "id": "17a39bf5-bf62-450d-8f64-522b066470c4",
+  "levels": {
+    "entry_price": 22.711112,
+    "limit1_price": 22.654,
+    "limit1_size": 201.60504496464318,
+    "limit2_price": 22.533,
+    "limit2_size": 336.00840827440527,
+    "new_tp1": 22.812117201306304,
+    "new_tp2": 22.688698433283978,
+    "position_id": "55f023ea-da9c-4177-95f8-be3e30ff1797",
+    "position_type": "Long",
+    "risk_percent": 0.02,
+    "size": 67.20168165488106,
+    "status": "Pending",
+    "stop_loss": 22.262444,
+    "take_profit": 23.287556000000002
+  },
+  "metadata": {
+    "generated_at": "2025-05-15T22:45:35.915342600+00:00",
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1747349135914
+  },
+  "position_type": "LONG",
+  "price": 22.711112,
+  "processed": false,
+  "reason": "Pivot high: 22.896, Pivot low: 22.654",
+  "stop_loss": 22.262444,
+  "strength": 0.8999999999999999,
+  "symbol": "ENS",
+  "take_profit": 23.287556000000002,
+  "timestamp": "2025-05-15T22:45:35.914303+00:00"
+}
