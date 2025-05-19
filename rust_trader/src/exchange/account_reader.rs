@@ -81,9 +81,8 @@ impl AccountReader {
         match self.read_account_info() {
             Ok(info) => Ok(info.balance),
             Err(e) => {
-                warn!("Failed to read balance from account info file: {}", e);
-                // Return a default value or fallback
-                Ok(1000.0) // Default fallback
+                // Instead of returning a default value, propagate the error
+                Err(anyhow::anyhow!("Failed to read balance from account info file: {}", e))
             }
         }
     }

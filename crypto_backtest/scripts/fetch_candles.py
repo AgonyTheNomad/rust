@@ -4,8 +4,8 @@ import json
 import os
 import sys
 
-url = "http://192.168.68.52:8086"
-token = "QJfVtZTmqXfq7QIwAjCFAsQ4YRF9IBlEawlgNPANNOg2kTSyhjuTEFTbQ2Qzl0C7oBzhja3nRyluqQ0LegegOw=="
+url = "http://0.0.0.0:8086"
+token = "Xu0vYUoLT_lAA02JKERHPS5jl02cN4YA76AJzZMH7FeApVKksrrcafLm3WVcZJj6VcZm53oUgR6PE8HMq39IpQ=="
 org = "ValhallaVault"
 bucket = "hyper_candles"
 

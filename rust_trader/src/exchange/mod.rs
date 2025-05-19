@@ -229,13 +229,12 @@ impl Exchange for MockExchange {
     }
     
     async fn get_balance(&self) -> Result<f64, ExchangeError> {
-        // Get balance from the account info file
+        // Get balance from the account info file, with no fallback
         match self.account_reader.get_balance() {
             Ok(balance) => Ok(balance),
             Err(e) => {
-                log::warn!("Failed to read balance from account_info.json: {}", e);
-                // Return a default value for dry run
-                Ok(10000.0)
+                // Convert anyhow::Error to ExchangeError
+                Err(ExchangeError::ApiError(format!("Failed to read balance: {}", e)))
             }
         }
     }
@@ -285,7 +284,7 @@ impl Exchange for MockExchange {
             },
             Err(e) => {
                 log::warn!("Failed to read positions from account_info.json: {}", e);
-                Ok(Vec::new()) // Return empty positions list for dry run
+                Err(ExchangeError::ApiError(format!("Failed to read positions: {}", e)))
             }
         }
     }
@@ -342,13 +341,8 @@ impl Exchange for MockExchange {
             },
             Err(e) => {
                 log::warn!("Failed to read account info from account_info.json: {}", e);
-                // Create a mock account with default values
-                Ok(Account {
-                    balance: 10000.0,
-                    equity: 10000.0,
-                    used_margin: 0.0,
-                    positions: HashMap::new(),
-                })
+                // Return error instead of creating a mock account
+                Err(ExchangeError::ApiError(format!("Failed to read account info: {}", e)))
             }
         }
     }

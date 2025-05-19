@@ -32,7 +32,7 @@ struct InfluxConfig {
 impl InfluxConfig {
     fn default() -> Self {
         Self {
-            url: "http://192.168.68.52:30086".to_string(),
+            url: "http://0.0.0.0:8086".to_string(),
             database: "hyper_candles".to_string(),
         }
     }

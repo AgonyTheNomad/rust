@@ -27,8 +27,8 @@ impl InfluxConfig {
     
     pub fn default() -> Self {
         Self {
-            url: "http://192.168.68.52:30086".to_string(),
-            token: "QJfVtZTmqXfq7QIwAjCFAsQ4YRF9IBlEawlgNPANNOg2kTSyhjuTEFTbQ2Qzl0C7oBzhja3nRyluqQ0LegegOw==".to_string(),
+            url: "http://0.0.0.0:8086".to_string(),
+            token: "Xu0vYUoLT_lAA02JKERHPS5jl02cN4YA76AJzZMH7FeApVKksrrcafLm3WVcZJj6VcZm53oUgR6PE8HMq39IpQ==".to_string(),
             org: "ValhallaVault".to_string(),
             bucket: "hyper_candles".to_string(),
         }

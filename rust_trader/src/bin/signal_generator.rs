@@ -10,6 +10,7 @@ use rust_trader::{
     SignalFileManager, 
     strategy::{Strategy, StrategyConfig, AssetConfig},
     risk::{RiskManager, RiskParameters, PositionCalculator},
+    exchange::AccountReader,
 };
 use std::collections::HashMap;
 use std::fs::{self, File};
@@ -24,6 +25,8 @@ use serde::Deserialize;
 // Define version constants
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const GENERATOR_NAME: &str = "fibonacci_pivot";
+const ACCOUNT_FILE_PATH: &str = "./account_info.json";
+const ACCOUNT_MAX_AGE_SECONDS: u64 = 300; // 5 minutes
 
 // CLI Arguments
 #[derive(Parser)]
@@ -72,6 +75,10 @@ struct Args {
     /// Path to backtest results directory for optimized parameters
     #[clap(long, default_value = "../crypto_backtest/results")]
     backtest_dir: PathBuf,
+    
+    /// Path to account info file
+    #[clap(long, default_value = "./account_info.json")]
+    account_file: PathBuf,
 }
 
 // Configuration structure
@@ -222,7 +229,7 @@ fn create_pid_file() -> Result<()> {
         // Read current PID file
         let pid_str = fs::read_to_string(&pid_path)?;
         
-        if let Ok(old_pid) = pid_str.trim().parse::<u32>() {
+        if let Ok(_old_pid) = pid_str.trim().parse::<u32>() {
             // Check if process still running (Unix-specific)
             #[cfg(unix)]
             {
@@ -364,8 +371,17 @@ async fn main() -> Result<()> {
     // Create a map to track last update time and strategy instance for each symbol
     let mut symbol_states: HashMap<String, (Strategy, DateTime<Utc>)> = HashMap::new();
     
-    // Initial account balance for risk calculations
-    let account_balance = 10000.0; // Default value, could be loaded from config
+    // Read account balance from file - fail if not found
+    let account_reader = AccountReader::new(
+        args.account_file.to_str().unwrap_or(ACCOUNT_FILE_PATH),
+        ACCOUNT_MAX_AGE_SECONDS
+    );
+    
+    let account_info = account_reader.read_account_info()
+        .context("Failed to read account information")?;
+    
+    let account_balance = account_info.balance;
+    info!("Using account balance: ${:.2}", account_balance);
     
     // Initialize with historical data
     for symbol in &symbols {
@@ -483,7 +499,7 @@ async fn main() -> Result<()> {
     // Last time we printed and wrote stats
     let mut last_stats_time = Utc::now();
     
-    // Create a mock account for risk calculations
+    // Create a mock account for risk calculations with the real balance
     let mock_account = Account {
         balance: account_balance,
         equity: account_balance,
@@ -491,8 +507,9 @@ async fn main() -> Result<()> {
         positions: HashMap::new(),
     };
     
-    // Create risk manager
-    let risk_manager = RiskManager::new(config.risk.clone(), account_balance);
+    // Create risk manager with the real account balance
+    let risk_manager = RiskManager::new(config.risk.clone(), account_balance)
+    .context("Failed to create risk manager")?;
     
     // Main loop - run continuously
     let mut interval = time::interval(StdDuration::from_secs(1));
@@ -599,14 +616,14 @@ async fn main() -> Result<()> {
                                                 let limit2_ratio = position.limit2_size;
                                                 
                                                 match risk_manager.calculate_scaled_position(
-                                                    &mock_account,
-                                                    position.entry_price,
-                                                    position.stop_loss,
-                                                    position.take_profit,
-                                                    limit1,
-                                                    limit2,
-                                                    position.position_type.clone()
-                                                ) {
+                                                        &mock_account,
+                                                        position.entry_price,
+                                                        position.stop_loss,
+                                                        position.take_profit,
+                                                        limit1,
+                                                        limit2,
+                                                        position.position_type.clone()
+                                                    ) {
                                                     Ok(scaling) => {
                                                         // Update position with calculated values
                                                         position.size = scaling.initial_position_size;
@@ -742,8 +759,32 @@ async fn main() -> Result<()> {
             }
         }
         
-        // Periodically print and save stats (every 5 minutes)
+        // Periodically check if account balance has changed
         if (now - last_stats_time).num_seconds() > 300 {
+            // Try to refresh account information
+            match account_reader.read_account_info() {
+                Ok(new_account_info) => {
+                    // Check if balance has changed significantly
+                    if (new_account_info.balance - account_balance).abs() > 0.01 {
+                        info!("Account balance updated: ${:.2} -> ${:.2}", 
+                             account_balance, new_account_info.balance);
+                             
+                        // Update mock account with new balance
+                        // Note: Since we're storing this in a local variable and the RiskManager 
+                        // is using a copy of the value, we can't update them without recreating them
+                        // In a real implementation, you might want to make these shareable with Arcs and Mutexes
+                        
+                        // For now, log the change but don't update (would require code restructuring)
+                        // In a future version, consider making these updatable during runtime
+                    }
+                },
+                Err(e) => {
+                    // Just log the error, don't stop execution
+                    warn!("Failed to refresh account info: {}", e);
+                }
+            }
+            
+            // Print and save stats (every 5 minutes)
             stats.print_stats();
             if let Err(e) = stats.write_to_file(Path::new("signal_generator_stats.json")) {
                 error!("Error writing stats to file: {}", e);
