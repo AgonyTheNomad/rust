@@ -1,0 +1,34 @@
+{
+  "id": "8f4b042e-2555-487b-b1bd-c91a7be3b6a7",
+  "levels": {
+    "entry_price": 266.79544,
+    "limit1_price": 267.14,
+    "limit1_size": 33.416726631127055,
+    "limit2_price": 267.87,
+    "limit2_size": 55.69454438521176,
+    "new_tp1": 266.0440228108801,
+    "new_tp2": 266.83290329949443,
+    "position_id": "2a17d246-82a6-4221-a7c8-245918f9f0c2",
+    "position_type": "Short",
+    "risk_percent": 0.02,
+    "size": 11.138908877042352,
+    "status": "Pending",
+    "stop_loss": 269.5022799999999,
+    "take_profit": 262.76000000000005
+  },
+  "metadata": {
+    "generated_at": "2025-05-20T02:33:00.561349300+00:00",
+    "generator_version": "0.1.0",
+    "test": false,
+    "timestamp_ms": 1747708380560
+  },
+  "position_type": "SHORT",
+  "price": 266.79544,
+  "processed": false,
+  "reason": "Pivot high: 267.14, Pivot low: 265.68",
+  "stop_loss": 269.5022799999999,
+  "strength": 0.7,
+  "symbol": "AAVE",
+  "take_profit": 262.76000000000005,
+  "timestamp": "2025-05-20T02:33:00.560324500+00:00"
+}

@@ -6,7 +6,7 @@ use log::*;
 use rust_trader::{
     exchange::{Exchange, ExchangeConfig, create_exchange},
     influxdb::{InfluxDBClient, InfluxDBConfig},
-    models::{Candle, Position, Signal, PositionStatus, PositionType},
+    models::{Candle, Position, Signal, PositionStatus},
     risk::{RiskManager, RiskParameters},
     setup_logging,
     strategy::{Strategy, StrategyConfig, AssetConfig},
@@ -249,7 +249,10 @@ async fn trade(
     
     // Initialize risk manager
     let account_balance = exchange.get_balance().await.map_err(|e| anyhow::anyhow!("Failed to get account balance: {}", e))?;
-    let risk_manager = Arc::new(Mutex::new(RiskManager::new(config.risk, account_balance)));
+    
+    // FIXED: First create the RiskManager, then wrap in Arc<Mutex>
+    let risk_manager_result = RiskManager::new(config.risk, account_balance)?;
+    let risk_manager = Arc::new(Mutex::new(risk_manager_result));
     
     // Create trading state
     let trading_state = Arc::new(Mutex::new(TradingState {
@@ -612,7 +615,7 @@ async fn process_candle(
                 }
             } else {
                 // Even in dry run mode, we should calculate the sizes for informational purposes
-                let mut position = position_template.clone();
+                let position = position_template.clone();
                 
                 // Store scaling ratios
                 let limit1_ratio = position.limit1_size;
@@ -786,7 +789,6 @@ async fn update_positions(
     Ok(())
 }
 
-// Fetch historical data and save to CSV
 // Fetch historical data and save to CSV
 async fn fetch_historical_data(symbol: &str, days: u32, output_dir: &PathBuf) -> Result<()> {
     // Load InfluxDB config from environment

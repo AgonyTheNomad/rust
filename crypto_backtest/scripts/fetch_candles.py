@@ -4,7 +4,7 @@ import json
 import os
 import sys
 
-url = "http://0.0.0.0:8086"
+url = "http://127.0.0.1:8086"
 token = "Xu0vYUoLT_lAA02JKERHPS5jl02cN4YA76AJzZMH7FeApVKksrrcafLm3WVcZJj6VcZm53oUgR6PE8HMq39IpQ=="
 org = "ValhallaVault"
 bucket = "hyper_candles"
